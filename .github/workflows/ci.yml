@@ -115,8 +115,7 @@ jobs:
   ios:
     name: iOS app (Xcode, simulator build) and package tests
     needs: changes
-    # Mosque Pro is private, where Mac minutes cost 10x: Apple jobs run only when started by hand (Actions > Run workflow).
-    if: needs.changes.outputs.ios == 'true' && github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-15
     # The widget and island screenshots made the job longer than an hour.
     timeout-minutes: 90
@@ -416,8 +415,7 @@ jobs:
   mac-first-launch:
     name: Mac app first launch (macOS 26, Release, sandbox)
     needs: changes
-    # Mosque Pro is private, where Mac minutes cost 10x: Apple jobs run only when started by hand (Actions > Run workflow).
-    if: needs.changes.outputs.ios == 'true' && github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-26
     timeout-minutes: 45
     defaults:
@@ -484,8 +482,7 @@ jobs:
   tvos:
     name: Apple TV app (tvOS simulator build and screenshots)
     needs: changes
-    # Mosque Pro is private, where Mac minutes cost 10x: Apple jobs run only when started by hand (Actions > Run workflow).
-    if: needs.changes.outputs.ios == 'true' && github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-26
     timeout-minutes: 50
     defaults:
@@ -565,8 +562,7 @@ jobs:
   ios27:
     name: iPhone app with the iOS 27 SDK (preview runner, for iPhone Duo)
     needs: changes
-    # Mosque Pro is private, where Mac minutes cost 10x: Apple jobs run only when started by hand (Actions > Run workflow).
-    if: needs.changes.outputs.ios == 'true' && github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ios == 'true'
     # GitHub's Xcode 27 image is a preview; this job warns early and never blocks.
     runs-on: xcode-27
     continue-on-error: true
@@ -604,8 +600,7 @@ jobs:
   watchos:
     name: Apple Watch app (watchOS simulator build and screenshots)
     needs: changes
-    # Mosque Pro is private, where Mac minutes cost 10x: Apple jobs run only when started by hand (Actions > Run workflow).
-    if: needs.changes.outputs.ios == 'true' && github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-26
     timeout-minutes: 50
     defaults:
@@ -693,8 +688,7 @@ jobs:
   visionos:
     name: Apple Vision Pro app (visionOS build)
     needs: changes
-    # Mosque Pro is private, where Mac minutes cost 10x: Apple jobs run only when started by hand (Actions > Run workflow).
-    if: needs.changes.outputs.ios == 'true' && github.event_name == 'workflow_dispatch'
+    if: needs.changes.outputs.ios == 'true'
     runs-on: macos-26
     timeout-minutes: 50
     defaults:
