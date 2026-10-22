@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s om %2$s, over %3$s</string>
     <string name="countdown_in">over %1$s</string>
     <string name="current_prayer">Huidig</string>
+    <string name="daily_ayah">Vers van de dag</string>
+    <string name="daily_hadith">Hadith van de dag</string>
     <string name="data_attribution_osm">Moskeegegevens © OpenStreetMap-bijdragers (ODbL)</string>
     <string name="dhikr_section">Koran en dhikr</string>
     <string name="directions">Route</string>

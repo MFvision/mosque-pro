@@ -96,6 +96,11 @@ struct BoardView: View {
 
             Spacer(minLength: 20)
 
+            if let daily = Daily.content {
+                DailyLine(content: daily, now: snap.now, zone: zone)
+                Spacer(minLength: 20)
+            }
+
             if let today = snap.today, today.status != .unavailable {
                 HStack(spacing: 22) {
                     ForEach(PrayerEvent.allCases, id: \.self) { e in
@@ -142,6 +147,49 @@ struct PrayerTile: View {
         .frame(maxWidth: .infinity)
         .glass(shape, tint: isNext ? Theme.gold.opacity(0.28) : nil)
         .overlay(shape.stroke(Theme.gold, lineWidth: isCurrent ? 4 : 0))
+        .accessibilityElement(children: .combine)
+    }
+}
+
+/// Verse of the day and Hadith of the day on the board, taking turns every minute: the Arabic, then the
+/// translation in the interface language and the reference.
+struct DailyLine: View {
+    @Environment(TVModel.self) private var model
+    let content: DailyContent
+    let now: Date
+    let zone: TimeZone
+
+    var body: some View {
+        let l10n = model.l10n
+        var cal = Calendar(identifier: .gregorian)
+        cal.timeZone = zone
+        let showAyah = Int(now.timeIntervalSince1970 / 60) % 2 == 0
+        let lines: (title: String, ar: String, translation: String?, note: String)
+        if showAyah {
+            let a = content.ayah(for: now, calendar: cal)
+            lines = (l10n.t("daily_ayah"), a.ar, a.translation(l10n.language), Daily.reference(a, language: l10n.language, locale: l10n.locale))
+        } else {
+            let h = content.hadith(for: now, calendar: cal)
+            let t = h.text(l10n.language)
+            lines = (l10n.t("daily_hadith"), "«\(h.ar.text)»", l10n.language == "ar" ? nil : "«\(t.text)»", "\(t.grade) · \(t.source)")
+        }
+        return VStack(alignment: .leading, spacing: 8) {
+            Text(lines.title).font(.system(size: 26, weight: .semibold)).foregroundStyle(Theme.gold)
+            Text(lines.ar)
+                .font(.system(size: 36))
+                .lineLimit(2)
+                .minimumScaleFactor(0.6)
+                .environment(\.layoutDirection, .rightToLeft)
+                .frame(maxWidth: .infinity, alignment: .leading)
+            if let t = lines.translation {
+                Text(t).font(.system(size: 26)).foregroundStyle(.white.opacity(0.85)).lineLimit(2).minimumScaleFactor(0.7)
+            }
+            Text(lines.note).font(.system(size: 22)).foregroundStyle(.white.opacity(0.7))
+        }
+        .frame(maxWidth: 1500, alignment: .leading)
+        .id(showAyah)
+        .transition(.opacity)
+        .animation(.easeInOut(duration: 0.8), value: showAyah)
         .accessibilityElement(children: .combine)
     }
 }

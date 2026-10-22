@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s pukul %2$s, dalam %3$s</string>
     <string name="countdown_in">dalam %1$s</string>
     <string name="current_prayer">Sekarang</string>
+    <string name="daily_ayah">Ayat hari ini</string>
+    <string name="daily_hadith">Hadis hari ini</string>
     <string name="data_attribution_osm">Data masjid © kontributor OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Al-Qur\'an dan zikir</string>
     <string name="directions">Petunjuk arah</string>

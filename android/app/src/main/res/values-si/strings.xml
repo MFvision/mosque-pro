@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s %2$s ට, තව %3$s කින්</string>
     <string name="countdown_in">තව %1$s කින්</string>
     <string name="current_prayer">වත්මන්</string>
+    <string name="daily_ayah">අද දින ආයතය</string>
+    <string name="daily_hadith">අද දින හදීසය</string>
     <string name="data_attribution_osm">පල්ලි දත්ත © OpenStreetMap දායකයින් (ODbL)</string>
     <string name="dhikr_section">අල්කුර්ආනය සහ දික්ර්</string>
     <string name="directions">මඟ</string>

@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s da ƙarfe %2$s, nan da %3$s</string>
     <string name="countdown_in">nan da %1$s</string>
     <string name="current_prayer">Yanzu</string>
+    <string name="daily_ayah">Ayar yau</string>
+    <string name="daily_hadith">Hadisin yau</string>
     <string name="data_attribution_osm">Bayanan masallatai © masu ba da gudummawa na OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Alƙur\'ani da zikiri</string>
     <string name="directions">Kwatance</string>

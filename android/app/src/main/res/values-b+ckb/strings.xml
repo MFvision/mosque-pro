@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s کاتژمێر %2$s، دوای %3$s</string>
     <string name="countdown_in">دوای %1$s</string>
     <string name="current_prayer">ئێستا</string>
+    <string name="daily_ayah">ئایەتی ڕۆژ</string>
+    <string name="daily_hadith">فەرموودەی ڕۆژ</string>
     <string name="data_attribution_osm">زانیاری مزگەوتەکان © بەشداربووانی OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">قورئان و زیکر</string>
     <string name="directions">ڕێنمایی ڕێگا</string>

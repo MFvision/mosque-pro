@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s lúc %2$s, còn %3$s</string>
     <string name="countdown_in">còn %1$s</string>
     <string name="current_prayer">Hiện tại</string>
+    <string name="daily_ayah">Câu kinh hôm nay</string>
+    <string name="daily_hadith">Hadith hôm nay</string>
     <string name="data_attribution_osm">Dữ liệu thánh đường © những người đóng góp OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Qur\'an và dhikr</string>
     <string name="directions">Chỉ đường</string>

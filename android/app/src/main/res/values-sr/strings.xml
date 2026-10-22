@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s у %2$s, за %3$s</string>
     <string name="countdown_in">за %1$s</string>
     <string name="current_prayer">Тренутно</string>
+    <string name="daily_ayah">Ајет дана</string>
+    <string name="daily_hadith">Хадис дана</string>
     <string name="data_attribution_osm">Подаци о џамијама © сарадници OpenStreetMap-а (ODbL)</string>
     <string name="dhikr_section">Куран и зикр</string>
     <string name="directions">Упутства</string>

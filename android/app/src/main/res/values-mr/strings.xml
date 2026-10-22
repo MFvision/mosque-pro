@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s %2$s वाजता, %3$s मध्ये</string>
     <string name="countdown_in">%1$s मध्ये</string>
     <string name="current_prayer">सध्याची</string>
+    <string name="daily_ayah">आजची आयत</string>
+    <string name="daily_hadith">आजची हदीस</string>
     <string name="data_attribution_osm">मशीद डेटा © OpenStreetMap योगदानकर्ते (ODbL)</string>
     <string name="dhikr_section">कुरआन आणि जिक्र</string>
     <string name="directions">रस्ता</string>
