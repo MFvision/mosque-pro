@@ -12,6 +12,11 @@ the TV prayer screen, Clean network, and Ayah and Hadith of the day. Near Mosque
 
 Kotlin and Swift package names (`sa.zood.nearmosque.*`) are internal and stay as they are.
 
-Every publishing workflow (TestFlight, App Store, Google Play, desktop release, store assets, content packs) is
-parked in `.github/workflows-disabled/` and does not run. Only `ci.yml` (build and tests) is active. Move a
-workflow back only after Mohammed approves publishing.
+TestFlight is on (Mohammed asked for it on 2026-10-22): `testflight.yml` uploads the iPhone, iPad, Mac, Apple TV
+and Vision Pro apps on every push to main that changes them. The internal group **Mosque Pro Team** gets every
+build automatically; the external group **Mosque Pro Testers** has a public link and gets each build after Apple's
+Beta App Review. It needs the three App Store Connect secrets (docs/07-testflight.md) and the app record for
+sa.zood.mosquepro.
+
+Every other publishing workflow (App Store review, Google Play, desktop release, store assets, content packs) is
+parked in `.github/workflows-disabled/` and does not run. Move one back only after Mohammed approves publishing.

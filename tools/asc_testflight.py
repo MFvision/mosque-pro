@@ -59,10 +59,10 @@ def create_internal_group(app_id: str) -> dict:
     (internal testers install without Beta App Review)."""
     g = api("POST", "/betaGroups", body={"data": {
         "type": "betaGroups",
-        "attributes": {"name": "Near Mosque Team", "isInternalGroup": True, "hasAccessToAllBuilds": True},
+        "attributes": {"name": "Mosque Pro Team", "isInternalGroup": True, "hasAccessToAllBuilds": True},
         "relationships": {"app": {"data": {"type": "apps", "id": app_id}}},
     }})["data"]
-    print("Created internal TestFlight group 'Near Mosque Team' (gets every build automatically).")
+    print("Created internal TestFlight group 'Mosque Pro Team' (gets every build automatically).")
     users = api("GET", "/users", {"limit": "50", "fields[users]": "username,firstName,lastName"})["data"]
     added = 0
     for u in users:
@@ -75,10 +75,47 @@ def create_internal_group(app_id: str) -> dict:
             }})
             added += 1
         except urllib.error.HTTPError:
-            print("::warning::Could not add a team member as a tester; add yourself in App Store Connect → TestFlight → Near Mosque Team.")
+            print("::warning::Could not add a team member as a tester; add yourself in App Store Connect → TestFlight → Mosque Pro Team.")
     # Logs are public for this repository: report a count, never names or emails.
     print(f"Added {added} of {len(users)} App Store Connect team member(s) as internal testers.")
     return g
+
+
+EXTERNAL_GROUP = "Mosque Pro Testers"
+
+
+def share_external(app_id: str, groups: list, build_id: str, version: str) -> None:
+    """External group with a public TestFlight link, so testers outside the App Store Connect team can join.
+
+    External builds need Apple's Beta App Review (usually under a day for the first build of a version, often
+    automatic after that). The link itself is not printed: the logs of this repository are public.
+    """
+    group = next((g for g in groups if not g["attributes"].get("isInternalGroup") and g["attributes"].get("name") == EXTERNAL_GROUP), None)
+    try:
+        if not group:
+            group = api("POST", "/betaGroups", body={"data": {
+                "type": "betaGroups",
+                "attributes": {"name": EXTERNAL_GROUP, "publicLinkEnabled": True, "publicLinkLimitEnabled": False},
+                "relationships": {"app": {"data": {"type": "apps", "id": app_id}}},
+            }})["data"]
+            print(f"Created external TestFlight group '{EXTERNAL_GROUP}' with a public link "
+                  "(copy it from App Store Connect → TestFlight → the group).")
+        api("POST", f"/betaGroups/{group['id']}/relationships/builds", body={"data": [{"type": "builds", "id": build_id}]})
+        print(f"Added build {version} to '{EXTERNAL_GROUP}'.")
+    except urllib.error.HTTPError as e:
+        print(f"::warning::Could not set up '{EXTERNAL_GROUP}' ({e.code}); internal testers still get the build.")
+        return
+    try:
+        api("POST", "/betaAppReviewSubmissions", body={"data": {
+            "type": "betaAppReviewSubmissions",
+            "relationships": {"build": {"data": {"type": "builds", "id": build_id}}},
+        }})
+        print(f"Submitted build {version} to Beta App Review for the public link.")
+    except urllib.error.HTTPError as e:
+        # 409: already submitted or approved; otherwise usually the Test Information page is not filled in yet.
+        if e.code != 409:
+            print(f"::warning::Beta App Review submission failed ({e.code}). Fill in App Store Connect → TestFlight → "
+                  "Test Information (description, feedback email, contact), then run TestFlight status again.")
 
 
 def ensure_platform(platform: str) -> int:
@@ -180,6 +217,8 @@ def handle(app_id: str, platform: str, want: str | None, wait: int) -> int:
             print(f"Added build {target['attributes']['version']} to internal group '{name}'.")
         except urllib.error.HTTPError:
             print(f"::warning::Could not add the build to '{name}'; add it in App Store Connect → TestFlight.")
+
+    share_external(app_id, groups, build_id, target["attributes"]["version"])
 
     detail = api("GET", f"/builds/{build_id}/buildBetaDetail")["data"]["attributes"]
     print(f"TestFlight state: internal={detail.get('internalBuildState')}, external={detail.get('externalBuildState')}")
