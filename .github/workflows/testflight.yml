@@ -1,13 +1,16 @@
-name: Nearest Mosque TestFlight
+name: Mosque Pro TestFlight
 
 # Builds the iPhone and iPad app (with the Apple Watch app inside), the Mac app (Mac Catalyst), the Apple TV app and the Apple Vision Pro app, signs them with the App Store Connect
 # API key (Xcode automatic signing, cloud-managed distribution certificate) and uploads them to TestFlight.
-# Start it from the Actions tab (Run workflow) or by pushing a tag such as `ios-v1`.
+# Runs on every push to main that changes the apps (so testers always get the latest build), from the Actions tab
+# (Run workflow), or by pushing a tag such as `ios-v1`. Mosque Pro only: bundle ID sa.zood.mosquepro, never Near Mosque's.
 # Needs three repository secrets (see docs/07-testflight.md):
 #   ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (contents of the .p8 file)
 # The Team ID is not secret and lives in ios/project.yml (override with an APPLE_TEAM_ID secret).
 on:
   push:
+    branches: [main]
+    paths: ["ios/**", "shared/**", "packs/**", ".github/workflows/testflight.yml"]
     tags:
       - "ios-v*"
   workflow_dispatch:
@@ -327,10 +330,9 @@ jobs:
             ios/vision-archive.log
             ios/vision-export.log
 
-  # Waiting for Apple's processing runs on Linux (macOS minutes count several times against the Actions
-  # allowance).
+  # Waiting for Apple's processing runs on Linux, so the macOS runner is free sooner.
   testers:
-    name: Wait for Apple processing and give internal testers access
+    name: Wait for Apple processing and give the tester groups access
     needs: testflight
     runs-on: ubuntu-latest
     timeout-minutes: 95
