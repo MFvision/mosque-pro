@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s u %2$s, za %3$s</string>
     <string name="countdown_in">za %1$s</string>
     <string name="current_prayer">Trenutno</string>
+    <string name="daily_ayah">Ajet dana</string>
+    <string name="daily_hadith">Hadis dana</string>
     <string name="data_attribution_osm">Podaci o džamijama © saradnici OpenStreetMap-a (ODbL)</string>
     <string name="dhikr_section">Kur\'an i zikr</string>
     <string name="directions">Upute</string>

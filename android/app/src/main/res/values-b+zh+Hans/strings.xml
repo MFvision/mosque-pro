@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s 在 %2$s，还有 %3$s</string>
     <string name="countdown_in">还有 %1$s</string>
     <string name="current_prayer">当前</string>
+    <string name="daily_ayah">每日经文</string>
+    <string name="daily_hadith">每日圣训</string>
     <string name="data_attribution_osm">清真寺数据 © OpenStreetMap 贡献者（ODbL）</string>
     <string name="dhikr_section">古兰经与记主</string>
     <string name="directions">路线</string>

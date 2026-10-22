@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s à %2$s, dans %3$s</string>
     <string name="countdown_in">dans %1$s</string>
     <string name="current_prayer">En cours</string>
+    <string name="daily_ayah">Verset du jour</string>
+    <string name="daily_hadith">Hadith du jour</string>
     <string name="data_attribution_osm">Données © contributeurs OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Coran et dhikr</string>
     <string name="directions">Itinéraire</string>

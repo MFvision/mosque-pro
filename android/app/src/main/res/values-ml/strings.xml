@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s %2$s-ന്, %3$s കഴിഞ്ഞ്</string>
     <string name="countdown_in">%1$s കഴിഞ്ഞ്</string>
     <string name="current_prayer">ഇപ്പോഴുള്ളത്</string>
+    <string name="daily_ayah">ഇന്നത്തെ ആയത്ത്</string>
+    <string name="daily_hadith">ഇന്നത്തെ ഹദീസ്</string>
     <string name="data_attribution_osm">പള്ളികളുടെ ഡാറ്റ © OpenStreetMap സംഭാവകർ (ODbL)</string>
     <string name="dhikr_section">ഖുർആനും ദിക്റും</string>
     <string name="directions">വഴി</string>

@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s — %2$s, დარჩა %3$s</string>
     <string name="countdown_in">%1$s-ში</string>
     <string name="current_prayer">მიმდინარე</string>
+    <string name="daily_ayah">დღის აიათი</string>
+    <string name="daily_hadith">დღის ჰადისი</string>
     <string name="data_attribution_osm">მეჩეთების მონაცემები © OpenStreetMap-ის მონაწილეები (ODbL)</string>
     <string name="dhikr_section">ყურანი და ზიქრი</string>
     <string name="directions">მარშრუტი</string>

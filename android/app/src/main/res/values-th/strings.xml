@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s เวลา %2$s อีก %3$s</string>
     <string name="countdown_in">อีก %1$s</string>
     <string name="current_prayer">ปัจจุบัน</string>
+    <string name="daily_ayah">อายะฮ์ประจำวัน</string>
+    <string name="daily_hadith">หะดีษประจำวัน</string>
     <string name="data_attribution_osm">ข้อมูลมัสยิด © ผู้ร่วมพัฒนา OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">อัลกุรอานและซิกิร</string>
     <string name="directions">เส้นทาง</string>

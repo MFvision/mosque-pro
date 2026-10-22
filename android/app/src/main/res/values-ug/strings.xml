@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s سائەت %2$s دە، %3$s دىن كېيىن</string>
     <string name="countdown_in">%1$s دىن كېيىن</string>
     <string name="current_prayer">ھازىرقى</string>
+    <string name="daily_ayah">بۈگۈنكى ئايەت</string>
+    <string name="daily_hadith">بۈگۈنكى ھەدىس</string>
     <string name="data_attribution_osm">مەسچىت سانلىق مەلۇماتى © OpenStreetMap تۆھپىكارلىرى (ODbL)</string>
     <string name="dhikr_section">قۇرئان ۋە زىكىر</string>
     <string name="directions">يول كۆرسىتىش</string>

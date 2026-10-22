@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s nang %2$s, sa loob ng %3$s</string>
     <string name="countdown_in">sa loob ng %1$s</string>
     <string name="current_prayer">Kasalukuyan</string>
+    <string name="daily_ayah">Talata ng araw</string>
+    <string name="daily_hadith">Hadith ng araw</string>
     <string name="data_attribution_osm">Datos ng masjid © mga contributor ng OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Qur\'an at dhikr</string>
     <string name="directions">Direksyon</string>

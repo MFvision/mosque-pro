@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s saa %2$s, baada ya %3$s</string>
     <string name="countdown_in">baada ya %1$s</string>
     <string name="current_prayer">Sasa</string>
+    <string name="daily_ayah">Aya ya leo</string>
+    <string name="daily_hadith">Hadithi ya leo</string>
     <string name="data_attribution_osm">Data ya misikiti © wachangiaji wa OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Qur\'ani na dhikri</string>
     <string name="directions">Maelekezo</string>
