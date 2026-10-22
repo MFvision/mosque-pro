@@ -75,7 +75,7 @@ android {
 
     sourceSets {
         // Data packs are shared with iOS and live outside the Gradle project.
-        getByName("main").assets.srcDirs("../../packs", "../../shared/content", "../../shared/semantic")
+        getByName("main").assets.srcDirs("../../packs", "../../shared/content", "../../shared/semantic", "../../shared/daily")
     }
 
     testOptions {
