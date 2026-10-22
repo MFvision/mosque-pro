@@ -1,0 +1,96 @@
+#if DEBUG
+import NMCore
+import SwiftUI
+import UIKit
+import WidgetKit
+
+/// Debug builds only: the home-screen widgets drawn at their real sizes, for CI screenshots
+/// (`-demoWidgets YES -demoWidgetKind next|countdown|ring|today|mosque|ask|qibla|actions|tasbih|companion|island -demoWidgetLook cream|green|night|teal|sky`).
+/// Uses the city and settings chosen in the app, like the widgets themselves.
+struct WidgetGalleryView: View {
+    @Environment(\.appModel) private var model
+
+    private var kind: PrayerWidgetKind {
+        switch UserDefaults.standard.string(forKey: "demoWidgetKind") {
+        case "countdown": return .countdown
+        case "ring": return .ring
+        case "today": return .today
+        case "mosque": return .mosque
+        case "ask": return .ask
+        case "qibla": return .qibla
+        case "actions": return .actions
+        case "tasbih": return .tasbih
+        case "companion": return .companion
+        default: return .next
+        }
+    }
+    private var look: WidgetLook { WidgetLook(rawValue: UserDefaults.standard.string(forKey: "demoWidgetLook") ?? "") ?? .cream }
+
+    private var sizes: [(WidgetFamily, CGSize)] {
+        let small = CGSize(width: 170, height: 170), medium = CGSize(width: 364, height: 170), large = CGSize(width: 364, height: 382)
+        // iPad only (on an iPhone the gallery would be cut off).
+        let xl: [(WidgetFamily, CGSize)] = UIDevice.current.userInterfaceIdiom == .pad ? [(.systemExtraLarge, CGSize(width: 715, height: 330))] : []
+        switch kind {
+        case .next: return [(.systemSmall, small), (.systemMedium, medium), (.systemLarge, large)]
+        case .ring: return [(.systemSmall, small), (.systemMedium, medium), (.systemLarge, large)] + xl
+        case .countdown: return [(.systemSmall, small), (.systemMedium, medium)]
+        case .today: return [(.systemMedium, medium), (.systemLarge, large)] + xl
+        case .mosque, .ask, .qibla: return [(.systemSmall, small), (.systemMedium, medium)]
+        case .actions: return [(.systemMedium, medium)]
+        case .tasbih, .companion: return [(.systemSmall, small), (.systemMedium, medium)]
+        }
+    }
+
+    var body: some View {
+        #if canImport(ActivityKit) && !targetEnvironment(macCatalyst) && !os(visionOS)
+        if UserDefaults.standard.string(forKey: "demoWidgetKind") == "island" {
+            IslandGalleryView(style: look.rawValue)
+        } else {
+            widgets
+        }
+        #else
+        widgets
+        #endif
+    }
+
+    @ViewBuilder private var widgets: some View {
+        let state = model.settings.location.map { loc in
+            SharedState(name: loc.name, latitude: loc.latitude, longitude: loc.longitude, zoneId: loc.zoneId, prayer: model.settings.prayer,
+                        language: model.l10n.language, hijriAdjustmentDays: model.settings.prayer.hijriAdjustmentDays,
+                        reminders: ["fajr", "maghrib", "isha"],
+                        mosques: model.nearestMosques.map { r in
+                            SharedMosque(id: r.id, name: r.mosque.displayName(model.l10n.language) ?? "", meters: r.distanceMeters,
+                                         bearing: Geo.initialBearing(from: loc.location, to: r.mosque.location))
+                        },
+                        questions: ((try? model.ask?.commonQuestions()) ?? []).compactMap { $0.question[model.l10n.language] ?? $0.question["en"] },
+                        companion: UserDefaults.standard.string(forKey: "demoCompanion") ?? model.settings.companion)
+        } ?? SharedState.preview
+        let entry = PrayerEntry.make(Date(), look: look, state: state)
+        let p = entry.palette
+        ScrollView {
+            VStack(spacing: 18) {
+                ForEach(Array(sizes.enumerated()), id: \.offset) { _, item in
+                    Group {
+                        if kind == .tasbih {
+                            TasbihFace(count: 6366, palette: p, family: item.0, locale: state.locale, a11y: "", resetLabel: "")
+                        } else if kind == .companion {
+                            CompanionFace(entry: entry, family: item.0)
+                        } else {
+                            PrayerWidgetView(entry: entry, kind: kind, family: item.0)
+                        }
+                    }
+                        .padding(16)
+                        .frame(width: item.1.width, height: item.1.height)
+                        .background(p.background)
+                        .clipShape(RoundedRectangle(cornerRadius: 24, style: .continuous))
+                        .shadow(color: .black.opacity(0.15), radius: 8, y: 3)
+                }
+            }
+            .padding(.vertical, 60)
+            .frame(maxWidth: .infinity)
+        }
+        .background(Color(white: 0.55).ignoresSafeArea())
+        .task(id: model.ready) { model.refreshNearestMosque() }
+    }
+}
+#endif

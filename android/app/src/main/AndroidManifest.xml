@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Foreground location only, requested when the user taps "Use my location". No background location. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- Live map images (OpenFreeMap) and optional live mosque search (OpenStreetMap Overpass). Everything else works offline. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- Prayer reminders (opt-in per prayer). -->
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Exact alarms ("Alarms & reminders", user-granted on Android 12+; Prayer & Audio links to it). The Fajr alarm is an
+         AlarmManager alarm clock on the alarm channel that rings until stopped; it needs no full-screen intent. -->
+    <uses-permission android:name="android.permission.SCHEDULE_EXACT_ALARM" />
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <!-- The Adhan and spoken reminders (opt-in) play while their notification shows, then stop. -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <!-- Silent during prayer (opt-in): the app turns its own Do Not Disturb rule on and off; the user grants access in system settings. -->
+    <uses-permission android:name="android.permission.ACCESS_NOTIFICATION_POLICY" />
+
+    <!-- Nothing needs a particular piece of hardware, so Google Play offers the app on Chromebooks and other desktops,
+         Android XR headsets and tablets too: the location permissions imply android.hardware.location (a city can be
+         chosen instead), the Qibla compass falls back to the bearing without a compass, and every screen works with a
+         mouse, trackpad, keyboard or XR hand input as well as touch. -->
+    <uses-feature android:name="android.hardware.touchscreen" android:required="false" />
+    <uses-feature android:name="android.hardware.location" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.compass" android:required="false" />
+    <uses-feature android:name="android.hardware.sensor.accelerometer" android:required="false" />
+
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="geo" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+        </intent>
+    </queries>
+
+    <application
+        android:name=".NearMosqueApp"
+        android:allowBackup="true"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:fullBackupContent="@xml/backup_rules"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:localeConfig="@xml/locales_config"
+        android:supportsRtl="true"
+        android:enableOnBackInvokedCallback="true"
+        android:theme="@style/Theme.NearMosque">
+
+        <!-- Folding, unfolding, turning and resizing (a Galaxy Z Fold, a tablet, split screen) redraw the screens at the
+             new size without restarting the activity; no fixed orientation (FoldTest checks this). -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:resizeableActivity="true"
+            android:windowSoftInputMode="adjustResize"
+            android:configChanges="orientation|screenSize|screenLayout|smallestScreenSize|density|uiMode|keyboardHidden">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+            <!-- Widgets and app-icon shortcuts: nearmosque://prayer, qibla, mosques, ask. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:scheme="nearmosque" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity>
+
+        <activity
+            android:name=".ui.WidgetStyleActivity"
+            android:exported="true"
+            android:theme="@style/Theme.NearMosque">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver android:name=".platform.PrayerWidgetSmall" android:exported="false" android:label="@string/next_prayer">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_small" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetMedium" android:exported="false" android:label="@string/widget_kind_next">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_medium" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetLarge" android:exported="false" android:label="@string/widget_kind_next">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_large" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetRingSmall" android:exported="false" android:label="@string/widget_kind_ring">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_ring_small" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetRingMedium" android:exported="false" android:label="@string/widget_kind_ring">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_ring_medium" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetRing" android:exported="false" android:label="@string/widget_kind_ring">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_ring" />
+        </receiver>
+        <receiver android:name=".platform.QiblaWidgetSmall" android:exported="false" android:label="@string/widget_kind_qibla">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_qibla_small" />
+        </receiver>
+        <receiver android:name=".platform.QiblaWidget" android:exported="false" android:label="@string/widget_kind_qibla">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_qibla" />
+        </receiver>
+        <receiver android:name=".platform.ActionsWidget" android:exported="false" android:label="@string/widget_kind_actions">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_actions" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetCountdown" android:exported="false" android:label="@string/widget_kind_countdown">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_countdown" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetToday" android:exported="false" android:label="@string/widget_kind_today">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_today" />
+        </receiver>
+        <receiver android:name=".platform.PrayerWidgetTodayLarge" android:exported="false" android:label="@string/widget_kind_today">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/prayer_widget_today_large" />
+        </receiver>
+
+        <receiver android:name=".platform.MosqueWidgetSmall" android:exported="false" android:label="@string/widget_kind_mosque">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_mosque_small" />
+        </receiver>
+        <receiver android:name=".platform.MosqueWidget" android:exported="false" android:label="@string/widget_kind_mosque">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_mosque" />
+        </receiver>
+        <receiver android:name=".platform.AskWidgetSmall" android:exported="false" android:label="@string/widget_kind_ask">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_ask_small" />
+        </receiver>
+        <receiver android:name=".platform.AskWidget" android:exported="false" android:label="@string/widget_kind_ask">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_ask" />
+        </receiver>
+
+        <!-- Persists the per-app language chosen in Settings on Android 12 and below. -->
+        <service
+            android:name="androidx.appcompat.app.AppLocalesMetadataHolderService"
+            android:enabled="false"
+            android:exported="false">
+            <meta-data
+                android:name="autoStoreLocales"
+                android:value="true" />
+        </service>
+
+        <!-- The alerts and the Adhan player also run before the first unlock after a restart (direct boot), so the Fajr
+             Adhan and alarm still come after a night-time restart; LockedBootReceiver sets them again then. -->
+        <receiver android:name=".platform.ReminderReceiver" android:exported="false" android:directBootAware="true" />
+        <receiver android:name=".platform.SilenceReceiver" android:exported="false" />
+        <service android:name=".platform.PrayerAudioService" android:exported="false" android:directBootAware="true" android:foregroundServiceType="mediaPlayback" />
+        <receiver android:name=".platform.LockedBootReceiver" android:exported="false" android:directBootAware="true">
+            <intent-filter>
+                <action android:name="android.intent.action.LOCKED_BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+        <!-- Rebuilt after a restart (some makers send only their quick-boot action), an app update, and time, zone and
+             exact-alarm permission changes. -->
+        <receiver android:name=".platform.RescheduleReceiver" android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="com.htc.intent.action.QUICKBOOT_POWERON" />
+                <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.app.action.SCHEDULE_EXACT_ALARM_PERMISSION_STATE_CHANGED" />
+            </intent-filter>
+        </receiver>
+    </application>
+</manifest>

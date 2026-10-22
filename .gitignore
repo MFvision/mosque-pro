@@ -1,0 +1,40 @@
+# Gradle / Android
+android/.gradle/
+android/.kotlin/
+android/build/
+android/*/build/
+android/local.properties
+android/captures/
+# Store graphics made by tools/store/play_graphics.py
+/build/
+# Xcode / SwiftPM
+ios/build/
+ios/*.xcodeproj
+ios/DerivedData/
+ios/**/.build/
+ios/**/.swiftpm/
+ios/Packages/**/Package.resolved
+# Python
+tools/__pycache__/
+.cache/
+**/__pycache__/
+# Secrets and signing material: never commit (they live in the repository's Actions secrets).
+*.p8
+*.p12
+*.pem
+*.cer
+*.key
+*.mobileprovision
+*.provisionprofile
+*.jks
+*.keystore
+.env
+.env.*
+GoogleService-Info.plist
+google-services.json
+*.xcarchive
+ExportOptions.plist
+# Windows (Compose Desktop)
+windows/build/
+windows/.gradle/
+windows/.kotlin/

@@ -1,0 +1,368 @@
+name: Nearest Mosque TestFlight
+
+# Builds the iPhone and iPad app (with the Apple Watch app inside), the Mac app (Mac Catalyst), the Apple TV app and the Apple Vision Pro app, signs them with the App Store Connect
+# API key (Xcode automatic signing, cloud-managed distribution certificate) and uploads them to TestFlight.
+# Start it from the Actions tab (Run workflow) or by pushing a tag such as `ios-v1`.
+# Needs three repository secrets (see docs/07-testflight.md):
+#   ASC_KEY_ID, ASC_ISSUER_ID, ASC_PRIVATE_KEY (contents of the .p8 file)
+# The Team ID is not secret and lives in ios/project.yml (override with an APPLE_TEAM_ID secret).
+on:
+  push:
+    tags:
+      - "ios-v*"
+  workflow_dispatch:
+    inputs:
+      mac_only:
+        description: "Only the Mac app (skip the iPhone, iPad and Apple TV uploads)"
+        type: boolean
+        default: false
+      tv_only:
+        description: "Only the Apple TV app (skip the iPhone, iPad and Mac uploads)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testflight
+  cancel-in-progress: false
+
+jobs:
+  testflight:
+    name: Archive and upload to TestFlight
+    runs-on: macos-15
+    timeout-minutes: 90
+    outputs:
+      build: ${{ steps.number.outputs.build }}
+    defaults:
+      run:
+        working-directory: ios
+    # The private key is given only to the steps that need it (writing the key file, the API scripts), never to
+    # the job, so tool installs and builds cannot read it.
+    env:
+      APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID || 'AWV883QWPU' }}
+      ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+      ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+      BUNDLE_ID: sa.zood.mosquepro
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      - name: Check signing secrets
+        env:
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: |
+          missing=0
+          for v in ASC_KEY_ID ASC_ISSUER_ID ASC_PRIVATE_KEY; do
+            if [ -z "${!v}" ]; then echo "::error::Repository secret $v is not set"; missing=1; fi
+          done
+          exit $missing
+
+      - name: Select newest Xcode
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          [ -z "$XC" ] && XC=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
+          # The iPhone app carries the Apple Watch app.
+          xcodebuild -showsdks | grep -q watchos || xcodebuild -downloadPlatform watchOS
+
+      - name: Generate project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+
+      - name: Install the API key
+        id: number
+        env:
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys
+          KEY=~/.appstoreconnect/private_keys/AuthKey_${ASC_KEY_ID}.p8
+          printf '%s\n' "$ASC_PRIVATE_KEY" > "$KEY"
+          chmod 600 "$KEY"
+          echo "ASC_KEY_PATH=$KEY" >> "$GITHUB_ENV"
+          # Monotonic build number: one per workflow run (TestFlight rejects duplicates).
+          echo "BUILD_NUMBER=$(( 100 + ${{ github.run_number }} ))" >> "$GITHUB_ENV"
+          echo "build=$(( 100 + ${{ github.run_number }} ))" >> "$GITHUB_OUTPUT"
+
+      - name: Archive (Release, automatic signing)
+        if: ${{ !inputs.mac_only && !inputs.tv_only }}
+        run: |
+          set -o pipefail
+          archive() {
+            xcodebuild -project NearMosque.xcodeproj -scheme NearMosque -configuration Release \
+              -destination 'generic/platform=iOS' -archivePath build/NearMosque.xcarchive \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Automatic \
+              APP_BUNDLE_ID="$BUNDLE_ID" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+              -allowProvisioningUpdates \
+              -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+              archive 2>&1 | tee -a archive.log | grep -E "error:|warning: .*(signing|provision)|ARCHIVE (SUCCEEDED|FAILED)" || true
+          }
+          archive
+          if grep -q "ARCHIVE SUCCEEDED" archive.log; then exit 0; fi
+          # The iPhone app carries the Apple Watch app. If the watch app (or its complications) cannot be built or
+          # signed, the iPhone and iPad build still goes out, without it.
+          echo "::warning::The archive with the Apple Watch app failed; archiving the iPhone app without it."
+          rm -rf build/NearMosque.xcarchive
+          sed -i '' '/# watch-embed/d' project.yml
+          xcodegen generate
+          archive
+          grep -q "ARCHIVE SUCCEEDED" archive.log
+
+      - name: Write the export options
+        run: |
+          set -o pipefail
+          cat > ExportOptions.plist <<EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key><string>app-store-connect</string>
+            <key>destination</key><string>upload</string>
+            <key>teamID</key><string>${APPLE_TEAM_ID}</string>
+            <key>signingStyle</key><string>automatic</string>
+            <key>uploadSymbols</key><true/>
+            <key>manageAppVersionAndBuildNumber</key><false/>
+          </dict>
+          </plist>
+          EOF
+
+      - name: Export and upload to App Store Connect
+        if: ${{ !inputs.mac_only && !inputs.tv_only }}
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive -archivePath build/NearMosque.xcarchive -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/export -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            2>&1 | tee export.log | grep -E "error|Upload|EXPORT (SUCCEEDED|FAILED)" || true
+          grep -q "EXPORT SUCCEEDED" export.log
+          echo "Uploaded build $BUILD_NUMBER of $BUNDLE_ID. It appears in TestFlight after Apple finishes processing (usually 5-30 minutes)."
+
+      # The Mac app (Mac Catalyst, same bundle id): a separate macOS build in TestFlight. Allowed to fail
+      # on its own so it never holds back the iPhone and iPad build above. The archive is signed ad hoc
+      # (with the Mac entitlements) and the export re-signs it for the App Store: automatic signing at
+      # archive time would need a development profile, hence a registered Mac, and CI's Macs are throwaway.
+      - name: Archive the Mac app (Mac Catalyst)
+        id: mac_archive
+        if: ${{ !inputs.tv_only }}
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -project NearMosque.xcodeproj -scheme NearMosque -configuration Release \
+            -destination 'generic/platform=macOS,variant=Mac Catalyst' -archivePath build/NearMosque-mac.xcarchive \
+            DEVELOPMENT_TEAM="$APPLE_TEAM_ID" CODE_SIGN_STYLE=Manual CODE_SIGN_IDENTITY="-" PROVISIONING_PROFILE_SPECIFIER="" \
+            APP_BUNDLE_ID="$BUNDLE_ID" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" \
+            archive 2>&1 | tee mac-archive.log | grep -E "error:|warning: .*(signing|provision)|ARCHIVE (SUCCEEDED|FAILED)" || true
+          grep -q "ARCHIVE SUCCEEDED" mac-archive.log
+
+      - name: Export and upload the Mac app
+        if: steps.mac_archive.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive -archivePath build/NearMosque-mac.xcarchive -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/export-mac -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            2>&1 | tee mac-export.log | grep -E "error|Upload|EXPORT (SUCCEEDED|FAILED)" || true
+          grep -q "EXPORT SUCCEEDED" mac-export.log
+          echo "Uploaded Mac build $BUILD_NUMBER of $BUNDLE_ID."
+
+      # The Apple TV app (same bundle id, so one App Store listing): allowed to fail on its own like the Mac
+      # app. App Store Connect takes tvOS builds only once the app record has the tvOS platform.
+      - name: Install the App Store Connect script's dependencies (pinned)
+        if: ${{ !inputs.mac_only }}
+        continue-on-error: true
+        run: "python3 -m venv /tmp/asc && /tmp/asc/bin/pip install --quiet --only-binary :all: pyjwt==2.10.1 cryptography==44.0.0"
+
+      - name: Add the Apple TV platform to the app record (first time only)
+        if: ${{ !inputs.mac_only }}
+        continue-on-error: true
+        env:
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: |
+          VERSION=$(sed -nE 's/^ +MARKETING_VERSION: "(.*)"/\1/p' project.yml | head -1)
+          VERSION="$VERSION" /tmp/asc/bin/python ../tools/asc_testflight.py --ensure-platform TV_OS
+
+      - name: Archive the Apple TV app
+        id: tv_archive
+        if: ${{ !inputs.mac_only }}
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          tv_archive() {
+            xcodebuild -project NearMosque.xcodeproj -scheme NearMosqueTV -configuration Release \
+              -destination 'generic/platform=tvOS' -archivePath build/NearMosque-tv.xcarchive \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" APP_BUNDLE_ID="$BUNDLE_ID" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" "$@" \
+              archive 2>&1 | tee -a tv-archive.log | grep -E "error:|warning: .*(signing|provision)|ARCHIVE (SUCCEEDED|FAILED)" || true
+          }
+          # Automatic signing works once the team has an Apple TV registered (it needs a development profile).
+          tv_archive CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          if grep -q "ARCHIVE SUCCEEDED" tv-archive.log; then exit 0; fi
+          # Without one: archive unsigned (Xcode refuses ad hoc signing for tvOS), then sign the bundle here with
+          # its entitlements, so the export keeps them (the shared keychain group the Top Shelf reads) when it
+          # re-signs everything with the cloud distribution certificate.
+          echo "Automatic signing did not archive; archiving unsigned for the export to sign."
+          rm -rf build/NearMosque-tv.xcarchive
+          PREFIX="$APPLE_TEAM_ID."
+          tv_archive CODE_SIGNING_ALLOWED=NO AppIdentifierPrefix="$PREFIX"
+          grep -q "ARCHIVE SUCCEEDED" tv-archive.log
+          ents() {  # $1 bundle id
+            cat <<XML
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>application-identifier</key><string>${PREFIX}$1</string>
+            <key>com.apple.developer.team-identifier</key><string>${APPLE_TEAM_ID}</string>
+            <key>keychain-access-groups</key><array><string>${PREFIX}${BUNDLE_ID}.shared</string></array>
+          </dict></plist>
+          XML
+          }
+          ents "$BUNDLE_ID" > /tmp/tv-app.entitlements
+          ents "$BUNDLE_ID.topshelf" > /tmp/tv-shelf.entitlements
+          APP=$(ls -d build/NearMosque-tv.xcarchive/Products/Applications/*.app)
+          find "$APP" \( -name "*.framework" -o -name "*.dylib" \) -prune -exec codesign -f -s - {} \;
+          for x in "$APP"/PlugIns/*.appex; do codesign -f -s - --entitlements /tmp/tv-shelf.entitlements "$x"; done
+          codesign -f -s - --entitlements /tmp/tv-app.entitlements "$APP"
+          codesign -d --entitlements - "$APP" 2>/dev/null | grep -c "keychain-access-groups"
+          plutil -extract SharedKeychainGroup raw "$APP/Info.plist"
+
+      - name: Export and upload the Apple TV app
+        if: steps.tv_archive.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive -archivePath build/NearMosque-tv.xcarchive -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/export-tv -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            2>&1 | tee tv-export.log | grep -E "error|Upload|EXPORT (SUCCEEDED|FAILED)" || true
+          grep -q "EXPORT SUCCEEDED" tv-export.log
+          echo "Uploaded Apple TV build $BUILD_NUMBER of $BUNDLE_ID."
+
+      # The Apple Vision Pro app (same bundle id, so one App Store listing; no extensions): allowed to fail on its
+      # own like the Mac and Apple TV apps.
+      - name: Add the Apple Vision Pro platform to the app record (first time only)
+        if: ${{ !inputs.mac_only && !inputs.tv_only }}
+        continue-on-error: true
+        env:
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: |
+          VERSION=$(sed -nE 's/^ +MARKETING_VERSION: "(.*)"/\1/p' project.yml | head -1)
+          VERSION="$VERSION" /tmp/asc/bin/python ../tools/asc_testflight.py --ensure-platform VISION_OS
+
+      - name: Archive the Apple Vision Pro app
+        id: vision_archive
+        if: ${{ !inputs.mac_only && !inputs.tv_only }}
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          vision_archive() {
+            xcodebuild -project NearMosque.xcodeproj -scheme NearMosqueVision -configuration Release \
+              -destination 'generic/platform=visionOS' -archivePath build/NearMosque-vision.xcarchive \
+              DEVELOPMENT_TEAM="$APPLE_TEAM_ID" APP_BUNDLE_ID="$BUNDLE_ID" CURRENT_PROJECT_VERSION="$BUILD_NUMBER" "$@" \
+              archive 2>&1 | tee -a vision-archive.log | grep -E "error:|warning: .*(signing|provision)|ARCHIVE (SUCCEEDED|FAILED)" || true
+          }
+          vision_archive CODE_SIGN_STYLE=Automatic -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID"
+          if grep -q "ARCHIVE SUCCEEDED" vision-archive.log; then exit 0; fi
+          # Automatic signing needs a registered Vision Pro for its development profile; without one, archive
+          # unsigned and sign here with the entitlements, so the export keeps them when it re-signs.
+          echo "Automatic signing did not archive; archiving unsigned for the export to sign."
+          rm -rf build/NearMosque-vision.xcarchive
+          PREFIX="$APPLE_TEAM_ID."
+          vision_archive CODE_SIGNING_ALLOWED=NO AppIdentifierPrefix="$PREFIX"
+          grep -q "ARCHIVE SUCCEEDED" vision-archive.log
+          cat > /tmp/vision-app.entitlements <<XML
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0"><dict>
+            <key>application-identifier</key><string>${PREFIX}${BUNDLE_ID}</string>
+            <key>com.apple.developer.team-identifier</key><string>${APPLE_TEAM_ID}</string>
+            <key>keychain-access-groups</key><array><string>${PREFIX}${BUNDLE_ID}.shared</string></array>
+          </dict></plist>
+          XML
+          APP=$(ls -d build/NearMosque-vision.xcarchive/Products/Applications/*.app)
+          find "$APP" \( -name "*.framework" -o -name "*.dylib" \) -prune -exec codesign -f -s - {} \;
+          codesign -f -s - --entitlements /tmp/vision-app.entitlements "$APP"
+
+      - name: Export and upload the Apple Vision Pro app
+        if: steps.vision_archive.outcome == 'success'
+        continue-on-error: true
+        run: |
+          set -o pipefail
+          xcodebuild -exportArchive -archivePath build/NearMosque-vision.xcarchive -exportOptionsPlist ExportOptions.plist \
+            -exportPath build/export-vision -allowProvisioningUpdates \
+            -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
+            2>&1 | tee vision-export.log | grep -E "error|Upload|EXPORT (SUCCEEDED|FAILED)" || true
+          grep -q "EXPORT SUCCEEDED" vision-export.log
+          echo "Uploaded Apple Vision Pro build $BUILD_NUMBER of $BUNDLE_ID."
+
+      - name: Remove the API key
+        if: always()
+        run: rm -rf ~/.appstoreconnect/private_keys
+
+      # Build logs only when something failed, for a few days, with the API key's identifiers and Xcode's
+      # command lines removed (artifacts are not masked like the console log).
+      - name: Scrub the logs
+        if: failure()
+        run: |
+          for f in archive.log export.log mac-archive.log mac-export.log tv-archive.log tv-export.log vision-archive.log vision-export.log; do
+            [ -f "$f" ] || continue
+            sed -i '' -E -e "s/${ASC_KEY_ID:-NO_KEY_ID}/[key id]/g" -e "s/${ASC_ISSUER_ID:-NO_ISSUER}/[issuer id]/g" \
+              -e 's/AuthKey_[A-Za-z0-9]+\.p8/AuthKey_[key id].p8/g' -e '/Command line invocation:/,/^$/d' "$f"
+          done
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: failure()
+        with:
+          name: testflight-logs
+          retention-days: 3
+          path: |
+            ios/archive.log
+            ios/export.log
+            ios/mac-archive.log
+            ios/mac-export.log
+            ios/tv-archive.log
+            ios/tv-export.log
+            ios/vision-archive.log
+            ios/vision-export.log
+
+  # Waiting for Apple's processing runs on Linux (macOS minutes count several times against the Actions
+  # allowance).
+  testers:
+    name: Wait for Apple processing and give internal testers access
+    needs: testflight
+    runs-on: ubuntu-latest
+    timeout-minutes: 95
+    env:
+      BUNDLE_ID: sa.zood.mosquepro
+      BUILD_NUMBER: ${{ needs.testflight.outputs.build }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - run: "python3 -m venv /tmp/asc && /tmp/asc/bin/pip install --quiet --only-binary :all: pyjwt==2.10.1 cryptography==44.0.0"
+      - name: Wait, answer export compliance, add the build to internal groups
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: |
+          WAIT_MINUTES=60 PLATFORMS=${{ inputs.mac_only && 'MAC_OS' || inputs.tv_only && 'TV_OS' || 'IOS,MAC_OS,TV_OS,VISION_OS' }} /tmp/asc/bin/python tools/asc_testflight.py
+
+  # The archive step's automatic signing creates a development certificate on each fresh machine; it is
+  # useless once the machine is gone and Apple caps how many an account holds, so revoke this run's.
+  certificates:
+    name: Revoke this build's development certificate
+    needs: testflight
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - run: "python3 -m venv /tmp/asc && /tmp/asc/bin/pip install --quiet --only-binary :all: pyjwt==2.10.1 cryptography==44.0.0"
+      - name: Revoke development certificates created in the last hours by CI
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+        run: |
+          /tmp/asc/bin/python tools/asc_certificates.py revoke-recent

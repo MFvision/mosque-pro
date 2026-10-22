@@ -1,0 +1,420 @@
+package sa.zood.nearmosque.ui.prayer
+
+import sa.zood.nearmosque.ui.theme.Accent
+
+import sa.zood.nearmosque.ui.theme.Ink
+
+import android.Manifest
+import android.os.Build
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.graphicsLayer
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import sa.zood.nearmosque.R
+import sa.zood.nearmosque.core.CompassState
+import sa.zood.nearmosque.core.PrayerEvent
+import sa.zood.nearmosque.core.ScheduleStatus
+import sa.zood.nearmosque.data.PrayerLocation
+import sa.zood.nearmosque.ui.Format
+import sa.zood.nearmosque.ui.glass.GlassButton
+import sa.zood.nearmosque.ui.glass.GlassButtonText
+import sa.zood.nearmosque.ui.glass.GlassCard
+import sa.zood.nearmosque.ui.glass.bottomBarPadding
+import sa.zood.nearmosque.ui.glass.glass
+import sa.zood.nearmosque.ui.theme.Tokens
+
+/**
+ * Prayer & Qibla: the sky for the current prayer period (drawn by AppRoot), the Qibla arc with the
+ * next prayer inside, today's times on glass. Scrolling past the arc pins a compact glass bar; tapping
+ * it opens the sky card (next prayer, the sun on its path, the Qibla), whose Qibla row opens the compass.
+ */
+@Composable
+fun PrayerScreen(
+    vm: PrayerViewModel,
+    ui: PrayerUi,
+    compass: CompassState,
+    aligned: Boolean,
+    onOpenSettings: () -> Unit,
+    onPickCity: () -> Unit,
+    onOpenCalculation: () -> Unit,
+    onOpenCompass: () -> Unit,
+    onOpenMosques: () -> Unit = {},
+) {
+    val context = LocalContext.current
+    val scope = rememberCoroutineScope()
+    var access by remember { mutableStateOf(sa.zood.nearmosque.platform.AlertAccess.read(context)) }
+    val listState = rememberLazyListState()
+    val density = androidx.compose.ui.platform.LocalDensity.current
+    val fadePx = with(density) { 240.dp.toPx() }
+    // The bar replaces the header once most of the header has scrolled away; the header fades as it goes.
+    val showCompact by remember { derivedStateOf { listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > fadePx * 1.25f } }
+    val heroAlpha by remember { derivedStateOf { if (listState.firstVisibleItemIndex > 0) 0f else 1f - (listState.firstVisibleItemScrollOffset / fadePx - 0.3f).coerceIn(0f, 1f) } }
+    val lang = Format.languageCode(context)
+    LaunchedEffect(ui.location?.location, lang) { vm.refreshNearestMosque(lang) }
+    var mosque by remember { mutableStateOf<sa.zood.nearmosque.core.RankedMosque?>(null) }
+    mosque?.let { NearestMosqueSheet(it, onDismiss = { mosque = null }) }
+    val locationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestMultiplePermissions()) {
+        vm.useDeviceLocation(context.getString(R.string.location_current))
+    }
+    val notificationPermission = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission()) {
+        vm.rescheduleReminders(context)
+        access = sa.zood.nearmosque.platform.AlertAccess.read(context)
+    }
+    val locate by vm.locate.collectAsStateWithLifecycle()
+    // Notifications and "Alarms & reminders" are allowed in system settings: checked again whenever the app comes back
+    // (MainActivity rebuilds the alarms then).
+    androidx.lifecycle.compose.LifecycleResumeEffect(Unit) {
+        access = sa.zood.nearmosque.platform.AlertAccess.read(context)
+        onPauseOrDispose { }
+    }
+    val settings = ui.settings
+    val alertProblem = remember(settings, access) {
+        when {
+            settings == null -> null
+            !access.notifications && sa.zood.nearmosque.platform.ReminderScheduler.wantsAlerts(settings) -> AlertProblem.NOTIFICATIONS
+            !access.exactAlarms && sa.zood.nearmosque.platform.ReminderScheduler.wantsTimedAlerts(settings) -> AlertProblem.EXACT_ALARMS
+            else -> null
+        }
+    }
+
+    androidx.compose.foundation.layout.BoxWithConstraints(Modifier.fillMaxSize()) {
+        val bottom = bottomBarPadding(16.dp).calculateBottomPadding()
+        val hero: @Composable () -> Unit = {
+            PrayerHero(ui, compass, aligned, onLocation = onPickCity, onSettings = onOpenSettings, onQibla = onOpenCompass, onNearest = { mosque = it })
+        }
+        // Everything under the header: notices, the day's arc, today's times and the dates.
+        val rest: androidx.compose.foundation.lazy.LazyListScope.() -> Unit = {
+            val loc = ui.location
+            if (loc == null) {
+                item("choose") {
+                    ChooseLocationCard(
+                        locating = locate == LocateState.Locating,
+                        error = when (locate) {
+                            LocateState.Denied -> stringResource(R.string.location_denied)
+                            LocateState.NoFix -> stringResource(R.string.location_fix_failed)
+                            LocateState.LocationOff -> stringResource(R.string.location_off)
+                            else -> null
+                        },
+                        onUseLocation = { locationPermission.launch(arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION)) },
+                        onPickCity = onPickCity,
+                    )
+                }
+            } else {
+                if (ui.today?.status is ScheduleStatus.Estimated) {
+                    item("estimated") {
+                        Text(
+                            stringResource(R.string.estimated_badge), color = Accent, style = MaterialTheme.typography.labelLarge,
+                            modifier = Modifier.glass(RoundedCornerShape(50), shadow = 4.dp).padding(horizontal = 14.dp, vertical = 8.dp),
+                        )
+                    }
+                }
+                if (!loc.zoneConfirmed) item("zone") { ZoneConfirmCard(loc, onConfirm = vm::confirmZone, onChange = onPickCity) }
+                alertProblem?.let { problem ->
+                    item("alerts") {
+                        AlertsCard(problem) {
+                            when {
+                                problem == AlertProblem.EXACT_ALARMS -> sa.zood.nearmosque.platform.ReminderScheduler.openExactAlarmSettings(context)
+                                sa.zood.nearmosque.platform.AlertAccess.canAskNotifications(context) -> {
+                                    sa.zood.nearmosque.platform.AlertAccess.asking(context)
+                                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                                else -> sa.zood.nearmosque.platform.ReminderScheduler.openNotificationSettings(context)
+                            }
+                        }
+                    }
+                }
+                val today = ui.today
+                if (today != null && today.status == ScheduleStatus.Unavailable) {
+                    item("polar") { PolarCard(onUseNearest = { vm.setPolar(sa.zood.nearmosque.core.PolarRule.NEAREST_LATITUDE) }) }
+                }
+                ui.arc?.let { arc -> item("sky") { DayArcView(arc, ui.sky, loc.zoneId) } }
+                if (today != null && today.status != ScheduleStatus.Unavailable) {
+                    item("schedule") {
+                        ScheduleCard(
+                            ui = ui,
+                            reminders = ui.settings?.reminders.orEmpty(),
+                            onToggleReminder = { e, on ->
+                                if (on && Build.VERSION.SDK_INT >= 33 && sa.zood.nearmosque.platform.AlertAccess.canAskNotifications(context)) {
+                                    sa.zood.nearmosque.platform.AlertAccess.asking(context)
+                                    notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+                                }
+                                vm.setReminder(e, on)
+                            },
+                        )
+                    }
+                }
+                item("dates") { DatesCard(ui, onOpenCalculation) }
+            }
+        }
+        if (sa.zood.nearmosque.ui.Adaptive.twoPane(maxWidth, maxHeight)) {
+            // A tablet or an unfolded Fold held sideways: the header on one side, the day and its times on the other.
+            val heroMax = maxHeight - 180.dp
+            androidx.compose.foundation.layout.Row(Modifier.fillMaxSize().statusBarsPadding()) {
+                Column(
+                    Modifier.weight(1f).fillMaxHeight().verticalScroll(rememberScrollState()).padding(start = 16.dp, end = 8.dp, bottom = bottom),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                ) {
+                    Box(Modifier.widthIn(max = heroMax)) { hero() }
+                }
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier.weight(1f).fillMaxHeight(),
+                    contentPadding = PaddingValues(start = 8.dp, end = 16.dp, top = 16.dp, bottom = bottom),
+                    verticalArrangement = Arrangement.spacedBy(14.dp),
+                    content = rest,
+                )
+            }
+        } else {
+            LazyColumn(
+                state = listState,
+                modifier = Modifier.fillMaxSize().statusBarsPadding(),
+                // On a tablet upright the cards keep a readable width in the middle.
+                contentPadding = PaddingValues(start = sa.zood.nearmosque.ui.Adaptive.sidePadding(maxWidth), end = sa.zood.nearmosque.ui.Adaptive.sidePadding(maxWidth), bottom = bottom),
+                verticalArrangement = Arrangement.spacedBy(14.dp),
+            ) {
+                item("hero") {
+                    Box(Modifier.graphicsLayer { alpha = heroAlpha; val k = 0.9f + 0.1f * heroAlpha; scaleX = k; scaleY = k; transformOrigin = androidx.compose.ui.graphics.TransformOrigin(0.5f, 0f) }) {
+                        hero()
+                    }
+                }
+                rest()
+            }
+            AnimatedVisibility(
+                visible = showCompact && ui.next != null,
+                enter = fadeIn() + slideInVertically { -it }, exit = fadeOut() + slideOutVertically { -it },
+            ) {
+                CompactPrayerBar(ui, compass, aligned) { scope.launch { listState.animateScrollToItem(0) } }
+            }
+        }
+    }
+}
+
+@Composable
+private fun ChooseLocationCard(locating: Boolean, error: String?, onUseLocation: () -> Unit, onPickCity: () -> Unit) {
+    GlassCard(padding = 20.dp) {
+        Text(stringResource(R.string.choose_city_title), style = MaterialTheme.typography.titleLarge, color = Ink, modifier = Modifier.semantics { heading() })
+        Spacer(Modifier.height(6.dp))
+        Text(stringResource(R.string.choose_city_body), style = MaterialTheme.typography.bodyLarge, color = Ink.copy(alpha = 0.85f))
+        Spacer(Modifier.height(16.dp))
+        GlassButton(onClick = onUseLocation, prominent = true, enabled = !locating, modifier = Modifier.fillMaxWidth()) {
+            if (locating) {
+                CircularProgressIndicator(Modifier.size(18.dp), strokeWidth = 2.dp, color = Tokens.navyNight)
+                Spacer(Modifier.width(8.dp))
+                GlassButtonText(stringResource(R.string.locating))
+            } else {
+                GlassButtonText(stringResource(R.string.use_my_location), painterResource(R.drawable.ic_pin))
+            }
+        }
+        Spacer(Modifier.height(10.dp))
+        GlassButton(onClick = onPickCity, modifier = Modifier.fillMaxWidth()) { GlassButtonText(stringResource(R.string.search_city)) }
+        if (error != null) {
+            Spacer(Modifier.height(8.dp))
+            Text(error, color = Color(0xFFF2B8B5), style = MaterialTheme.typography.bodyMedium)
+        }
+    }
+}
+
+@Composable
+private fun ZoneConfirmCard(loc: PrayerLocation, onConfirm: () -> Unit, onChange: () -> Unit) {
+    val context = LocalContext.current
+    GlassCard {
+        Text(stringResource(R.string.confirm_time_zone_title), style = MaterialTheme.typography.titleMedium, color = Ink)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.confirm_time_zone_body, Format.zoneName(context, loc.zoneId)), style = MaterialTheme.typography.bodyMedium, color = Ink)
+        Spacer(Modifier.height(10.dp))
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            GlassButton(onClick = onConfirm, prominent = true) { GlassButtonText(stringResource(R.string.use_this_time_zone)) }
+            GlassButton(onClick = onChange) { GlassButtonText(stringResource(R.string.change)) }
+        }
+    }
+}
+
+/** What keeps the alerts that are on from coming. */
+private enum class AlertProblem { NOTIFICATIONS, EXACT_ALARMS }
+
+/** Notifications not allowed (one button asks, or opens Settings once Android no longer asks), or "Alarms & reminders" off. */
+@Composable
+private fun AlertsCard(problem: AlertProblem, onAction: () -> Unit) {
+    val context = LocalContext.current
+    val ask = problem == AlertProblem.NOTIFICATIONS && sa.zood.nearmosque.platform.AlertAccess.canAskNotifications(context)
+    val (title, body, action) = when {
+        problem == AlertProblem.EXACT_ALARMS -> Triple(R.string.exact_off_title_android, R.string.exact_off_body_android, R.string.exact_allow_android)
+        ask -> Triple(R.string.alerts_ask_title, R.string.alerts_ask_body, R.string.onb2_allow)
+        else -> Triple(R.string.alerts_off_title, R.string.alerts_off_body, R.string.open_settings)
+    }
+    GlassCard {
+        Text(stringResource(title), style = MaterialTheme.typography.titleMedium, color = Ink)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(body), style = MaterialTheme.typography.bodyMedium, color = Ink)
+        Spacer(Modifier.height(10.dp))
+        GlassButton(onClick = onAction, prominent = true) { GlassButtonText(stringResource(action)) }
+    }
+}
+
+@Composable
+private fun PolarCard(onUseNearest: () -> Unit) {
+    GlassCard {
+        Text(stringResource(R.string.polar_unavailable_title), style = MaterialTheme.typography.titleMedium, color = Ink)
+        Spacer(Modifier.height(4.dp))
+        Text(stringResource(R.string.polar_unavailable_body), style = MaterialTheme.typography.bodyMedium, color = Ink)
+        Spacer(Modifier.height(10.dp))
+        GlassButton(onClick = onUseNearest, prominent = true) { GlassButtonText(stringResource(R.string.polar_use_nearest)) }
+    }
+}
+
+fun prayerIcon(e: PrayerEvent): Int = when (e) {
+    PrayerEvent.FAJR -> R.drawable.ic_p_fajr
+    PrayerEvent.SUNRISE -> R.drawable.ic_p_sunrise
+    PrayerEvent.DHUHR -> R.drawable.ic_p_dhuhr
+    PrayerEvent.ASR -> R.drawable.ic_p_asr
+    PrayerEvent.MAGHRIB -> R.drawable.ic_p_maghrib
+    PrayerEvent.ISHA -> R.drawable.ic_p_isha
+}
+
+/** Today's times on glass; the upcoming prayer sits in a gold glass pill with an "Upcoming" badge. */
+@Composable
+internal fun ScheduleCard(ui: PrayerUi, reminders: Set<PrayerEvent>, onToggleReminder: ((PrayerEvent, Boolean) -> Unit)?) {
+    val context = LocalContext.current
+    val today = ui.today ?: return
+    val zone = today.zone
+    GlassCard(padding = 10.dp) {
+        Text(
+            stringResource(R.string.todays_times), style = MaterialTheme.typography.titleSmall, color = Ink.copy(alpha = 0.8f),
+            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp).semantics { heading() },
+        )
+        PrayerEvent.entries.forEachIndexed { i, e ->
+            val at = today[e] ?: return@forEachIndexed
+            val isNext = ui.next?.event == e && !ui.next.isTomorrow
+            val name = stringResource(Format.prayerName(e))
+            val nextDay = at.atZone(zone).toLocalDate().isAfter(today.date)
+            val fg = if (isNext) Accent else if (e.isPrayer) Ink else Ink.copy(alpha = 0.7f)
+            Row(
+                Modifier.fillMaxWidth().heightIn(min = 54.dp)
+                    .then(
+                        if (isNext) Modifier.background(Tokens.gold.copy(alpha = 0.14f), RoundedCornerShape(18.dp))
+                            .border(1.dp, Tokens.gold.copy(alpha = 0.55f), RoundedCornerShape(18.dp)) else Modifier,
+                    )
+                    .padding(start = 10.dp),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(painterResource(prayerIcon(e)), contentDescription = null, tint = fg, modifier = Modifier.size(22.dp))
+                Spacer(Modifier.width(12.dp))
+                Text(name, style = MaterialTheme.typography.bodyLarge, fontWeight = if (isNext) FontWeight.SemiBold else FontWeight.Normal, color = fg)
+                if (isNext) {
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        stringResource(R.string.upcoming), color = Accent, style = MaterialTheme.typography.labelSmall,
+                        modifier = Modifier.border(1.dp, Tokens.gold.copy(alpha = 0.7f), RoundedCornerShape(50)).padding(horizontal = 8.dp, vertical = 3.dp),
+                    )
+                }
+                Spacer(Modifier.weight(1f))
+                Text(
+                    Format.time(context, at, zone) + if (nextDay) " (" + stringResource(R.string.next_day) + ")" else "",
+                    style = MaterialTheme.typography.titleMedium.copy(fontFeatureSettings = "tnum"),
+                    fontWeight = if (isNext) FontWeight.SemiBold else FontWeight.Normal, color = fg,
+                )
+                if (onToggleReminder != null) {
+                    val on = e in reminders
+                    val label = stringResource(if (on) R.string.reminder_on_a11y else R.string.reminder_off_a11y, name)
+                    Box(
+                        Modifier.size(48.dp).clickable { onToggleReminder(e, !on) }.semantics { contentDescription = label },
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        Icon(
+                            painterResource(if (on) R.drawable.ic_bell else R.drawable.ic_bell_off), contentDescription = null,
+                            tint = if (on) Accent else Ink.copy(alpha = 0.55f), modifier = Modifier.size(18.dp),
+                        )
+                    }
+                } else {
+                    Spacer(Modifier.width(48.dp))
+                }
+            }
+            if (i < PrayerEvent.entries.size - 1 && !isNext) HorizontalDivider(Modifier.padding(horizontal = 10.dp), color = Ink.copy(alpha = 0.10f))
+        }
+        Text(
+            stringResource(R.string.sunrise_not_prayer_note), Modifier.padding(start = 8.dp, end = 8.dp, top = 8.dp, bottom = 4.dp),
+            style = MaterialTheme.typography.bodySmall, color = Ink.copy(alpha = 0.7f),
+        )
+    }
+}
+
+@Composable
+private fun DatesCard(ui: PrayerUi, onOpenCalculation: () -> Unit) {
+    val context = LocalContext.current
+    val loc = ui.location ?: return
+    val date = ui.now.atZone(loc.zoneId).toLocalDate()
+    val adj = ui.settings?.prayer?.hijriAdjustmentDays ?: 0
+    GlassCard {
+        Text(Format.gregorian(context, date), style = MaterialTheme.typography.titleMedium, color = Ink)
+        Format.hijri(context, date, adj)?.let { Text(it, style = MaterialTheme.typography.bodyLarge, color = Accent) }
+        Text(stringResource(R.string.hijri_calendar_note), style = MaterialTheme.typography.bodySmall, color = Ink.copy(alpha = 0.7f))
+        HorizontalDivider(Modifier.padding(vertical = 10.dp), color = Ink.copy(alpha = 0.18f))
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Column(Modifier.weight(1f)) {
+                ui.settings?.prayer?.method?.let { Text(stringResource(Format.methodName(it)), style = MaterialTheme.typography.bodyMedium, color = Ink) }
+                Text(stringResource(R.string.time_zone_label, Format.zoneName(context, loc.zoneId)), style = MaterialTheme.typography.bodySmall, color = Ink.copy(alpha = 0.7f))
+            }
+            Spacer(Modifier.width(8.dp))
+            GlassButton(onClick = onOpenCalculation) { GlassButtonText(stringResource(R.string.calculation)) }
+        }
+    }
+}

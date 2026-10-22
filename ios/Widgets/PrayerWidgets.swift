@@ -1,0 +1,222 @@
+import AppIntents
+import NMCore
+import SwiftUI
+import WidgetKit
+
+// The views, entry and looks are in Shared/WidgetViews.swift (also used by the app's debug gallery).
+
+// MARK: - Configuration
+
+struct PrayerWidgetIntent: WidgetConfigurationIntent {
+    static var title: LocalizedStringResource = "widget_style_title"
+    static var description = IntentDescription("widget_kind_next_desc")
+
+    /// Named `style` (it was `look`): widgets added before "Same as app" became the default had saved Gold and
+    /// cream, so they ignored the app's style; the new name starts every widget on "Same as app".
+    @Parameter(title: "widget_style_title", default: .auto)
+    var style: WidgetLook
+}
+
+// MARK: - Timeline
+
+struct PrayerProvider: AppIntentTimelineProvider {
+    /// For the ring, which is drawn per entry: an entry every 5 minutes for the next 4 hours.
+    var fine = false
+
+    func placeholder(in context: Context) -> PrayerEntry {
+        PrayerEntry.make(Date(), look: .cream, state: SharedState.preview)
+    }
+
+    func snapshot(for configuration: PrayerWidgetIntent, in context: Context) async -> PrayerEntry {
+        PrayerEntry.make(Date(), look: configuration.style, state: SharedStore.read() ?? (context.isPreview ? SharedState.preview : nil))
+    }
+
+    /// One entry now and one at each prayer time in the next day (countdowns and bars move on their own).
+    func timeline(for configuration: PrayerWidgetIntent, in context: Context) async -> Timeline<PrayerEntry> {
+        let now = Date()
+        let state = SharedStore.read()
+        var entries = [PrayerEntry.make(now, look: configuration.style, state: state)]
+        if let state {
+            let horizon = now.addingTimeInterval(26 * 3600)
+            // Each prayer time, and with the iqama on its iqama and the end of its prayer too.
+            let calc = PrayerCalculator()
+            let days = state.days(now) + state.days(now.addingTimeInterval(86_400))
+            let times = days.flatMap { d in PrayerEvent.allCases.compactMap { d[$0] } }
+                + calc.stageChanges(days, after: now, iqama: state.iqamaSettings)
+            // Midnight too, so the dates change on time.
+            var cal = Calendar(identifier: .gregorian)
+            cal.timeZone = state.zone
+            let midnight = cal.startOfDay(for: now.addingTimeInterval(86_400))
+            let steps = fine ? (1...48).map { now.addingTimeInterval(Double($0) * 300) } : []
+            let end = fine ? now.addingTimeInterval(4 * 3600 + 1) : horizon
+            for t in Set(times.map { $0.addingTimeInterval(1) } + [midnight.addingTimeInterval(1)] + steps).sorted() where t > now && t < end {
+                entries.append(PrayerEntry.make(t, look: configuration.style, state: state))
+            }
+        }
+        let next = entries.count > 1 ? entries.last!.date : now.addingTimeInterval(3600)
+        return Timeline(entries: entries, policy: .after(next))
+    }
+}
+
+// MARK: - Widgets
+
+/// Reads the widget family and draws the shared view on the chosen look's background.
+struct WidgetFrame: View {
+    @Environment(\.widgetFamily) private var family
+    let entry: PrayerEntry
+    let kind: PrayerWidgetKind
+
+    var body: some View {
+        let p = entry.palette
+        PrayerWidgetView(entry: entry, kind: kind, family: family)
+            .containerBackground(for: .widget) {
+                ZStack(alignment: .bottomTrailing) {
+                    p.background
+                    Image(decorative: "MosqueTab").renderingMode(.template).resizable().scaledToFit()
+                        .frame(width: 90, height: 90).foregroundStyle(p.accent.opacity(0.08)).offset(x: 14, y: 14)
+                }
+            }
+            .widgetURL(kind.url(entry.state))
+    }
+}
+
+struct PrayerWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "PrayerTimes", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .next)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_next"))
+        .description(LocalizedStringResource("widget_kind_next_desc"))
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge] + LockScreen.next)
+    }
+}
+
+struct CountdownWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "PrayerCountdown", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .countdown)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_countdown"))
+        .description(LocalizedStringResource("widget_kind_countdown_desc"))
+        .supportedFamilies([.systemSmall, .systemMedium] + LockScreen.countdown)
+    }
+}
+
+struct RingWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "PrayerRing", intent: PrayerWidgetIntent.self, provider: PrayerProvider(fine: true)) { entry in
+            WidgetFrame(entry: entry, kind: .ring)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_ring"))
+        .description(LocalizedStringResource("widget_kind_ring_desc"))
+        .supportedFamilies([.systemSmall, .systemMedium, .systemLarge, .systemExtraLarge])
+    }
+}
+
+struct TodayWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "TodayPrayers", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .today)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_today"))
+        .description(LocalizedStringResource("widget_kind_today_desc"))
+        .supportedFamilies([.systemMedium, .systemLarge, .systemExtraLarge])
+    }
+}
+
+struct MosqueWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "NearestMosque", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .mosque)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_mosque"))
+        .description(LocalizedStringResource("widget_kind_mosque_desc"))
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+struct AskWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "AskIslam", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .ask)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_ask"))
+        .description(LocalizedStringResource("widget_kind_ask_desc"))
+        .supportedFamilies([.systemSmall, .systemMedium])
+    }
+}
+
+struct QiblaWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "QiblaDirection", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .qibla)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_qibla"))
+        .description(LocalizedStringResource("widget_kind_qibla_desc"))
+        .supportedFamilies([.systemSmall, .systemMedium] + LockScreen.qibla)
+    }
+}
+
+struct ActionsWidget: Widget {
+    var body: some WidgetConfiguration {
+        AppIntentConfiguration(kind: "QuickActions", intent: PrayerWidgetIntent.self, provider: PrayerProvider()) { entry in
+            WidgetFrame(entry: entry, kind: .actions)
+        }
+        .configurationDisplayName(LocalizedStringResource("widget_kind_actions"))
+        .description(LocalizedStringResource("widget_kind_actions_desc"))
+        .supportedFamilies([.systemMedium])
+    }
+}
+
+/// Lock Screen sizes, where there is a Lock Screen (not on the Mac).
+enum LockScreen {
+    #if targetEnvironment(macCatalyst)
+    static let next: [WidgetFamily] = []
+    static let countdown: [WidgetFamily] = []
+    static let qibla: [WidgetFamily] = []
+    static let tasbih: [WidgetFamily] = []
+    static let companion: [WidgetFamily] = []
+    #else
+    static let next: [WidgetFamily] = [.accessoryCircular, .accessoryRectangular, .accessoryInline]
+    static let countdown: [WidgetFamily] = [.accessoryRectangular]
+    static let qibla: [WidgetFamily] = [.accessoryCircular]
+    static let tasbih: [WidgetFamily] = [.accessoryCircular]
+    static let companion: [WidgetFamily] = [.accessoryCircular]
+    #endif
+}
+
+#if !targetEnvironment(macCatalyst)
+/// Control Center and Lock Screen control: opens the Qibla.
+struct QiblaControl: ControlWidget {
+    var body: some ControlWidgetConfiguration {
+        StaticControlConfiguration(kind: "QiblaControl") {
+            ControlWidgetButton(action: OpenQiblaIntent()) {
+                Label("widget_kind_qibla", systemImage: "location.north.line.fill")
+            }
+        }
+        .displayName(LocalizedStringResource("widget_kind_qibla"))
+    }
+}
+
+#endif
+
+@main
+struct NearMosqueWidgets: WidgetBundle {
+    var body: some Widget {
+        PrayerWidget()
+        CountdownWidget()
+        RingWidget()
+        TodayWidget()
+        MosqueWidget()
+        AskWidget()
+        QiblaWidget()
+        ActionsWidget()
+        TasbihWidget()
+        CompanionWidget()
+        #if !targetEnvironment(macCatalyst)
+        QiblaControl()
+        PrayerLiveActivity()
+        QiblaLiveActivity()
+        #endif
+    }
+}

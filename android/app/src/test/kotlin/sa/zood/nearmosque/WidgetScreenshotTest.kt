@@ -1,0 +1,136 @@
+package sa.zood.nearmosque
+
+import android.widget.FrameLayout
+import androidx.test.core.app.ApplicationProvider
+import com.github.takahirom.roborazzi.captureRoboImage
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
+import org.robolectric.annotation.GraphicsMode
+import sa.zood.nearmosque.core.LatLng
+import sa.zood.nearmosque.core.Method
+import sa.zood.nearmosque.data.PrayerLocation
+import sa.zood.nearmosque.platform.PrayerWidgets
+import sa.zood.nearmosque.platform.WidgetExtras
+import sa.zood.nearmosque.platform.WidgetKind
+import sa.zood.nearmosque.platform.WidgetMosque
+import sa.zood.nearmosque.platform.WidgetStyle
+import java.time.ZoneId
+import java.time.ZonedDateTime
+
+/** The home-screen widgets in each look, drawn from their RemoteViews (build/screenshots/widget_*.png). */
+@RunWith(RobolectricTestRunner::class)
+@GraphicsMode(GraphicsMode.Mode.NATIVE)
+@Config(qualifiers = "w393dp-h852dp-xxhdpi", sdk = [35], application = android.app.Application::class)
+class WidgetScreenshotTest {
+    private val context = ApplicationProvider.getApplicationContext<android.content.Context>()
+
+    private val noon = ZonedDateTime.of(2026, 10, 3, 14, 10, 0, 0, ZoneId.of("Africa/Johannesburg")).toInstant()
+
+    /** [afterAsr]: minutes after that day's Asr Adhan instead of 14:10 (5: waiting for the iqama; 25: the prayer). */
+    private fun shoot(name: String, kind: WidgetKind, style: WidgetStyle, extras: WidgetExtras = WidgetExtras(), afterAsr: Long? = null) = runBlocking {
+        val at = afterAsr?.let { m ->
+            val zone = ZoneId.of("Africa/Johannesburg")
+            sa.zood.nearmosque.core.PrayerCalculator().schedule(LatLng(-33.92584, 18.42322), java.time.LocalDate.of(2026, 10, 3), zone, sa.zood.nearmosque.core.PrayerSettings())
+                .get(sa.zood.nearmosque.core.PrayerEvent.ASR)!!.plusSeconds(m * 60)
+        } ?: noon
+        val c = AppContainer(
+            context, inMemoryDb = true,
+            clock = { at },
+            settingsFile = java.io.File.createTempFile("settings", ".preferences_pb").also { it.delete() },
+        )
+        c.settings.setPrayerLocation(
+            PrayerLocation("Cape Town", LatLng(-33.92584, 18.42322), ZoneId.of("Africa/Johannesburg"), "ZA", PrayerLocation.Source.CITY), follow = false,
+        )
+        c.settings.setMethod(Method.MUSLIM_WORLD_LEAGUE, byUser = false)
+        c.settings.setReminder(sa.zood.nearmosque.core.PrayerEvent.FAJR, true)
+        c.settings.setReminder(sa.zood.nearmosque.core.PrayerEvent.MAGHRIB, true)
+        val (views, _) = PrayerWidgets.views(context, c, c.settings.settings.first(), kind, style, extras)
+        val density = context.resources.displayMetrics.density
+        val w = ((if (kind in setOf(WidgetKind.SMALL, WidgetKind.MOSQUE_SMALL, WidgetKind.ASK_SMALL, WidgetKind.RING_SMALL, WidgetKind.QIBLA_SMALL)) 170 else 340) * density).toInt()
+        val h = (when (kind) { WidgetKind.LARGE, WidgetKind.TODAY_LARGE, WidgetKind.RING -> 380; WidgetKind.TODAY -> 180; else -> 170 } * density).toInt()
+        val activity = org.robolectric.Robolectric.buildActivity(androidx.activity.ComponentActivity::class.java).setup().get()
+        val parent = FrameLayout(activity).apply { setBackgroundColor(0xFFC8C8CD.toInt()); setPadding(24, 24, 24, 24) }
+        val v = views.apply(activity, parent)
+        parent.addView(v, FrameLayout.LayoutParams(w, h))
+        activity.setContentView(parent, android.view.ViewGroup.LayoutParams(w + 48, h + 48))
+        org.robolectric.shadows.ShadowLooper.idleMainLooper()
+        parent.captureRoboImage("build/screenshots/$name.png")
+    }
+
+    @Test fun smallCream() = shoot("widget_small_cream", WidgetKind.SMALL, WidgetStyle.CREAM)
+    @Test fun smallGreen() = shoot("widget_small_green", WidgetKind.SMALL, WidgetStyle.GREEN)
+    @Test fun mediumCream() = shoot("widget_medium_cream", WidgetKind.MEDIUM, WidgetStyle.CREAM)
+    @Test fun mediumGreen() = shoot("widget_medium_green", WidgetKind.MEDIUM, WidgetStyle.GREEN)
+    @Test fun mediumNight() = shoot("widget_medium_night", WidgetKind.MEDIUM, WidgetStyle.NIGHT)
+    @Test fun countdownGreen() = shoot("widget_countdown_green", WidgetKind.COUNTDOWN, WidgetStyle.GREEN)
+    @Test fun countdownCream() = shoot("widget_countdown_cream", WidgetKind.COUNTDOWN, WidgetStyle.CREAM)
+    @Test fun todayNight() = shoot("widget_today_night", WidgetKind.TODAY, WidgetStyle.NIGHT)
+    @Test fun largeCream() = shoot("widget_large_cream", WidgetKind.LARGE, WidgetStyle.CREAM)
+    @Test fun largeNight() = shoot("widget_large_night", WidgetKind.LARGE, WidgetStyle.NIGHT)
+    @Test fun todayLargeGreen() = shoot("widget_today_large_green", WidgetKind.TODAY_LARGE, WidgetStyle.GREEN)
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun todayLargeArabic() = shoot("widget_today_large_cream_ar", WidgetKind.TODAY_LARGE, WidgetStyle.CREAM)
+    @Test fun todayGreen() = shoot("widget_today_green", WidgetKind.TODAY, WidgetStyle.GREEN)
+    @Test fun countdownTeal() = shoot("widget_countdown_teal", WidgetKind.COUNTDOWN, WidgetStyle.TEAL)
+    @Test fun largeTeal() = shoot("widget_large_teal", WidgetKind.LARGE, WidgetStyle.TEAL)
+    // 14:10 in Cape Town is after Dhuhr: the time-of-day look shows the day sky.
+    @Test fun largeSky() = shoot("widget_large_sky", WidgetKind.LARGE, WidgetStyle.SKY)
+    @Test fun todaySky() = shoot("widget_today_sky", WidgetKind.TODAY, WidgetStyle.SKY)
+
+    // After the Asr Adhan: the countdown to the iqama, then the prayer itself with no countdown.
+    @Test fun smallIqama() = shoot("widget_small_iqama_cream", WidgetKind.SMALL, WidgetStyle.CREAM, afterAsr = 5)
+    @Test fun countdownIqama() = shoot("widget_countdown_iqama_green", WidgetKind.COUNTDOWN, WidgetStyle.GREEN, afterAsr = 5)
+    @Test fun ringIqama() = shoot("widget_ring_medium_iqama_cream", WidgetKind.RING_MEDIUM, WidgetStyle.CREAM, afterAsr = 5)
+    @Test fun smallPrayer() = shoot("widget_small_prayer_cream", WidgetKind.SMALL, WidgetStyle.CREAM, afterAsr = 25)
+    @Test fun ringPrayer() = shoot("widget_ring_prayer_night", WidgetKind.RING, WidgetStyle.NIGHT, afterAsr = 25)
+    @Test fun largePrayer() = shoot("widget_large_prayer_night", WidgetKind.LARGE, WidgetStyle.NIGHT, afterAsr = 25)
+    @Test fun todayPrayer() = shoot("widget_today_prayer_green", WidgetKind.TODAY, WidgetStyle.GREEN, afterAsr = 25)
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun mediumIqamaArabic() = shoot("widget_medium_iqama_cream_ar", WidgetKind.MEDIUM, WidgetStyle.CREAM, afterAsr = 5)
+
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun mediumArabic() = shoot("widget_medium_cream_ar", WidgetKind.MEDIUM, WidgetStyle.CREAM)
+
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun todayArabic() = shoot("widget_today_cream_ar", WidgetKind.TODAY, WidgetStyle.CREAM)
+
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun countdownArabic() = shoot("widget_countdown_night_ar", WidgetKind.COUNTDOWN, WidgetStyle.NIGHT)
+
+    private val sampleMosques = WidgetExtras(
+        mosques = listOf(
+            WidgetMosque("way/1", "Masjid Al-Noor", 420.0, 35.0),
+            WidgetMosque("way/2", "Auwal Mosque", 1250.0, 200.0),
+            WidgetMosque("way/3", "Palm Tree Mosque", 2900.0, 290.0),
+        ),
+        questions = listOf("How do I pray Witr?", "What breaks the fast?", "How is zakat calculated?", "Can I combine prayers when travelling?"),
+    )
+
+    @Test fun mosqueSmallCream() = shoot("widget_mosque_small_cream", WidgetKind.MOSQUE_SMALL, WidgetStyle.CREAM, sampleMosques)
+    @Test fun mosqueGreen() = shoot("widget_mosque_green", WidgetKind.MOSQUE, WidgetStyle.GREEN, sampleMosques)
+    @Test fun mosqueEmpty() = shoot("widget_mosque_empty_night", WidgetKind.MOSQUE, WidgetStyle.NIGHT, WidgetExtras(mosques = emptyList()))
+    @Test fun mosqueUnknown() = shoot("widget_mosque_unknown_cream", WidgetKind.MOSQUE_SMALL, WidgetStyle.CREAM)
+    @Test fun askSmallNight() = shoot("widget_ask_small_night", WidgetKind.ASK_SMALL, WidgetStyle.NIGHT, sampleMosques)
+    @Test fun askCream() = shoot("widget_ask_cream", WidgetKind.ASK, WidgetStyle.CREAM, sampleMosques)
+
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun askArabic() = shoot("widget_ask_green_ar", WidgetKind.ASK, WidgetStyle.GREEN,
+        sampleMosques.copy(questions = listOf("كيف أصلي الوتر؟", "ما مفطرات الصيام؟")))
+
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun ringArabic() = shoot("widget_ring_cream_ar", WidgetKind.RING, WidgetStyle.CREAM)
+    @Test fun ringNight() = shoot("widget_ring_night", WidgetKind.RING, WidgetStyle.NIGHT)
+    @Test fun ringSmallGreen() = shoot("widget_ring_small_green", WidgetKind.RING_SMALL, WidgetStyle.GREEN)
+    @Test fun ringMediumCream() = shoot("widget_ring_medium_cream", WidgetKind.RING_MEDIUM, WidgetStyle.CREAM)
+
+    @Test fun qiblaSmallGreen() = shoot("widget_qibla_small_green", WidgetKind.QIBLA_SMALL, WidgetStyle.GREEN)
+    @Test fun qiblaNight() = shoot("widget_qibla_night", WidgetKind.QIBLA, WidgetStyle.NIGHT)
+    @Test @Config(qualifiers = "ar-w393dp-h852dp-xxhdpi")
+    fun qiblaArabic() = shoot("widget_qibla_cream_ar", WidgetKind.QIBLA, WidgetStyle.CREAM)
+    @Test fun actionsCream() = shoot("widget_actions_cream", WidgetKind.ACTIONS, WidgetStyle.CREAM)
+    @Test fun actionsNight() = shoot("widget_actions_night", WidgetKind.ACTIONS, WidgetStyle.NIGHT)
+}

@@ -1,0 +1,449 @@
+# XcodeGen spec: `xcodegen generate` (CI: .github/workflows/ci.yml; TestFlight: .github/workflows/testflight.yml).
+name: NearMosque
+options:
+  bundleIdPrefix: sa.zood
+  deploymentTarget:
+    iOS: "18.0"
+    tvOS: "18.0"
+    visionOS: "26.0"
+    # Controls in the watch's Control Center and relevance in the Smart Stack need watchOS 26 (Series 6 and later).
+    watchOS: "26.0"
+  developmentLanguage: en
+  createIntermediateGroups: true
+packages:
+  NearestMosqueKit:
+    path: Packages/NearestMosqueKit
+settings:
+  base:
+    SWIFT_VERSION: "5.0"
+    MARKETING_VERSION: "0.5.0"
+    DEVELOPMENT_TEAM: AWV883QWPU
+    CODE_SIGN_STYLE: Automatic
+    CURRENT_PROJECT_VERSION: "1"
+    LOCALIZATION_PREFERS_STRING_CATALOGS: YES
+    SWIFT_EMIT_LOC_STRINGS: NO
+    # The app's bundle id; the widget extension is $(APP_BUNDLE_ID).widgets (TestFlight overrides this one value).
+    APP_BUNDLE_ID: sa.zood.mosquepro
+targets:
+  NearMosque:
+    type: application
+    platform: iOS
+    sources:
+      - path: App
+      - path: Shared
+      - path: ../packs
+        type: folder
+        buildPhase: resources
+      - path: ../shared/content/stopwords.json
+        buildPhase: resources
+      - path: ../shared/content/lexicon.json
+        buildPhase: resources
+      - path: ../shared/content/remote-packs.json
+        buildPhase: resources
+      - path: ../shared/content/books-catalog.json
+        buildPhase: resources
+      - path: ../shared/semantic/model.bin
+        buildPhase: resources
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - package: NearestMosqueKit
+        product: NMData
+      - target: NearMosqueWidgets
+      # The Apple Watch app ships inside the iPhone app (not in the Mac app). TestFlight removes these two lines and
+      # archives again if the watch app cannot be signed, so the iPhone build still goes out.
+      - target: NearMosqueWatch # watch-embed
+        platformFilter: iOS # watch-embed
+    entitlements:
+      path: App/NearMosque.entitlements
+      properties:
+        # Shared with the widgets (city, method, language) without an App Group.
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+        # The Adhan, the iqama and the reminders before the prayer come through a Focus and the Scheduled Summary.
+        com.apple.developer.usernotifications.time-sensitive: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
+        # iPhone, iPad, and the Mac app (Mac Catalyst, "Optimize for Mac"), one bundle id for all.
+        TARGETED_DEVICE_FAMILY: "1,2,6"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: App/Info.plist
+        SUPPORTS_MACCATALYST: YES
+        SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD: NO
+        DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER: NO
+        "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": App/NearMosque-mac.entitlements
+        ENABLE_PREVIEWS: YES
+    info:
+      path: App/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        # The Mac menu bar shows this name.
+        CFBundleName: Mosque Pro
+        # Required for the Mac App Store (same category as on iPhone: Lifestyle).
+        LSApplicationCategoryType: public.app-category.lifestyle
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        # Widgets open the app with nearmosque://prayer, nearmosque://qibla or nearmosque://ask.
+        CFBundleURLTypes:
+          - CFBundleURLName: $(APP_BUNDLE_ID)
+            CFBundleURLSchemes: [nearmosque]
+        # Directions can open Google Maps or Waze when installed (canOpenURL needs the schemes listed).
+        LSApplicationQueriesSchemes: [comgooglemaps, waze]
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        CFBundleAllowMixedLocalizations: false
+        LSRequiresIPhoneOS: true
+        ITSAppUsesNonExemptEncryption: false
+        NSAlarmKitUsageDescription: Rings the Adhan and the Fajr alarm like an alarm, even on silent, with a Stop button.
+        # The next-prayer countdown on the Lock Screen and in the Dynamic Island.
+        NSSupportsLiveActivities: true
+        # The Qibla compass in the Dynamic Island updates about once a second for two minutes.
+        NSSupportsLiveActivitiesFrequentUpdates: true
+        # Experimental Qibla compass in the Dynamic Island: the compass is read in the background for two minutes
+        # after a tap on the Qibla widget (iOS shows the location indicator meanwhile).
+        # fetch: a background refresh tops up the prayer reminders (ReminderRefresh); nothing is downloaded.
+        UIBackgroundModes: [location, fetch]
+        BGTaskSchedulerPermittedIdentifiers: [sa.zood.nearmosque.reminders]
+        NSLocationWhenInUseUsageDescription: Your location is used on this phone for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
+        NSLocationUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
+        UILaunchScreen:
+          UIColorName: ""
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UISupportedInterfaceOrientations: [UIInterfaceOrientationPortrait, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+        UISupportedInterfaceOrientations~ipad: [UIInterfaceOrientationPortrait, UIInterfaceOrientationPortraitUpsideDown, UIInterfaceOrientationLandscapeLeft, UIInterfaceOrientationLandscapeRight]
+  NearMosqueWidgets:
+    type: app-extension
+    platform: iOS
+    sources:
+      - path: Widgets
+      - path: Shared
+      - path: App/Resources/Localizable.xcstrings
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    entitlements:
+      path: Widgets/NearMosqueWidgets.entitlements
+      properties:
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).widgets
+        TARGETED_DEVICE_FAMILY: "1,2,6"
+        SUPPORTS_MACCATALYST: YES
+        DERIVE_MACCATALYST_PRODUCT_BUNDLE_IDENTIFIER: NO
+        "CODE_SIGN_ENTITLEMENTS[sdk=macosx*]": Widgets/NearMosqueWidgets-mac.entitlements
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Widgets/Info.plist
+        SKIP_INSTALL: YES
+    info:
+      path: Widgets/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+  # Apple Vision Pro: the iPhone app's own code built natively for visionOS (same bundle id, so one App Store listing).
+  # What the headset lacks (Live Activities, the alarm clock, the compass, Lock Screen widgets) is left out by the
+  # same `os(visionOS)` checks as on the Mac; the Qibla is shown from north.
+  NearMosqueVision:
+    type: application
+    platform: visionOS
+    sources:
+      - path: App
+        excludes: [Info.plist, "*.entitlements"]
+      - path: Shared
+      - path: Vision
+        excludes: [Info.plist, "*.entitlements"]
+      - path: ../packs
+        type: folder
+        buildPhase: resources
+      - path: ../shared/content/stopwords.json
+        buildPhase: resources
+      - path: ../shared/content/lexicon.json
+        buildPhase: resources
+      - path: ../shared/content/remote-packs.json
+        buildPhase: resources
+      - path: ../shared/content/books-catalog.json
+        buildPhase: resources
+      - path: ../shared/semantic/model.bin
+        buildPhase: resources
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - package: NearestMosqueKit
+        product: NMData
+    entitlements:
+      path: Vision/NearMosqueVision.entitlements
+      properties:
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+        com.apple.developer.usernotifications.time-sensitive: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
+        TARGETED_DEVICE_FAMILY: "7"
+        ASSETCATALOG_COMPILER_APPICON_NAME: VisionIcon
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Vision/Info.plist
+        ENABLE_PREVIEWS: YES
+    info:
+      path: Vision/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        CFBundleName: Mosque Pro
+        LSApplicationCategoryType: public.app-category.lifestyle
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        CFBundleURLTypes:
+          - CFBundleURLName: $(APP_BUNDLE_ID)
+            CFBundleURLSchemes: [nearmosque]
+        LSApplicationQueriesSchemes: [comgooglemaps, waze]
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        CFBundleAllowMixedLocalizations: false
+        ITSAppUsesNonExemptEncryption: false
+        UIBackgroundModes: [fetch]
+        BGTaskSchedulerPermittedIdentifiers: [sa.zood.nearmosque.reminders]
+        NSLocationWhenInUseUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+          UIApplicationPreferredDefaultSceneSessionRole: UIWindowSceneSessionRoleApplication
+  # Apple TV: the prayer board, Qibla from north and nearby mosques (same bundle id as the phone app,
+  # so one App Store listing covers both).
+  NearMosqueTV:
+    type: application
+    platform: tvOS
+    sources:
+      - path: TV
+        # The banner view is shared with the Top Shelf extension (Debug screenshots draw it in the app).
+        excludes: [TopShelf/Info.plist, TopShelf/*.entitlements, TopShelf/PrivacyInfo.xcprivacy]
+      - path: Shared/SharedState.swift
+      - path: Shared/StyleAccent.swift
+      - path: App/Support/Localization.swift
+      - path: App/Support/Format.swift
+      - path: App/Support/Sky.swift
+      - path: App/Support/Theme.swift
+      - path: App/Support/Art.swift
+      - path: App/Mosques/AppleMosqueSearch.swift
+      - path: App/Resources/Localizable.xcstrings
+      # Built-in mosques and the city table only (the books stay on the phone).
+      - path: ../packs/mosques
+        type: folder
+        buildPhase: resources
+      - path: ../packs/cities
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - package: NearestMosqueKit
+        product: NMData
+      - target: NearMosqueTopShelf
+    entitlements:
+      path: TV/NearMosqueTV.entitlements
+      properties:
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
+        TARGETED_DEVICE_FAMILY: "3"
+        ASSETCATALOG_COMPILER_APPICON_NAME: "App Icon & Top Shelf Image"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: TV/Info.plist
+    info:
+      path: TV/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        CFBundleName: Mosque Pro
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        CFBundleURLTypes:
+          - CFBundleURLName: $(APP_BUNDLE_ID)
+            CFBundleURLSchemes: [nearmosque]
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        CFBundleAllowMixedLocalizations: false
+        ITSAppUsesNonExemptEncryption: false
+        NSLocationWhenInUseUsageDescription: Your location is used on this Apple TV for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
+        UIRequiredDeviceCapabilities: [arm64]
+        UILaunchScreen:
+          UIColorName: ""
+  NearMosqueTopShelf:
+    type: app-extension
+    platform: tvOS
+    sources:
+      - path: TV/TopShelf
+      - path: Shared/SharedState.swift
+      - path: App/Resources/Localizable.xcstrings
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - sdk: TVServices.framework
+    entitlements:
+      path: TV/TopShelf/NearMosqueTopShelf.entitlements
+      properties:
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).topshelf
+        TARGETED_DEVICE_FAMILY: "3"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: TV/TopShelf/Info.plist
+        SKIP_INSTALL: YES
+    info:
+      path: TV/TopShelf/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        # App Store validation asks every 64-bit tvOS bundle, extensions included, to say so.
+        UIRequiredDeviceCapabilities: [arm64]
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.tv-top-shelf
+          NSExtensionPrincipalClass: $(PRODUCT_MODULE_NAME).ContentProvider
+  # Apple Watch: prayer times, the Qibla compass, tasbih, nearest mosques and the common answers, from the iPhone's
+  # settings or the watch's own location (it also works without the iPhone). One App Store listing with the iPhone app.
+  NearMosqueWatch:
+    type: application
+    platform: watchOS
+    sources:
+      - path: Watch
+        excludes: [Info.plist, "*.entitlements"]
+      - path: WatchShared
+      - path: Shared/SharedState.swift
+      - path: Shared/StyleAccent.swift
+      - path: Shared/Companion.swift
+      # The iPhone's sky and its mosque skyline, behind every watch page.
+      - path: App/Support/Sky.swift
+      - path: App/Support/Art.swift
+      - path: App/Support/Localization.swift
+      - path: App/Support/Format.swift
+      - path: App/Mosques/AppleMosqueSearch.swift
+      - path: App/Resources/Localizable.xcstrings
+      # The built-in mosques, the city table and the common answers (the books stay on the iPhone).
+      - path: ../packs/mosques
+        type: folder
+        buildPhase: resources
+      - path: ../packs/cities
+        type: folder
+        buildPhase: resources
+      - path: ../shared/content/common-questions.json
+        buildPhase: resources
+      - path: ../shared/content/stopwords.json
+        buildPhase: resources
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - package: NearestMosqueKit
+        product: NMData
+      - target: NearMosqueWatchWidgets
+    entitlements:
+      path: Watch/NearMosqueWatch.entitlements
+      properties:
+        # Shared with the complications (the watch's own keychain; the iPhone's values arrive through WatchConnectivity).
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+        # Settings → Apple Health (off by default): marked prayers as mindful minutes; nothing is read.
+        com.apple.developer.healthkit: true
+        com.apple.developer.healthkit.access: []
+        # Reminders on this watch come through a Focus (Sleep at Fajr, for one) that allows Time Sensitive notifications.
+        com.apple.developer.usernotifications.time-sensitive: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).watchkitapp
+        TARGETED_DEVICE_FAMILY: "4"
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: Watch/Info.plist
+        SKIP_INSTALL: YES
+        ENABLE_PREVIEWS: YES
+    info:
+      path: Watch/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        CFBundleName: Mosque Pro
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        CFBundleAllowMixedLocalizations: false
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        WKApplication: true
+        WKCompanionAppBundleIdentifier: $(APP_BUNDLE_ID)
+        # Works on its own: its own location, reminders and mosque search when the iPhone is not around.
+        WKRunsIndependentlyOfCompanionApp: true
+        CFBundleURLTypes:
+          - CFBundleURLName: $(APP_BUNDLE_ID).watchkitapp
+            CFBundleURLSchemes: [nearmosque]
+        NSLocationWhenInUseUsageDescription: Your location is used on this watch for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
+        NSHealthUpdateUsageDescription: If you turn it on, each prayer you mark is added to Apple Health as mindful minutes.
+        NSHealthShareUsageDescription: Near Mosque does not read your health data; it only adds the mindful minutes of the prayers you mark.
+        ITSAppUsesNonExemptEncryption: false
+  NearMosqueWatchWidgets:
+    type: app-extension
+    platform: watchOS
+    sources:
+      - path: WatchWidgets
+        excludes: [Info.plist, "*.entitlements"]
+      - path: WatchShared
+      - path: Shared/SharedState.swift
+      - path: Shared/StyleAccent.swift
+      - path: Shared/Companion.swift
+      - path: App/Resources/Localizable.xcstrings
+    dependencies:
+      - package: NearestMosqueKit
+        product: NMCore
+      - sdk: WidgetKit.framework
+      - sdk: SwiftUI.framework
+    entitlements:
+      path: WatchWidgets/NearMosqueWatchWidgets.entitlements
+      properties:
+        keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID).watchkitapp.widgets
+        TARGETED_DEVICE_FAMILY: "4"
+        GENERATE_INFOPLIST_FILE: NO
+        INFOPLIST_FILE: WatchWidgets/Info.plist
+        SKIP_INSTALL: YES
+    info:
+      path: WatchWidgets/Info.plist
+      properties:
+        CFBundleDisplayName: Mosque Pro
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
+        SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
+        NSExtension:
+          NSExtensionPointIdentifier: com.apple.widgetkit-extension
+schemes:
+  NearMosque:
+    build:
+      targets:
+        NearMosque: all
+    run:
+      config: Debug
+  NearMosqueVision:
+    build:
+      targets:
+        NearMosqueVision: all
+    run:
+      config: Debug
+  NearMosqueTV:
+    build:
+      targets:
+        NearMosqueTV: all
+    run:
+      config: Debug
+  NearMosqueWatch:
+    build:
+      targets:
+        NearMosqueWatch: all
+    run:
+      config: Debug

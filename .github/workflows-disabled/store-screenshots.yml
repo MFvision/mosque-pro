@@ -1,0 +1,243 @@
+name: App Store screenshots
+
+# Captures the App Store screenshots of every Apple device type in every store language (tools/store/screens.json)
+# from Debug builds in the simulators and on the Mac runner, then sorts them into App Store Connect slots with a
+# manifest (tools/store/finish.py; how to use it: docs/09-app-store.md). Started by hand; uploads nothing to Apple.
+
+on:
+  workflow_dispatch:
+    inputs:
+      platforms:
+        description: "Devices (any of: iphone ipad duo-outer duo-inner watch mac tv vision)"
+        default: "iphone ipad watch mac tv vision"
+      languages:
+        description: "App language codes, space-separated (empty: all 22 store languages)"
+        default: ""
+      from_run:
+        description: "Earlier run IDs whose screenshots to use (space-separated, later ones win; matched by screen name, so an older order is fine); this run's own captures win over all"
+        default: ""
+      only:
+        description: "Capture only these, e.g. \"ar/01-prayer en/02-prayer-weather\" (NN: the position in screens.json's current order; to redo a few, give from_run for the rest)"
+        default: ""
+      extra_wait:
+        description: "Extra seconds before each capture"
+        default: "0"
+      capture:
+        description: "Capture (false: sort the from_run captures only)"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+
+concurrency:
+  group: store-screenshots
+  cancel-in-progress: true
+
+jobs:
+  plan:
+    runs-on: ubuntu-24.04
+    outputs:
+      shards: ${{ steps.p.outputs.shards }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      # Each device's languages are split over 4 machines that capture side by side (one simulator
+      # captures about 25 seconds a screenshot, so a device's 22 languages took over an hour on one).
+      - id: p
+        env:
+          WANTED: ${{ inputs.platforms }}
+          LANGS: ${{ inputs.languages }}
+        run: |
+          python3 -c "
+          import json, os
+          ok = ['iphone', 'ipad', 'duo-outer', 'duo-inner', 'watch', 'mac', 'tv', 'vision']
+          want = [p for p in os.environ['WANTED'].split() if p in ok] or ok
+          langs = os.environ['LANGS'].split() or [l['app'] for l in json.load(open('tools/store/screens.json'))['languages']]
+          n = min(4, len(langs))
+          groups = [langs[i::n] for i in range(n)]
+          shards = [{'platform': p, 'shard': i + 1, 'langs': ' '.join(g)} for p in want for i, g in enumerate(groups)]
+          print('shards=' + json.dumps(shards))" >> "$GITHUB_OUTPUT"
+
+  shoot:
+    name: Screenshots (${{ matrix.platform }} ${{ matrix.shard }})
+    needs: plan
+    if: inputs.capture
+    # iPhone Duo needs Xcode 27.1 and its simulator (GitHub's Xcode 27 image).
+    runs-on: ${{ startsWith(matrix.platform, 'duo') && 'xcode-27' || 'macos-26' }}
+    timeout-minutes: 240
+    strategy:
+      fail-fast: false
+      matrix:
+        include: ${{ fromJSON(needs.plan.outputs.shards) }}
+    defaults:
+      run:
+        working-directory: ios
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      # Before anything that can fail: every screen this shard is to capture is marked as not captured yet
+      # (raw/<platform>/<language>/<NN>-<screen>.failed); each capture replaces its marker. The raw folder is uploaded
+      # even when a later step (Xcode, runtime download, build, capture) fails, so the merge never fills those
+      # screens in from an older run.
+      - name: Mark the screens to capture
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          LANGS: ${{ matrix.langs }}
+          ONLY: ${{ inputs.only }}
+          MARK_REASON: "not captured: the shard stopped before capturing it (a setup or build step failed, or the job was stopped)"
+        # shellcheck disable=SC2086 # the language list is meant to split into arguments
+        run: python3 ../tools/store/shoot.py --mark "$PLATFORM" raw $LANGS
+      - name: Select newest Xcode
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          XC=$(ls -d /Applications/Xcode_26*.app 2>/dev/null | sort -V | tail -1)
+          [ -z "$XC" ] && XC=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          case "$PLATFORM" in duo*) XC=/Applications/Xcode_27.1.app ;; esac
+          sudo xcode-select -s "$XC"
+          xcodebuild -version
+      - name: iOS 27.1 simulator runtime (iPhone Duo)
+        if: startsWith(matrix.platform, 'duo')
+        run: xcrun simctl list runtimes | grep -q "iOS 27.1" || xcodebuild -downloadPlatform iOS
+      - name: watchOS SDK and simulator
+        if: matrix.platform == 'watch'
+        run: xcrun simctl list runtimes | grep -qi watchos || xcodebuild -downloadPlatform watchOS
+      - name: visionOS SDK and simulator
+        if: matrix.platform == 'vision'
+        run: |
+          xcrun simctl list runtimes | grep -qi -e xros -e visionos || xcodebuild -downloadPlatform visionOS
+          xcrun simctl list runtimes
+      - name: Generate project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Debug build
+        env:
+          PLATFORM: ${{ matrix.platform }}
+        run: |
+          set -o pipefail
+          case "$PLATFORM" in
+            iphone|ipad|duo-*) SCHEME=NearMosque; DEST='generic/platform=iOS Simulator' ;;
+            mac) SCHEME=NearMosque; DEST='generic/platform=macOS,variant=Mac Catalyst' ;;
+            tv) SCHEME=NearMosqueTV; DEST='generic/platform=tvOS Simulator' ;;
+            vision) SCHEME=NearMosqueVision; DEST='generic/platform=visionOS Simulator' ;;
+            watch) SCHEME=NearMosqueWatch; DEST='generic/platform=watchOS Simulator' ;;
+          esac
+          xcodebuild -project NearMosque.xcodeproj -scheme "$SCHEME" -configuration Debug -destination "$DEST" \
+            -derivedDataPath dd CODE_SIGNING_ALLOWED=NO build 2>&1 | tee build.log | grep -E "error:|BUILD (SUCCEEDED|FAILED)" || true
+          grep -q "BUILD SUCCEEDED" build.log
+          APP=$(find dd/Build/Products -maxdepth 2 -name "$SCHEME.app" -type d | head -1)
+          echo "APP=$PWD/$APP" >> "$GITHUB_ENV"
+      - name: Capture
+        # A shard that runs long stops here and still uploads what it captured, with markers for the screens it did
+        # not reach (a cancelled job may upload nothing: the finish job marks its screens). An Apple Vision Pro shard
+        # takes about half an hour without retries, and a hung screenshot costs up to 3 tries of 60 seconds.
+        timeout-minutes: 75
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          LANGS: ${{ matrix.langs }}
+          ONLY: ${{ inputs.only }}
+          EXTRA_WAIT: ${{ inputs.extra_wait }}
+        # shellcheck disable=SC2086 # the language list is meant to split into arguments
+        run: |
+          python3 ../tools/store/shoot.py "$PLATFORM" "$APP" raw $LANGS
+          # Crash reports of the app, if it crashed while being captured (kept with the raw captures).
+          mkdir -p crashes
+          find ~/Library/Logs/DiagnosticReports -name 'NearMosque*' -newer build.log -exec cp {} crashes/ \; 2>/dev/null || true
+          ls crashes
+      # The whole raw folder: the captures and shoot.py's <NN>-<screen>.failed markers (a screen this run meant to
+      # capture and has none of), which collect.py needs so it never uses an older capture of that screen instead.
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: raw-${{ matrix.platform }}-${{ matrix.shard }}
+          path: |
+            ios/raw/
+            ios/build.log
+            ios/crashes/
+          retention-days: 3
+
+  finish:
+    name: Sort into App Store Connect slots
+    needs: [plan, shoot]
+    if: always()
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      # An earlier run's raw captures are kept 3 days, its finished set (app-store-screenshots) 30 days: both are
+      # read, the finished set first. tools/store/collect.py matches captures by screen name, so a later capture of a
+      # screen replaces an earlier one whatever its number, and runs made in an older order sort into the new one.
+      # A failed capture (a .failed marker, or "failed" in a finished set's manifest) drops the earlier capture of that
+      # screen, so finish.py reports it as missing instead of mixing in an old picture. A planned shard of this run
+      # that uploaded no raw folder at all (cancelled, or its runner lost) gets markers for its screens here.
+      - name: Collect the captures (earlier runs first, this run last)
+        env:
+          GH_TOKEN: ${{ github.token }}
+          FROM_RUN: ${{ inputs.from_run }}
+          CAPTURE: ${{ inputs.capture }}
+          SHARDS: ${{ needs.plan.outputs.shards }}
+          ONLY: ${{ inputs.only }}
+        # shellcheck disable=SC2086 # the language list is meant to split into arguments
+        run: |
+          mkdir -p raw
+          if [ "$CAPTURE" = "true" ] && [ -z "$SHARDS" ]; then
+            echo "::error::No shard plan for this run's captures (the plan job failed); nothing to sort."
+            exit 1
+          fi
+          for id in $FROM_RUN "$GITHUB_RUN_ID"; do
+            if [ "$id" != "$GITHUB_RUN_ID" ]; then
+              gh run download "$id" --repo "$GITHUB_REPOSITORY" --name app-store-screenshots --dir "downloaded/$id/finished" || true
+              if [ -f "downloaded/$id/finished/manifest.json" ]; then python3 tools/store/collect.py raw "downloaded/$id/finished"; fi
+            fi
+            gh run download "$id" --repo "$GITHUB_REPOSITORY" --pattern 'raw-*' --dir "downloaded/$id" || true
+            if [ "$id" = "$GITHUB_RUN_ID" ] && [ "$CAPTURE" = "true" ]; then
+              echo "$SHARDS" | python3 -c 'import json, sys; [print(s["platform"], s["shard"], s["langs"]) for s in json.load(sys.stdin)]' |
+                while read -r platform shard langs; do
+                  if [ ! -d "downloaded/$id/raw-$platform-$shard/raw" ]; then
+                    echo "::error::Screenshots ($platform $shard) uploaded no raw captures: its screens are reported as missing, not filled in from an earlier run."
+                    MARK_REASON="not captured: shard $platform $shard uploaded no captures" \
+                      python3 tools/store/shoot.py --mark "$platform" "downloaded/$id/raw-$platform-$shard/raw" $langs
+                  fi
+                done
+            fi
+            for d in "downloaded/$id"/raw-*; do
+              if [ -d "$d/raw" ]; then python3 tools/store/collect.py raw "$d/raw"; fi
+            done
+            rm -rf "downloaded/$id"
+          done
+          find raw -name '*.png' | wc -l
+          echo "Failed captures (reported as missing):"
+          find raw -name '*.failed' | sort
+      - name: Sort, check sizes, write the manifest
+        run: |
+          python3 -m venv /tmp/venv && /tmp/venv/bin/pip install --quiet pillow
+          /tmp/venv/bin/python tools/store/finish.py raw store "$GITHUB_SHA"
+          du -sh store
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: app-store-screenshots
+          path: store/
+          retention-days: 30
+      # The run's artifact expires; a full run (every language) is also kept as a release of this repository,
+      # one zip per device type plus the manifest, contact sheets and icons. Unzipped together they give the
+      # layout the manifest describes.
+      - name: Keep the full set as a release
+        if: inputs.languages == '' && inputs.platforms == 'iphone ipad watch mac tv vision'
+        # Needs "Read and write permissions" under Settings → Actions → General → Workflow permissions;
+        # without it the set is still in the run's artifact.
+        continue-on-error: true
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd store
+          for d in APP_*; do zip -qr "../$d.zip" "$d"; done
+          zip -qr ../manifest-sheets-icons.zip manifest.json contact-sheets icons
+          cd ..
+          TAG="store-screenshots-${GITHUB_SHA::7}"
+          gh release delete "$TAG" --yes --cleanup-tag 2>/dev/null || true
+          gh release create "$TAG" --target "$GITHUB_SHA" --title "App Store screenshots ${GITHUB_SHA::7}" \
+            --notes "Every Apple device type in the 22 store languages, from run $GITHUB_RUN_ID. Unzip all files into one folder; manifest.json says where each screenshot goes (docs/09-app-store.md)." \
+            APP_*.zip manifest-sheets-icons.zip
+          echo "Release: $GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$TAG" >> "$GITHUB_STEP_SUMMARY"

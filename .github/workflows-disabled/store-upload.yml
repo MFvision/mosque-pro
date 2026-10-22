@@ -1,0 +1,116 @@
+name: App Store screenshots upload
+
+# Uploads screenshot sets made by the "App Store screenshots" workflow to App Store Connect, and optionally the
+# listing text (tools/store/asc_upload.py, docs/09-app-store.md "Uploading"). Started by hand.
+# With only display_types it fills empty sets: anything already in App Store Connect is left as it is.
+# screens adds named screens to sets that already have screenshots and orders them; remove_screens deletes named
+# screens only when confirm_delete is on (otherwise it reports them), and with screens only in sets the manifest
+# has every one of those screens for. A set with room deletes only once the new screen is ready in App Store
+# Connect; a full set deletes first to make room, so if the new screen then fails, the deleted one is not brought
+# back (the run reports it). replace_screens (only with confirm_delete; otherwise it reports) puts in the manifest's
+# new file of a screen whose picture changed: where the set's screenshot of it has another checksum, the new one is
+# uploaded and the old one deleted only once the new one is ready (a set of 10 has no room for that and is left,
+# unless delete_first_in_full_sets is on: then the old one goes first and is not brought back if the new one
+# fails); where it has none, it is added as screens adds it. replace_sets (only with confirm_delete; otherwise it
+# reports; on its own, not with screens, remove_screens or replace_screens) replaces whole sets: in each display_types
+# set the manifest has files for, everything is deleted and the manifest's files uploaded in order, unless the set
+# already holds exactly those (then it is left, or only ordered); a set that would end shorter (the manifest lacks a
+# screen for that locale, or has fewer files than it holds) is left and reported unless allow_short_sets is on; a
+# failed upload leaves that set short and a re-run replaces it again; two sets ending short in a row, or one left
+# with none of its files, stop the run. text updates description, keywords, promotional text and
+# what's new from shared/store/listing.json, and with TV_OS in platforms also the Privacy Policy Text of the app
+# information (shown on Apple TV), only where it differs and only while the app information is editable. Start
+# every change with dry_run on.
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Run ID of the App Store screenshots workflow whose app-store-screenshots artifact to upload (not needed for text only)"
+        required: false
+        default: ""
+      display_types:
+        description: "Screenshot sets, space-separated (e.g. APP_WATCH_ULTRA); empty for text only"
+        default: ""
+      screens:
+        description: "Add these screens to sets that already have screenshots, then order the sets (e.g. prayer-weather); empty: only fill empty sets"
+        default: ""
+      remove_screens:
+        description: "Delete these screens' screenshots from those sets (e.g. prayer-dark); only with confirm_delete, and with screens only in sets the manifest has every one of those screens for; a full set deletes before uploading, so a failed upload does not bring it back"
+        default: ""
+      replace_screens:
+        description: "Replace these screens' screenshots whose file differs from the manifest's (e.g. onboarding): new one uploaded, old one deleted once it is ready; only with confirm_delete (off: report only); a set of 10 is left; a screen goes in only one of screens, remove_screens, replace_screens"
+        default: ""
+      confirm_delete:
+        description: "Really delete: the remove_screens screenshots, the old replace_screens ones, and with replace_sets every screenshot in each display_types set the manifest has files for (cannot be undone); off: only report them"
+        type: boolean
+        default: false
+      delete_first_in_full_sets:
+        description: "With replace_screens and confirm_delete: in a set of 10, delete the old screenshot first to make room (only where the manifest has the new file); if the new one then fails, the old one is not brought back"
+        type: boolean
+        default: false
+      replace_sets:
+        description: "Replace whole sets (e.g. uploaded by hand as ipad_01.jpg): only with confirm_delete (off: report only); deletes everything in each display_types set the manifest has files for, then uploads the manifest's files in order; a set already holding them is left, and so is one that would end shorter; not with screens, remove_screens or replace_screens"
+        type: boolean
+        default: false
+      allow_short_sets:
+        description: "With replace_sets: also replace a set the manifest lacks screens for (missing, failed or skipped captures) or has fewer files for than it holds, so it ends shorter; only once the owner agrees"
+        type: boolean
+        default: false
+      text:
+        description: "Update description, keywords, promotional text and what's new from shared/store/listing.json; with TV_OS in platforms, also the Apple TV Privacy Policy Text (app information, only while editable)"
+        type: boolean
+        default: false
+      platforms:
+        description: "Text: App Store versions to update, space-separated (IOS MAC_OS VISION_OS TV_OS); TV_OS also updates the Privacy Policy Text"
+        default: "IOS MAC_OS VISION_OS"
+      dry_run:
+        description: "Only report what would change"
+        type: boolean
+        default: true
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: store-upload
+  cancel-in-progress: false
+
+jobs:
+  upload:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Get the screenshots
+        if: ${{ inputs.display_types != '' }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          if [ -z "$RUN_ID" ]; then
+            echo "::error::run_id is needed to upload screenshots (the App Store screenshots run to take them from)."
+            exit 1
+          fi
+          gh run download "$RUN_ID" -n app-store-screenshots -D store
+      - name: Install the script's dependencies (pinned)
+        run: "python3 -m venv /tmp/asc && /tmp/asc/bin/pip install --quiet --only-binary :all: pyjwt==2.10.1 cryptography==44.0.0"
+      - name: Upload
+        env:
+          ASC_KEY_ID: ${{ secrets.ASC_KEY_ID }}
+          ASC_ISSUER_ID: ${{ secrets.ASC_ISSUER_ID }}
+          ASC_PRIVATE_KEY: ${{ secrets.ASC_PRIVATE_KEY }}
+          BUNDLE_ID: sa.zood.mosquepro
+          DISPLAY_TYPES: ${{ inputs.display_types }}
+          SCREENS: ${{ inputs.screens }}
+          REMOVE_SCREENS: ${{ inputs.remove_screens }}
+          REPLACE_SCREENS: ${{ inputs.replace_screens }}
+          CONFIRM_DELETE: ${{ inputs.confirm_delete }}
+          DELETE_FIRST_IN_FULL_SETS: ${{ inputs.delete_first_in_full_sets }}
+          REPLACE_SETS: ${{ inputs.replace_sets }}
+          ALLOW_SHORT_SETS: ${{ inputs.allow_short_sets }}
+          TEXT: ${{ inputs.text }}
+          PLATFORMS: ${{ inputs.platforms }}
+          DRY_RUN: ${{ inputs.dry_run }}
+        run: /tmp/asc/bin/python tools/store/asc_upload.py store
