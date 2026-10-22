@@ -32,6 +32,13 @@ the features by group.
 * `4/`: version 4, Ask first: four of the app's common questions typed in and answered as the app answers them,
   with their Qur'an and HadeethEnc sources and the review label. `4/questions.json` comes from
   `shared/content/common-questions.json` through `tools/site/build_ask_sample.py`.
+* `tv/`: Mosque Pro on a TV's own browser (Samsung, LG, any smart TV), opened at an address with nothing installed:
+  the prayer board on the app's sky (the next prayer with a countdown, both dates, the verse or hadith of the day,
+  today's six times), the Adhan screen from the Adhan until the iqama (with the Makkah Adhan if sound is on), and a
+  dim night screen from 90 minutes after Isha until 30 minutes before Fajr that moves every minute. OK on the remote
+  opens the settings (city, language, sound, night screen), kept in that browser only. `tv/daily.json` is made by
+  `tools/build_daily.py` (Arabic and English of `shared/daily/daily.json`). `.github/workflows/tv-preview.yml` puts
+  it on GitHub Pages for testing.
 * `versions/`: one page that opens all four versions, for asking people which they prefer.
 * `prayer.js`: prayer times, the Qibla and the sky's moment for versions 2 and 3.
 * Shared by all four versions: `devices.css` with `assets/frames/` (the iPhone and Apple Watch frames drawn round

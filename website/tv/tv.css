@@ -1,0 +1,67 @@
+/* The TV page: sized in vh/vw so the same board fills a 1080p or a 4K screen, read from across a room. */
+:root { --gold: #E2B85C; --ink: #FFFFFF; --soft: rgba(255, 255, 255, 0.82); --glass: rgba(255, 255, 255, 0.10); }
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #0B1B33; color: var(--ink); cursor: none;
+  font-family: "IBM Plex Sans Arabic", "Segoe UI", "Noto Sans Arabic", "Noto Sans", Tahoma, sans-serif; }
+p, h2, ol { margin: 0; }
+.sky { position: fixed; inset: 0; width: 100%; height: 100%; }
+.screen { position: fixed; inset: 0; padding: 5vh 5vw 4.5vh; display: flex; flex-direction: column;
+  text-shadow: 0 0.2vh 0.8vh rgba(0, 0, 0, 0.35); }
+.screen[hidden] { display: none; }
+.gold { color: var(--gold); }
+.label { font-size: 2.6vh; color: var(--soft); }
+
+.top { display: flex; justify-content: space-between; align-items: flex-start; }
+.city { font-size: 4.2vh; font-weight: 600; }
+.date { font-size: 2.8vh; color: var(--soft); margin-top: 0.6vh; }
+.hijri { font-size: 2.8vh; color: var(--gold); margin-top: 0.4vh; }
+.clock { font-size: 7.5vh; font-weight: 300; font-variant-numeric: tabular-nums; }
+
+.next { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.next-line { display: flex; align-items: baseline; gap: 3vw; }
+.next-name { font-size: 10.5vh; font-weight: 700; line-height: 1.1; }
+.next-at { font-size: 5vh; font-weight: 600; color: var(--gold); }
+.countdown { font-size: 14.5vh; font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; direction: ltr; text-align: start; }
+[dir="rtl"] .countdown { text-align: end; align-self: flex-start; }
+
+.daily { margin-bottom: 3vh; padding: 1.8vh 2vw; border-radius: 2.4vh; background: var(--glass); }
+.daily[hidden] { display: none; }
+.daily-ar { font-family: "Amiri", "Traditional Arabic", "Noto Naskh Arabic", serif; font-size: 3.9vh; line-height: 1.45; }
+.daily-tr { font-size: 2.4vh; color: var(--soft); margin-top: 0.6vh; }
+.daily-ref { font-size: 2vh; color: var(--soft); margin-top: 0.6vh; }
+.daily-tr:empty { display: none; }
+
+.times { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1.2vw; }
+.times li { display: flex; flex-direction: column; align-items: center; gap: 0.8vh; padding: 2.2vh 0.5vw; border-radius: 2.6vh;
+  background: var(--glass); border: 0.3vh solid transparent; }
+.times li span { font-size: 3vh; font-weight: 600; }
+.times li b { font-size: 3.6vh; font-weight: 400; font-variant-numeric: tabular-nums; }
+.times li.is-next { background: rgba(226, 184, 92, 0.30); }
+.times li.is-now { border-color: var(--gold); }
+.times li.is-sunrise { opacity: 0.75; }
+
+.adhan { align-items: center; justify-content: center; text-align: center; gap: 2.4vh; background: #0B1B33; }
+.adhan .label { font-size: 3.8vh; }
+.adhan-name { font-size: 17vh; font-weight: 700; line-height: 1.05; }
+.takbir { font-family: "Amiri", "Traditional Arabic", serif; font-size: 5.6vh; color: var(--gold); }
+.iqama { margin-top: 3vh; display: flex; align-items: center; gap: 2vw; padding: 2.4vh 3vw; border-radius: 3vh; background: var(--glass); font-size: 3.6vh; }
+.iqama[hidden] { display: none; }
+.iqama b { font-size: 7vh; font-weight: 300; font-variant-numeric: tabular-nums; }
+
+.night { background: #000; padding: 0; }
+.night-box { position: absolute; transition: top 2s ease, left 2s ease; }
+.night-clock { font-size: 16vh; font-weight: 300; color: #D8D8D8; font-variant-numeric: tabular-nums; line-height: 1; }
+.night-next { font-size: 3.4vh; color: #9A9A9A; margin-top: 1.4vh; }
+
+.settings { border: 0; border-radius: 3vh; padding: 4vh 4vw; min-width: 50vw; background: #102542; color: var(--ink); font-size: 3vh; }
+.settings::backdrop { background: rgba(0, 0, 0, 0.6); }
+.settings h2 { font-size: 4vh; margin-bottom: 3vh; }
+.settings .row { display: flex; align-items: center; gap: 1.5vw; margin: 1.6vh 0; }
+.settings .row > span { flex: 1; color: var(--soft); }
+.settings button { font: inherit; color: inherit; background: var(--glass); border: 0.3vh solid transparent; border-radius: 1.6vh; padding: 1.2vh 2vw; min-width: 6vw; cursor: pointer; }
+.settings button:focus { outline: none; border-color: var(--gold); background: rgba(226, 184, 92, 0.25); }
+.settings .hint { font-size: 2.2vh; color: var(--soft); margin-top: 2vh; }
+.settings .close { margin-top: 3vh; width: 100%; }
+
+.tip { position: fixed; bottom: 1.5vh; inset-inline-start: 5vw; font-size: 1.8vh; color: rgba(255, 255, 255, 0.55); transition: opacity 1s; }
+.tip.gone { opacity: 0; }
