@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s %2$s-এ, %3$s পর</string>
     <string name="countdown_in">%1$s পর</string>
     <string name="current_prayer">বর্তমান</string>
+    <string name="daily_ayah">আজকের আয়াত</string>
+    <string name="daily_hadith">আজকের হাদিস</string>
     <string name="data_attribution_osm">মসজিদের ডেটা © OpenStreetMap অবদানকারীরা (ODbL)</string>
     <string name="dhikr_section">কুরআন ও জিকির</string>
     <string name="directions">পথনির্দেশ</string>

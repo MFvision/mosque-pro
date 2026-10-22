@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s នៅម៉ោង %2$s ក្នុងរយៈពេល %3$s ទៀត</string>
     <string name="countdown_in">ក្នុងរយៈពេល %1$s ទៀត</string>
     <string name="current_prayer">បច្ចុប្បន្ន</string>
+    <string name="daily_ayah">អាយ៉ាត់ប្រចាំថ្ងៃ</string>
+    <string name="daily_hadith">ហាឌីសប្រចាំថ្ងៃ</string>
     <string name="data_attribution_osm">ទិន្នន័យម៉ាស្ជិត © អ្នករួមចំណែក OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">គម្ពីរគួរអាន និងហ្ស៊ីកៀរ</string>
     <string name="directions">ផ្លូវទៅ</string>

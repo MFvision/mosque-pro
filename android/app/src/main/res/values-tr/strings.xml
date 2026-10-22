@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s saat %2$s, %3$s sonra</string>
     <string name="countdown_in">%1$s sonra</string>
     <string name="current_prayer">Şimdiki</string>
+    <string name="daily_ayah">Günün ayeti</string>
+    <string name="daily_hadith">Günün hadisi</string>
     <string name="data_attribution_osm">Cami verisi © OpenStreetMap katkıda bulunanları (ODbL)</string>
     <string name="dhikr_section">Kur\'an ve zikir</string>
     <string name="directions">Yol tarifi</string>

@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s в %2$s, через %3$s</string>
     <string name="countdown_in">через %1$s</string>
     <string name="current_prayer">Сейчас</string>
+    <string name="daily_ayah">Аят дня</string>
+    <string name="daily_hadith">Хадис дня</string>
     <string name="data_attribution_osm">Данные о мечетях © участники OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">Коран и зикр</string>
     <string name="directions">Маршрут</string>

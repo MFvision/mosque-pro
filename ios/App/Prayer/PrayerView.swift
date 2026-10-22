@@ -274,6 +274,7 @@ struct PrayerView: View {
         }
         if model.settings.companion != CompanionKind.none.rawValue, snap.today?.status != .unavailable { CompanionCard(snap: snap).id("companion") }
         if let today = snap.today, today.status != .unavailable { ScheduleCard(snap: snap, today: today).id("schedule") }
+        if let daily = Daily.content { DailyCard(content: daily, now: snap.now, zone: loc.zone).id("daily") }
         DatesCard(snap: snap, onCalculation: { showCalc = true })
     }
 }

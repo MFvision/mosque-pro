@@ -208,6 +208,8 @@
     <string name="countdown_a11y">%1$s الساعة %2$s، بعد %3$s</string>
     <string name="countdown_in">بعد %1$s</string>
     <string name="current_prayer">الحالية</string>
+    <string name="daily_ayah">آية اليوم</string>
+    <string name="daily_hadith">حديث اليوم</string>
     <string name="data_attribution_osm">بيانات المساجد © مساهمو OpenStreetMap (ODbL)</string>
     <string name="dhikr_section">القرآن والذكر</string>
     <string name="directions">الاتجاهات</string>
