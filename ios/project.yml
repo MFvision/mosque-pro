@@ -42,6 +42,8 @@ targets:
         buildPhase: resources
       - path: ../shared/content/books-catalog.json
         buildPhase: resources
+      - path: ../shared/daily/daily.json
+        buildPhase: resources
       - path: ../shared/semantic/model.bin
         buildPhase: resources
     dependencies:
@@ -238,6 +240,9 @@ targets:
         buildPhase: resources
       - path: ../packs/cities
         type: folder
+        buildPhase: resources
+      # Ayah and Hadith of the day on the prayer screen.
+      - path: ../shared/daily/daily.json
         buildPhase: resources
     dependencies:
       - package: NearestMosqueKit
