@@ -1,0 +1,33 @@
+name: Samsung TV app
+
+# Packs the TV screen as a Samsung (Tizen) app, MosquePro.wgt, and puts it on this repository's latest release, where
+# TizenBrew Installer finds it: in TizenBrew Installer, install from GitHub with MFvision/mosque-pro. The .wgt is
+# unsigned; TizenBrew Installer signs it with the TV owner's own Samsung certificate.
+on:
+  push:
+    branches: [main]
+    paths: ["website/tv/**", "website/prayer.js", "website/places.js", "website/assets/**", "tools/webos/build.py", "tools/tizen/**", ".github/workflows/tv-samsung.yml"]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: tv-samsung
+  cancel-in-progress: true
+
+jobs:
+  release:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - name: Build MosquePro.wgt
+        run: python3 tools/tizen/build.py
+      - name: Put it on the latest release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete tv-samsung --cleanup-tag --yes || true
+          gh release create tv-samsung build/tizen/MosquePro.wgt --target "$GITHUB_SHA" --latest \
+            --title "Mosque Pro for Samsung TV" \
+            --notes "The Mosque Pro TV screen as a Samsung TV app, built from ${GITHUB_SHA::7}. Install it with TizenBrew Installer: install from GitHub, MFvision/mosque-pro."
