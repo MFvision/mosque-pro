@@ -644,8 +644,8 @@ function hint() {
 function activate(el) {
   if (!el) return;
   const id = el.getAttribute('data-app'), act = el.getAttribute('data-act'), n = +el.getAttribute('data-surah');
-  // In a TV's web browser the page can't open apps (only the LG app can): say where they are.
-  if ((id || act === 'tv-settings') && !apps.webos) { toast(t().appsHere); return; }
+  // In a TV's web browser the page can't open apps, and only the LG app opens the TV's settings: say where they are.
+  if ((id && !apps.opens) || (act === 'tv-settings' && !apps.webos)) { toast(t().appsHere); return; }
   if (id) { stopQuran(); apps.launch(id); return; }
   // OK plays; OK on what is playing stops it.
   if (n) { const was = !!playing && playing.n === n; stopQuran(); if (!was) playQuran({ kind: 'surah', n, r: reciter }); return; }
