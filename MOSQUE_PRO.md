@@ -20,3 +20,12 @@ sa.zood.mosquepro.
 
 Every other publishing workflow (App Store review, Google Play, desktop release, store assets, content packs) is
 parked in `.github/workflows-disabled/` and does not run. Move one back only after Mohammed approves publishing.
+
+## Help Center
+
+Settings → Help Center (iPhone, iPad, Mac, Apple Vision Pro): answers to common problems from `shared/help/help.json`
+(English and Arabic; other languages show English), searchable in either language; Report a problem, Suggest an idea
+and Ask us a question, each with a reference (MP-XXXXXX) and, if left on, the app and device lines shown on screen
+(never the location). There is no server: the message opens in Mail or WhatsApp to the contact in help.json, and the
+app keeps a list of what was sent. Apple TV: Settings → Help Center with a QR code to WhatsApp and the TV's answers.
+TV page: a Help tile in the settings row. `tools/check_help.py` checks the answers and the search fixture (CI).

@@ -189,6 +189,9 @@ struct TVSettingsView: View {
                 } footer: {
                     Text(l10n.t("online_search_body"))
                 }
+                Section {
+                    NavigationLink(l10n.t("help_center")) { TVHelpView() }
+                }
                 Section(l10n.t("about")) {
                     LabeledContent(l10n.t("app_name"), value: l10n.t("version_label", Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? ""))
                     Text(l10n.t("data_attribution_osm")).font(.system(size: 22)).foregroundStyle(.secondary)

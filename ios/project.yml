@@ -44,6 +44,8 @@ targets:
         buildPhase: resources
       - path: ../shared/daily/daily.json
         buildPhase: resources
+      - path: ../shared/help/help.json
+        buildPhase: resources
       - path: ../shared/semantic/model.bin
         buildPhase: resources
     dependencies:
@@ -178,6 +180,8 @@ targets:
         buildPhase: resources
       - path: ../shared/daily/daily.json
         buildPhase: resources
+      - path: ../shared/help/help.json
+        buildPhase: resources
       - path: ../shared/semantic/model.bin
         buildPhase: resources
     dependencies:
@@ -250,6 +254,8 @@ targets:
         buildPhase: resources
       # Ayah and Hadith of the day on the prayer screen.
       - path: ../shared/daily/daily.json
+        buildPhase: resources
+      - path: ../shared/help/help.json
         buildPhase: resources
       # The lock screen's film: the tawaf around the Kaaba.
       - path: ../website/assets/kaaba-tawaf.mp4

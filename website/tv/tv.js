@@ -44,6 +44,13 @@ const T = {
     ramadan: 'رمضان كريم', iftar: 'موعد الإفطار', iftarChip: 'الإفطار', suhoor: 'السحور حتى الفجر', suhoorChip: 'السحور حتى',
     ramadanDay: (d) => 'اليوم ' + d + ' من رمضان', taraweeh: 'التراويح بعد العشاء',
     jumuah: 'جمعة مباركة', early: 'بكِّر إلى صلاة الجمعة', answerHour: 'ساعة إجابة · أكثِر من الدعاء', kahfDay: 'يوم الجمعة', kahf: 'سورة الكهف',
+    help: 'المساعدة', helpValue: 'تواصل معنا', helpWa: 'واتساب', helpMail: 'البريد',
+    helpReply: 'نقرأ كل رسالة ونردّ بالبريد أو عبر واتساب حيث راسلتنا.',
+    helpQA: [
+      ['المواقيت لا تطابق مسجدي', 'تُحسب بالطريقة المعتمدة في بلد المدينة (أم القرى في السعودية). تأكّد أن المدينة في الإعدادات صحيحة. ولضبط الطريقة والدقائق استخدم تطبيق «مسجد وأكثر» على Apple TV أو الجوال.'],
+      ['لا أسمع الأذان', 'صوت الأذان متوقف في البداية. شغّله من الإعدادات ← صوت الأذان، ثم اضغط أي زر مرة ليسمح التلفاز بالصوت.'],
+      ['القرآن لا يعمل', 'التلاوات تُبث عبر الإنترنت. تأكّد من اتصال التلفاز، أو جرّب قارئًا آخر.'],
+    ],
   },
   en: {
     prayers: { fajr: 'Fajr', sunrise: 'Sunrise', dhuhr: 'Dhuhr', jumuah: "Jumu'ah", asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' },
@@ -70,8 +77,17 @@ const T = {
     ramadan: 'Ramadan Kareem', iftar: 'Iftar', iftarChip: 'Iftar', suhoor: 'Suhoor until Fajr', suhoorChip: 'Suhoor until',
     ramadanDay: (d) => 'Day ' + d + ' of Ramadan', taraweeh: 'Taraweeh after Isha',
     jumuah: "Jumu'ah Mubarak", early: "Go early to Jumu'ah", answerHour: "An hour of answered du'a", kahfDay: 'Friday', kahf: 'Surah Al-Kahf',
+    help: 'Help', helpValue: 'Contact', helpWa: 'WhatsApp', helpMail: 'Email',
+    helpReply: 'We read every message and reply by email or WhatsApp, wherever you wrote from.',
+    helpQA: [
+      ["The times don't match my mosque", "They use the method of the city's country (Umm al-Qura in Saudi Arabia). Check the city in Settings. To change the method or add minutes, use the Mosque Pro app on Apple TV or on a phone."],
+      ["I don't hear the Adhan", 'The Adhan sound starts off. Turn it on in Settings, Adhan sound, then press any key once so the TV allows sound.'],
+      ["The Quran won't play", "Recitations are streamed. Check the TV's internet connection, or try another reciter."],
+    ],
   },
 };
+// Where help requests go (the same as shared/help/help.json).
+const CONTACT = { email: 'app@vision.bz', whatsapp: '+966 57 937 2403' };
 // Minutes from the Adhan to the iqama (the common ones in Saudi mosques); the Adhan screen stays up until then.
 const IQAMA = { fajr: 25, dhuhr: 20, asr: 20, maghrib: 10, isha: 20 };
 const JUMUAH_SCREEN = 5; // On Friday the khutbah follows, so the Adhan screen shows only briefly.
@@ -161,6 +177,7 @@ const ICON = {
   lang: 'M4 5h10M9 3v2M6 5c1 4 4 7 7 8M12 5c-1 4-4 7-8 8M13 21l4-10 4 10M14.5 17h5',
   sound: 'M11 5L6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13',
   moon: 'M15.5 3.5a8.5 8.5 0 1 0 5 13.6A7 7 0 0 1 15.5 3.5z',
+  help: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01',
   gear: 'M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z',
   compass: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z',
   shield: 'M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4',
@@ -598,6 +615,7 @@ function renderPrefs() {
     pref('sound', 'sound', tx.sound, sound ? tx.on : tx.off),
     pref('night', 'moon', tx.night, nightOn ? tx.auto : tx.off),
     pref('lock', 'clock', tx.lock, lockOn ? tx.lockOn : tx.off),
+    pref('help', 'help', tx.help, tx.helpValue),
     pref('tv-settings', 'gear', tx.tvSettings, tx.open),
   ].join('');
   place();
@@ -650,6 +668,7 @@ function activate(el) {
   if (act === 'lucky') { if (!stopQuran()) { const sg = suggestion(new Date()); lucky = 0; playQuran({ kind: 'surah', n: sg.n, r: reciter }); } }
   else if (act === 'radio') { const was = !!playing && playing.kind === 'radio'; stopQuran(); if (!was) playQuran({ kind: 'radio' }); }
   else if (act === 'reciter') openReciters();
+  else if (act === 'help') openHelp();
   else if (act === 'tv-settings') apps.settings();
   else if (act === 'city') openPicker();
   else if (act === 'lang') { lang = rtl() ? 'en' : 'ar'; store.set('mp-tv-lang', lang); render(); }
@@ -665,7 +684,8 @@ function openList(title, rows, current, done) {
   pickRows = rows; pickDone = done; pick = Math.max(0, current);
   $('#picker-h').textContent = title;
   $('#picker-keys').textContent = t().pickKeys;
-  $('#picker-list').innerHTML = rows.map((r) => (r.group ? `<li class="group">${html(r.group)}</li>` : `<li>${html(r.label)}</li>`)).join('');
+  $('#picker-list').innerHTML = rows.map((r) => (r.group ? `<li class="group">${html(r.group)}</li>`
+    : r.qa ? `<li class="qa"><b>${html(r.qa[0])}</b><small>${html(r.qa[1])}</small></li>` : `<li>${html(r.label)}</li>`)).join('');
   $('#picker').hidden = false;
   movePicker(0);
 }
@@ -679,6 +699,13 @@ function openPicker() {
     if (r.auto) store.set('mp-tv-city', null); else store.set('mp-tv-city', r.p[0]);
     resolveCity(ALL, '../assets/zones.json', store.get('mp-tv-city')).then((c) => { city = c; weather = null; render(); loadWeather(); });
   });
+}
+// Help: how to reach us (and that we reply), then the answers to what TV viewers ask most. OK or Back closes it.
+function openHelp() {
+  const tx = t(), ltr = (s) => '\u2066' + s + '\u2069';
+  const rows = [{ label: tx.helpWa + ' · ' + ltr(CONTACT.whatsapp) }, { label: tx.helpMail + ' · ' + ltr(CONTACT.email) }, { group: tx.helpReply }]
+    .concat(tx.helpQA.map((qa) => ({ qa })));
+  openList(tx.help, rows, 0, () => {});
 }
 function openReciters() {
   openList(t().pickReciter, RECITERS.map((r) => ({ r, label: reciterName(r) })), RECITERS.indexOf(reciter), (x) => {

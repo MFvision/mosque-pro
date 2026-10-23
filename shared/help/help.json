@@ -1,0 +1,169 @@
+{
+  "_comment": "The Help Center's answers, in English and Arabic (other interface languages show English). Checked by tools/check_help.py; read by NMCore HelpCenter.swift. platforms: phone (iPhone, iPad, Mac, Apple Vision Pro) and tv (Apple TV). Keep the app's name as Mosque Pro / مسجد وأكثر.",
+  "contact": {
+    "email": "app@vision.bz",
+    "whatsapp": "966579372403"
+  },
+  "articles": [
+    {
+      "id": "times-differ",
+      "platforms": ["phone", "tv"],
+      "title": {
+        "en": "My prayer times don't match my mosque",
+        "ar": "مواقيت الصلاة لا تطابق مسجدي"
+      },
+      "body": {
+        "en": "Times are worked out from your city and a calculation method. Open Settings, then Calculation, and choose the method your country uses: Umm al-Qura in Saudi Arabia, the Egyptian authority in Egypt, and so on. If your mosque prays Asr later, choose the Hanafi school. If your mosque is still a minute or two off, adjust each prayer by minutes on the same page. Also check that the city in Settings, then Location for prayer times, is the right one.",
+        "ar": "تُحسب المواقيت من مدينتك وطريقة الحساب. افتح الإعدادات ثم «طريقة الحساب» واختر الطريقة المعتمدة في بلدك: أم القرى في السعودية، والهيئة المصرية في مصر، وهكذا. إن كان مسجدك يصلي العصر متأخرًا فاختر المذهب الحنفي. وإن بقي فرق دقيقة أو دقيقتين فعدّل كل صلاة بالدقائق من الصفحة نفسها. وتأكّد أن المدينة في الإعدادات ثم «موقع حساب المواقيت» صحيحة."
+      },
+      "keywords": {
+        "en": ["time", "times", "wrong", "late", "early", "method", "asr", "hanafi", "minutes", "mosque"],
+        "ar": ["وقت", "مواقيت", "خطأ", "متأخر", "مبكر", "طريقة", "حساب", "العصر", "حنفي", "دقائق", "مسجد"]
+      }
+    },
+    {
+      "id": "no-adhan",
+      "platforms": ["phone"],
+      "title": {
+        "en": "The Adhan or my reminders don't arrive",
+        "ar": "الأذان أو التذكيرات لا تصلني"
+      },
+      "body": {
+        "en": "Open the phone's Settings, then Notifications, then Mosque Pro, and allow notifications with sounds. A Focus such as Sleep or Do Not Disturb can hold them back: add Mosque Pro to the Focus's allowed apps. After the phone restarts, open Mosque Pro once so the next days' reminders are set again. In Mosque Pro, Settings, then Prayer & Audio, has a check that shows what is blocking them.",
+        "ar": "افتح إعدادات الجهاز ثم «الإشعارات» ثم «مسجد وأكثر»، واسمح بالإشعارات مع الأصوات. قد يحجبها وضع التركيز مثل «النوم» أو «عدم الإزعاج»، فأضف «مسجد وأكثر» إلى التطبيقات المسموح بها فيه. وبعد إعادة تشغيل الجهاز افتح «مسجد وأكثر» مرة ليعيد ضبط تذكيرات الأيام القادمة. وفي التطبيق، من الإعدادات ثم «الصلاة والصوت»، فحصٌ يبيّن ما الذي يمنعها."
+      },
+      "keywords": {
+        "en": ["adhan", "athan", "notification", "notifications", "reminder", "sound", "alarm", "silent", "focus", "play", "hear", "work"],
+        "ar": ["أذان", "الأذان", "إشعار", "إشعارات", "تذكير", "تنبيه", "صوت", "منبه", "صامت", "تركيز", "يعمل", "يشتغل", "أسمع"]
+      }
+    },
+    {
+      "id": "qibla",
+      "platforms": ["phone", "tv"],
+      "title": {
+        "en": "The Qibla compass looks wrong",
+        "ar": "اتجاه القبلة يبدو خاطئًا"
+      },
+      "body": {
+        "en": "A phone's compass is easily pulled off by metal, magnets (many cases and car mounts have them) and speakers. Move away from them, hold the phone flat, and move it in a figure of eight a few times to calibrate it. The number under the compass is the Qibla's direction from north for your city, worked out exactly; you can also check it against a known landmark. On a Mac or Apple TV there is no compass, so only that direction is shown.",
+        "ar": "تتأثر بوصلة الجوال بسهولة بالمعادن والمغناطيس (في كثير من الأغطية وحوامل السيارات) ومكبرات الصوت. ابتعد عنها، وأمسك الجوال مستويًا، وحرّكه على شكل الرقم ٨ عدة مرات لمعايرته. والرقم تحت البوصلة هو اتجاه القبلة من الشمال لمدينتك محسوبًا بدقة، ويمكنك مطابقته بمعلم معروف. ولا بوصلة في الماك وApple TV، فيظهر الاتجاه وحده."
+      },
+      "keywords": {
+        "en": ["qibla", "compass", "direction", "north", "calibrate", "kaaba"],
+        "ar": ["قبلة", "القبلة", "بوصلة", "اتجاه", "الشمال", "معايرة", "الكعبة"]
+      }
+    },
+    {
+      "id": "wrong-city",
+      "platforms": ["phone", "tv"],
+      "title": {
+        "en": "The app shows the wrong city",
+        "ar": "التطبيق يعرض مدينة غير مدينتي"
+      },
+      "body": {
+        "en": "Open Settings, then Location for prayer times. Choose \"Use my location\" and allow location while using the app, or search for your city by name in Arabic or English. Your location is used on the device to work out the times; it is not sent anywhere for that.",
+        "ar": "افتح الإعدادات ثم «موقع حساب المواقيت». اختر «استخدم موقعي» واسمح بالموقع أثناء استخدام التطبيق، أو ابحث عن مدينتك باسمها بالعربية أو الإنجليزية. يُستخدم موقعك على الجهاز لحساب المواقيت، ولا يُرسل إلى أي جهة لذلك."
+      },
+      "keywords": {
+        "en": ["city", "location", "wrong", "place", "gps", "town"],
+        "ar": ["مدينة", "المدينة", "موقع", "الموقع", "مكان", "خطأ"]
+      }
+    },
+    {
+      "id": "quran-wont-play",
+      "platforms": ["phone", "tv"],
+      "title": {
+        "en": "The Quran won't play",
+        "ar": "القرآن لا يعمل"
+      },
+      "body": {
+        "en": "Recitations are streamed, so they need the internet. If one reciter's file won't load, Mosque Pro tries the same surah by Mishary Alafasy; if that fails too, check your connection or try another reciter. A recitation stops by itself at the next Adhan, so it never plays over the prayer.",
+        "ar": "التلاوات تُبث عبر الإنترنت فتحتاج إلى اتصال. إن لم يُحمَّل ملف قارئ فإن «مسجد وأكثر» يجرّب السورة نفسها بصوت مشاري العفاسي، فإن تعذّر ذلك أيضًا فتأكّد من الاتصال أو جرّب قارئًا آخر. وتتوقف التلاوة تلقائيًا عند الأذان التالي حتى لا تعلو على الصلاة."
+      },
+      "keywords": {
+        "en": ["quran", "play", "recitation", "reciter", "surah", "radio", "audio", "stops"],
+        "ar": ["قرآن", "القرآن", "تشغيل", "تلاوة", "قارئ", "سورة", "إذاعة", "صوت", "يتوقف", "يعمل", "يشتغل"]
+      }
+    },
+    {
+      "id": "clean-network",
+      "platforms": ["phone"],
+      "title": {
+        "en": "What is Clean network, and how do I turn it off?",
+        "ar": "ما «الشبكة النظيفة»، وكيف أوقفها؟"
+      },
+      "body": {
+        "en": "Clean network asks iOS to look up website names through AdGuard's free encrypted DNS, which refuses the names of ad and tracking servers. It works in every app on the iPhone or iPad. AdGuard sees the names of the sites and services your device looks up, but not what you do on them. To turn it off, switch it off in Mosque Pro's Settings, or in the phone's Settings, then General, then VPN & Device Management, then DNS. Ads served from the same place as the content (YouTube, Instagram) are not blocked.",
+        "ar": "تطلب «الشبكة النظيفة» من iOS أن يبحث عن أسماء المواقع عبر خدمة DNS المشفّرة المجانية من AdGuard، وهي ترفض أسماء خوادم الإعلانات والتتبّع. وتعمل في كل تطبيقات الآيفون أو الآيباد. ترى AdGuard أسماء المواقع والخدمات التي يبحث عنها جهازك، لا ما تفعله فيها. ولإيقافها أطفئها من إعدادات «مسجد وأكثر»، أو من إعدادات الجهاز ثم «عام» ثم «VPN وإدارة الجهاز» ثم «DNS». ولا تُحجب الإعلانات التي تأتي من مصدر المحتوى نفسه (يوتيوب وإنستغرام)."
+      },
+      "keywords": {
+        "en": ["clean", "network", "ads", "adblock", "dns", "adguard", "vpn", "internet", "slow", "turn off"],
+        "ar": ["الشبكة", "النظيفة", "إعلانات", "حجب", "دي إن إس", "DNS", "AdGuard", "VPN", "الإنترنت", "بطيء", "إيقاف"]
+      }
+    },
+    {
+      "id": "tv-screen",
+      "platforms": ["phone", "tv"],
+      "title": {
+        "en": "Putting the prayer screen on a TV",
+        "ar": "عرض شاشة الصلاة على التلفاز"
+      },
+      "body": {
+        "en": "On Apple TV, install Mosque Pro from the App Store on the Apple TV itself: it shows the prayer board, the Adhan screen, the Quran and a lock screen. Choose the city in its Settings. Other smart TVs (Samsung, LG) can show the same board in the TV's web browser; the address will be on Mosque Pro's website.",
+        "ar": "على Apple TV ثبّت «مسجد وأكثر» من متجر التطبيقات في جهاز Apple TV نفسه، فيعرض لوحة المواقيت وشاشة الأذان والقرآن وشاشة القفل. واختر المدينة من إعداداته. ويمكن للتلفزيونات الذكية الأخرى (سامسونج وإل جي) عرض اللوحة نفسها في متصفح التلفاز، وسيكون العنوان في موقع «مسجد وأكثر»."
+      },
+      "keywords": {
+        "en": ["tv", "television", "apple tv", "samsung", "lg", "screen", "board", "mosque", "display"],
+        "ar": ["تلفاز", "تلفزيون", "شاشة", "سامسونج", "إل جي", "لوحة", "مسجد", "عرض"]
+      }
+    },
+    {
+      "id": "privacy",
+      "platforms": ["phone", "tv"],
+      "title": {
+        "en": "What leaves my device?",
+        "ar": "ما الذي يخرج من جهازي؟"
+      },
+      "body": {
+        "en": "There is no account, no ads and no tracking. Prayer times, the Qibla and Ask are worked out on your device. Things go online only when you use them: mosque search sends an approximate location; the map loads pictures of the area; \"Sky follows the weather\" sends your city's rounded location to MET Norway; the Quran is streamed from mp3quran.net, QuranicAudio and qurango.net, which see your device's internet address; Clean network sends the website names your device looks up to AdGuard; downloads come from github.com. When you contact us, we receive only what you send.",
+        "ar": "لا حساب ولا إعلانات ولا تتبّع. تُحسب المواقيت والقبلة وإجابات «اسأل» على جهازك. ولا يتصل شيء بالإنترنت إلا عند استخدامه: البحث عن المساجد يرسل موقعًا تقريبيًا، والخريطة تحمّل صور المنطقة، و«سماء حسب الطقس» ترسل موقع مدينتك مقرّبًا إلى MET Norway، والقرآن يُبث من mp3quran.net وQuranicAudio وqurango.net وهي ترى عنوان جهازك على الإنترنت، و«الشبكة النظيفة» ترسل أسماء المواقع التي يبحث عنها جهازك إلى AdGuard، والتنزيلات من github.com. وحين تراسلنا لا يصلنا إلا ما ترسله."
+      },
+      "keywords": {
+        "en": ["privacy", "data", "track", "tracking", "location", "account", "ads", "online", "send"],
+        "ar": ["خصوصية", "الخصوصية", "بيانات", "تتبع", "موقع", "حساب", "إعلانات", "إنترنت", "يرسل"]
+      }
+    },
+    {
+      "id": "ask-answers",
+      "platforms": ["phone"],
+      "title": {
+        "en": "Are the answers in Ask a fatwa?",
+        "ar": "هل إجابات «اسأل» فتوى؟"
+      },
+      "body": {
+        "en": "No. Ask finds passages in the books on your device (the Quran, hadith, fatwas of Sheikh Ibn Baz and more) and shows each one with its source, so you can read it in context. It does not make up an answer, and it says when it finds nothing. For a ruling on your own situation, ask a scholar you trust. If an answer looks wrong, report it from Report a problem so we can check it.",
+        "ar": "لا. يبحث «اسأل» في الكتب الموجودة على جهازك (القرآن والحديث وفتاوى الشيخ ابن باز وغيرها) ويعرض كل نص مع مصدره لتقرأه في سياقه. ولا يؤلّف إجابة، ويخبرك إن لم يجد شيئًا. وللحكم في حالتك الخاصة اسأل عالمًا تثق به. وإن بدت إجابة خاطئة فأبلغنا من «الإبلاغ عن مشكلة» لنراجعها."
+      },
+      "keywords": {
+        "en": ["ask", "answer", "fatwa", "ruling", "ai", "question", "wrong", "scholar"],
+        "ar": ["اسأل", "إجابة", "جواب", "فتوى", "حكم", "سؤال", "خطأ", "عالم", "ذكاء"]
+      }
+    },
+    {
+      "id": "widgets",
+      "platforms": ["phone"],
+      "title": {
+        "en": "Adding a widget or the Lock Screen countdown",
+        "ar": "إضافة أداة أو العدّ التنازلي على شاشة القفل"
+      },
+      "body": {
+        "en": "Touch and hold an empty part of the Home Screen, tap Edit, then Add Widget, and search for Mosque Pro. For the Lock Screen, touch and hold the Lock Screen, tap Customize, then the space under the clock. The countdown to the next prayer on the Lock Screen and in the Dynamic Island is switched on in Mosque Pro's Settings, under Prayer times.",
+        "ar": "المس مطولًا مكانًا فارغًا في الشاشة الرئيسية، ثم «تعديل» ثم «إضافة أداة»، وابحث عن «مسجد وأكثر». ولشاشة القفل المسها مطولًا ثم «تخصيص» ثم المساحة تحت الساعة. ويُفعّل العدّ التنازلي للصلاة القادمة على شاشة القفل وفي Dynamic Island من إعدادات «مسجد وأكثر» تحت «مواقيت الصلاة»."
+      },
+      "keywords": {
+        "en": ["widget", "widgets", "home screen", "lock screen", "countdown", "dynamic island"],
+        "ar": ["أداة", "أدوات", "الشاشة الرئيسية", "شاشة القفل", "عد تنازلي", "تنازلي"]
+      }
+    }
+  ]
+}

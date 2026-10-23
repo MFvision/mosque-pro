@@ -121,6 +121,12 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    NavigationLink { HelpCenterView() } label: {
+                        SettingsRow(icon: "questionmark.circle.fill", tint: .green, title: l10n.t("help_center"), subtitle: l10n.t("help_center_note"))
+                    }
+                }
+
+                Section {
                     NavigationLink {
                         Form { Section { Text(l10n.t("privacy_body")) } }
                             .navigationTitle(l10n.t("privacy")).navigationBarTitleDisplayMode(.inline)

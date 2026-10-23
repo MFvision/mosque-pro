@@ -66,6 +66,8 @@ jobs:
         run: python3 tools/store/collect.py --check
       - name: Ayah and Hadith of the day (shared/daily/daily.json and its fixture)
         run: python3 tools/build_daily.py --check
+      - name: Help Center answers (shared/help/help.json and its search fixture)
+        run: python3 tools/check_help.py
       - name: Design tokens (contrast, theme parity)
         run: python3 tools/check_tokens.py
       - name: Golden fixtures regenerate identically
