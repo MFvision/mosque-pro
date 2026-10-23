@@ -3,7 +3,8 @@
 
     check_privacy.py    # exit 1 and list each problem
 
-Collects every https:// address written in the Apple apps (ios/, tests left out) and the TV page (website/tv/), and
+Collects every https:// address written in the Apple apps (ios/, tests left out), the TV page (website/tv/) and the
+home page's scripts, and
 checks that the service behind it is named in both languages of the privacy policy (website/privacy.html). The two
 that people meet most, the Quran streams and Clean network's DNS, must also be in the app's own privacy text
 (privacy_body, every language) and the store's (privacy_policy_text, every language). A new service in the code
@@ -52,6 +53,7 @@ def hosts():
     found = {}
     files = [p for p in (REPO / "ios").rglob("*.swift") if "/Tests/" not in str(p) and p.name not in SKIP_FILES]
     files += sorted((REPO / "website/tv").glob("*.js"))
+    files += [REPO / "website" / n for n in ("app.js", "story.js", "globe.js", "places.js", "prayer.js", "sky.js", "duo.js", "wall.js")]
     for p in files:
         for n, line in enumerate(p.read_text().splitlines(), 1):
             for h in URL.findall(line):

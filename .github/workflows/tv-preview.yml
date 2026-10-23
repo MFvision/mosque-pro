@@ -1,13 +1,13 @@
 name: TV page preview
 
-# Puts Mosque Pro's site on GitHub Pages, https://mfvision.github.io/mosque-pro/: the home page, the privacy policy and
+# Puts Mosque Pro's site on GitHub Pages, https://mfvision.github.io/mosque-pro/: the home page (its story over the globe), the privacy policy and
 # terms, and the TV page for a TV's own browser (tools/site_bundle.py; the same folder is nearmosque.net/mosque-pro/,
 # where the apps link). Only these and the few files they use are published. Needs Settings > Pages > Source: GitHub Actions.
 on:
   push:
     branches: [main]
-    paths: ["website/tv/**", "website/prayer.js", "website/places.js", "website/sky.js", "website/home.html", "website/privacy.html",
-            "website/terms.html", "website/legal.*", "tools/site_bundle.py", ".github/workflows/tv-preview.yml"]
+    paths: ["website/tv/**", "website/*.js", "website/*.css", "website/index.html", "website/privacy.html", "website/terms.html",
+            "website/legal.*", "website/assets/**", "tools/site_bundle.py", ".github/workflows/tv-preview.yml"]
   workflow_dispatch:
 
 permissions:

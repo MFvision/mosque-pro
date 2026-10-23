@@ -91,7 +91,7 @@ def apple_problems():
 
 def web_problems():
     out = []
-    pages = [REPO / "website" / n for n in ("home.html", "privacy.html", "terms.html")]
+    pages = [REPO / "website" / n for n in ("index.html", "story.js", "app.js", "wall.js", "duo.js", "privacy.html", "terms.html")]
     pages += sorted((REPO / "website/tv").glob("*.js")) + sorted((REPO / "website/tv").glob("*.html"))
     for p in pages:
         text = p.read_text()

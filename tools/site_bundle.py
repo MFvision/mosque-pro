@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-"""Gathers Mosque Pro's website into one folder: the home page, the privacy policy and terms, and the TV page with
-what it loads. Everything links relatively, so the folder works at any address.
+"""Gathers Mosque Pro's website into one folder: the home page (the story told over the globe and the sky, with what
+it loads), the privacy policy and terms, and the TV page. Everything links relatively, so the folder works at any
+address.
 
     site_bundle.py OUT          # write the site into OUT (emptied first)
 
@@ -14,10 +15,17 @@ import sys
 
 REPO = pathlib.Path(__file__).resolve().parent.parent
 WEB = REPO / "website"
-PAGES = {"index.html": "home.html", "privacy.html": "privacy.html", "terms.html": "terms.html",
+PAGES = {"index.html": "index.html", "privacy.html": "privacy.html", "terms.html": "terms.html",
          "legal.css": "legal.css", "legal.js": "legal.js"}
-SCRIPTS = ["prayer.js", "places.js", "sky.js"]
-ASSETS = ["zones.json", "adhan.mp3", "icon-180.png", "kaaba-tawaf.mp4"]
+# The home page's scripts and styles (index.html), and what the TV page shares with it.
+SCRIPTS = ["app.js", "story.js", "globe.js", "places.js", "prayer.js", "sky.js", "duo.js", "wall.js",
+           "style.css", "devices.css", "duo.css", "wall.css"]
+ASSETS = ["zones.json", "adhan.mp3", "icon-180.png", "icon.webp", "land.json", "cities.json", "earth-day.jpg",
+          "earth-night.jpg", "makkah-iss.jpg", "haram-night.jpg", "kaaba-tawaf.mp4", "kaaba-tawaf.webm",
+          "kaaba-tawaf-tall.mp4", "kaaba-tawaf-tall.webm"]
+# The screenshots, by language, without the ones that show the other app: its Apple TV pictures (the TV pictures
+# here are of Mosque Pro's TV page, in screen/) and the welcome steps that say its name (see wall.js).
+SHOTS_LEFT_OUT = ["tv", "promise.webp", "done.webp", "extras.webp", "more.webp", "adhan.webp"]
 
 
 def bundle(out):
@@ -31,6 +39,10 @@ def bundle(out):
         shutil.copyfile(WEB / name, out / name)
     for name in ASSETS:
         shutil.copyfile(WEB / "assets" / name, out / "assets" / name)
+    shutil.copytree(WEB / "assets/frames", out / "assets/frames")
+    for lang in ("en", "ar"):
+        shutil.copytree(WEB / "assets" / lang, out / "assets" / lang, ignore=shutil.ignore_patterns(*SHOTS_LEFT_OUT))
+    shutil.copytree(WEB / "vendor", out / "vendor")
     shutil.copytree(WEB / "tv", out / "tv")
     (out / ".nojekyll").touch()
     return out
