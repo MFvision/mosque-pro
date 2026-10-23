@@ -1,0 +1,13 @@
+{
+  "id": "sa.zood.mosquepro.tv",
+  "version": "1.0.0",
+  "vendor": "Mosque Pro",
+  "type": "web",
+  "main": "tv/index.html",
+  "title": "Mosque Pro",
+  "icon": "icon.png",
+  "largeIcon": "largeIcon.png",
+  "bgColor": "#0A1B2C",
+  "resolution": "1920x1080",
+  "disableBackHistoryAPI": true
+}

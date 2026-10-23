@@ -1,67 +1,133 @@
-/* The TV page: sized in vh/vw so the same board fills a 1080p or a 4K screen, read from across a room. */
-:root { --gold: #E2B85C; --ink: #FFFFFF; --soft: rgba(255, 255, 255, 0.82); --glass: rgba(255, 255, 255, 0.10); }
+/* The TV page, design 2: night navy, a mihrab arch for the next prayer, the day as a line from Fajr to Isha.
+   Sized in vh/vw from a 1280×720 drawing, so the same board fills a 1080p or a 4K screen, read from across a room. */
+:root { --gold: #D9B26A; --ivory: #F4EEDF; --soft: rgba(244, 238, 223, 0.72); --dim: rgba(244, 238, 223, 0.55);
+  --glass: rgba(244, 238, 223, 0.06); --mint: #7FD1BF; --navy: #0A1B2C; }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #0B1B33; color: var(--ink); cursor: none;
+html, body { margin: 0; height: 100%; overflow: hidden; background: #060F1A; color: var(--ivory); cursor: none;
   font-family: "IBM Plex Sans Arabic", "Segoe UI", "Noto Sans Arabic", "Noto Sans", Tahoma, sans-serif; }
-p, h2, ol { margin: 0; }
-.sky { position: fixed; inset: 0; width: 100%; height: 100%; }
-.screen { position: fixed; inset: 0; padding: 5vh 5vw 4.5vh; display: flex; flex-direction: column;
-  text-shadow: 0 0.2vh 0.8vh rgba(0, 0, 0, 0.35); }
-.screen[hidden] { display: none; }
+p, h2 { margin: 0; }
 .gold { color: var(--gold); }
-.label { font-size: 2.6vh; color: var(--soft); }
+.mint { color: var(--mint); }
+.label { font-size: 2.5vh; letter-spacing: 0.05vh; color: var(--soft); }
+.kufi { font-family: "Reem Kufi", "IBM Plex Sans Arabic", sans-serif; }
 
-.top { display: flex; justify-content: space-between; align-items: flex-start; }
-.city { font-size: 4.2vh; font-weight: 600; }
-.date { font-size: 2.8vh; color: var(--soft); margin-top: 0.6vh; }
-.hijri { font-size: 2.8vh; color: var(--gold); margin-top: 0.4vh; }
-.clock { font-size: 7.5vh; font-weight: 300; font-variant-numeric: tabular-nums; }
+.screen { position: fixed; top: 0; right: 0; bottom: 0; left: 0; overflow: hidden;
+  background: radial-gradient(120% 90% at 75% 35%, #12304A 0%, var(--navy) 55%, #060F1A 100%); }
+[dir="ltr"] .screen { background: radial-gradient(120% 90% at 25% 35%, #12304A 0%, var(--navy) 55%, #060F1A 100%); }
+.screen[hidden] { display: none; }
+/* The girih pattern, very faint. */
+.board::before, .adhan::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; opacity: 0.05; background-size: 11.1vh 11.1vh;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 8 L48 32 L72 40 L48 48 L40 72 L32 48 L8 40 L32 32 Z M40 20 L60 40 L40 60 L20 40 Z' fill='none' stroke='%23D9B26A' stroke-width='1.2'/%3E%3C/svg%3E"); }
 
-.next { flex: 1; display: flex; flex-direction: column; justify-content: center; }
-.next-line { display: flex; align-items: baseline; gap: 3vw; }
-.next-name { font-size: 10.5vh; font-weight: 700; line-height: 1.1; }
-.next-at { font-size: 5vh; font-weight: 600; color: var(--gold); }
-.countdown { font-size: 14.5vh; font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; direction: ltr; text-align: start; }
-[dir="rtl"] .countdown { text-align: end; align-self: flex-start; }
+/* Board */
+.board { transition: transform 2s ease; }
+.top { position: absolute; top: 5.6vh; left: 4.4vw; right: 4.4vw; display: flex; justify-content: space-between; align-items: flex-start; }
+.city { font-family: "Reem Kufi", sans-serif; font-size: 4.7vh; font-weight: 700; }
+.date { font-size: 2.5vh; color: var(--soft); margin-top: 0.6vh; }
+.clock { font-size: 10vh; font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; direction: ltr; }
 
-.daily { margin-bottom: 3vh; padding: 1.8vh 2vw; border-radius: 2.4vh; background: var(--glass); }
-.daily[hidden] { display: none; }
-.daily-ar { font-family: "Amiri", "Traditional Arabic", "Noto Naskh Arabic", serif; font-size: 3.9vh; line-height: 1.45; }
-.daily-tr { font-size: 2.4vh; color: var(--soft); margin-top: 0.6vh; }
-.daily-ref { font-size: 2vh; color: var(--soft); margin-top: 0.6vh; }
+.arch { position: absolute; top: 19.2vh; right: 4.4vw; width: 37.5vw; height: 55.6vh; padding: 0 2.5vw 4.7vh;
+  border: 0.21vh solid rgba(217, 178, 106, 0.55); border-radius: 18.75vw 18.75vw 3.9vh 3.9vh;
+  background: linear-gradient(180deg, rgba(217, 178, 106, 0.10) 0%, rgba(217, 178, 106, 0.02) 100%);
+  display: flex; flex-direction: column; align-items: center; justify-content: flex-end; text-align: center; }
+[dir="ltr"] .arch { right: auto; left: 4.4vw; }
+.next-name { font-family: "Reem Kufi", sans-serif; font-size: 15.6vh; font-weight: 700; line-height: 1.05; }
+[lang="en"] .next-name { font-size: 12vh; }
+.next-at { font-size: 3.6vh; font-weight: 600; color: var(--gold); }
+.remain { margin-top: 1.9vh; display: flex; align-items: baseline; gap: 1vw; }
+.countdown { font-size: 9.2vh; font-weight: 200; line-height: 1; direction: ltr; font-variant-numeric: tabular-nums; }
+
+.daily { position: absolute; top: 22vh; left: 4.4vw; width: 48.4vw; display: flex; flex-direction: column; gap: 1.9vh; }
+[dir="ltr"] .daily { left: auto; right: 4.4vw; }
+.daily-head { display: flex; align-items: center; gap: 1vw; font-size: 2.4vh; letter-spacing: 0.1vh; color: var(--gold); }
+.daily-head i { width: 2.2vw; height: 0.21vh; background: var(--gold); }
+.daily-ar { font-family: "Amiri", "Traditional Arabic", "Noto Naskh Arabic", serif; font-size: 5.3vh; line-height: 1.6;
+  max-height: 34vh; overflow: hidden; }
+.daily-ar.long { font-size: 4.1vh; }
+.daily-ar.longer { font-size: 3.4vh; }
+.daily-tr { font-size: 2.4vh; color: var(--soft); max-height: 10vh; overflow: hidden; }
 .daily-tr:empty { display: none; }
+.daily-ref { font-size: 2.2vh; color: rgba(244, 238, 223, 0.6); }
+.chips { margin-top: 1.2vh; display: flex; gap: 1.1vw; }
+.chip { padding: 1.7vh 1.4vw; border-radius: 1.9vh; background: var(--glass); display: flex; flex-direction: column; gap: 0.3vh; }
+.chip[hidden] { display: none; }
+.chip span { font-size: 1.9vh; color: rgba(244, 238, 223, 0.6); }
+.chip b { font-size: 3vh; font-weight: 400; }
 
-.times { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 1.2vw; }
-.times li { display: flex; flex-direction: column; align-items: center; gap: 0.8vh; padding: 2.2vh 0.5vw; border-radius: 2.6vh;
-  background: var(--glass); border: 0.3vh solid transparent; }
-.times li span { font-size: 3vh; font-weight: 600; }
-.times li b { font-size: 3.6vh; font-weight: 400; font-variant-numeric: tabular-nums; }
-.times li.is-next { background: rgba(226, 184, 92, 0.30); }
-.times li.is-now { border-color: var(--gold); }
-.times li.is-sunrise { opacity: 0.75; }
+.line { position: absolute; left: 6.25vw; right: 6.25vw; bottom: 7.5vh; height: 13.3vh; }
+.rail, .rail-done { position: absolute; top: 6.4vh; height: 0.28vh; }
+.rail { left: 0; right: 0; background: rgba(244, 238, 223, 0.16); }
+.rail-done { right: 0; background: linear-gradient(270deg, rgba(217, 178, 106, 0.2), var(--gold)); }
+[dir="ltr"] .rail-done { right: auto; left: 0; background: linear-gradient(90deg, rgba(217, 178, 106, 0.2), var(--gold)); }
+.mark { position: absolute; top: 0; width: 9.4vw; margin: 0 -4.7vw; display: flex; flex-direction: column; align-items: center; gap: 1.1vh; }
+.mark span { height: 4.2vh; display: flex; align-items: flex-end; font-size: 2.5vh; }
+.mark i { width: 1.4vh; height: 1.4vh; border-radius: 50%; border: 0.21vh solid rgba(244, 238, 223, 0.5); background: var(--navy); }
+.mark b { font-size: 2.5vh; font-weight: 400; direction: ltr; color: rgba(244, 238, 223, 0.85); }
+.mark.past span, .mark.past b { color: var(--dim); }
+.mark.past i { background: var(--gold); border-color: var(--gold); }
+.mark.sunrise { opacity: 0.8; }
+.mark.next span { font-size: 3vh; font-weight: 700; color: var(--gold); }
+.mark.next i { width: 1.9vh; height: 1.9vh; border-color: var(--gold); }
+.mark.next b { color: var(--ivory); }
+.sun { position: absolute; top: 5.1vh; width: 2.8vh; height: 2.8vh; margin: 0 -1.4vh; border-radius: 50%; background: #FFE3A3;
+  box-shadow: 0 0 2.5vh 0.8vh rgba(255, 214, 130, 0.45); }
+.sun[hidden] { display: none; }
 
-.adhan { align-items: center; justify-content: center; text-align: center; gap: 2.4vh; background: #0B1B33; }
-.adhan .label { font-size: 3.8vh; }
-.adhan-name { font-size: 17vh; font-weight: 700; line-height: 1.05; }
+/* Adhan */
+.adhan { background: radial-gradient(80% 80% at 50% 45%, #163A52 0%, var(--navy) 60%, #050C15 100%); }
+.arch-big { position: absolute; top: 9.7vh; left: 50%; width: 43.75vw; height: 83.3vh; margin-left: -21.9vw;
+  border: 0.28vh solid rgba(217, 178, 106, 0.7); border-radius: 21.9vw 21.9vw 4.4vh 4.4vh;
+  background: linear-gradient(180deg, rgba(217, 178, 106, 0.14) 0%, rgba(217, 178, 106, 0.03) 100%); box-shadow: 0 0 11vh rgba(217, 178, 106, 0.12); }
+.adhan-text { position: absolute; top: 16.7vh; left: 0; right: 0; display: flex; flex-direction: column; align-items: center; gap: 0.8vh; text-align: center; }
+.moon { width: 7.5vh; height: 7.5vh; fill: none; stroke: var(--gold); stroke-width: 1.4; stroke-linecap: round; stroke-linejoin: round; margin-bottom: 2.5vh; }
+.adhan .label { font-size: 3vh; }
+.adhan-name { font-family: "Reem Kufi", sans-serif; font-size: 20.8vh; font-weight: 700; line-height: 1.05; }
+[lang="en"] .adhan-name { font-size: 15vh; }
 .takbir { font-family: "Amiri", "Traditional Arabic", serif; font-size: 5.6vh; color: var(--gold); }
-.iqama { margin-top: 3vh; display: flex; align-items: center; gap: 2vw; padding: 2.4vh 3vw; border-radius: 3vh; background: var(--glass); font-size: 3.6vh; }
-.iqama[hidden] { display: none; }
-.iqama b { font-size: 7vh; font-weight: 300; font-variant-numeric: tabular-nums; }
+.ring { position: absolute; top: 65.3vh; left: 50%; width: 22.2vh; height: 22.2vh; margin-left: -11.1vh; }
+.ring[hidden] { display: none; }
+.ring svg { width: 100%; height: 100%; }
+.ring-bg { fill: none; stroke: rgba(244, 238, 223, 0.14); stroke-width: 6; }
+.ring-fg { fill: none; stroke: var(--gold); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 440; stroke-dashoffset: 0; transition: stroke-dashoffset 1s linear; }
+.ring-text { position: absolute; top: 0; right: 0; bottom: 0; left: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.ring-text span { font-size: 1.9vh; color: var(--soft); }
+.ring-text b { font-size: 5.8vh; font-weight: 200; line-height: 1.1; direction: ltr; font-variant-numeric: tabular-nums; }
+.foot { position: absolute; bottom: 3.9vh; font-size: 2.2vh; color: var(--dim); }
+.foot-start { right: 4.4vw; }
+.foot-end { left: 4.4vw; }
+[dir="ltr"] .foot-start { right: auto; left: 4.4vw; }
+[dir="ltr"] .foot-end { left: auto; right: 4.4vw; }
 
-.night { background: #000; padding: 0; }
-.night-box { position: absolute; transition: top 2s ease, left 2s ease; }
-.night-clock { font-size: 16vh; font-weight: 300; color: #D8D8D8; font-variant-numeric: tabular-nums; line-height: 1; }
-.night-next { font-size: 3.4vh; color: #9A9A9A; margin-top: 1.4vh; }
+/* Night: dim and warm, moving a little every minute. */
+.night { background: #000; color: #BDB7A8; }
+.night-box { position: absolute; display: flex; flex-direction: column; align-items: flex-start; gap: 1.4vh; transition: top 2s ease, left 2s ease; }
+.night-moon { width: 4.7vh; height: 4.7vh; fill: none; stroke: #8C7444; stroke-width: 1.4; stroke-linecap: round; }
+.night-time { display: flex; align-items: baseline; gap: 1.4vh; direction: ltr; }
+.night-ampm { font-size: 3.3vh; color: #7A7568; }
+.night-clock { font-size: 18.3vh; font-weight: 200; line-height: 1; color: #CFC9BA; direction: ltr; font-variant-numeric: tabular-nums; }
+.night-next { font-size: 3.3vh; color: #8F897B; }
+.night-bar { margin-top: 3.6vh; width: 32.8vw; height: 0.28vh; background: #1C1C1C; position: relative; }
+.night-bar div { position: absolute; top: 0; right: 0; height: 100%; background: #6E5C36; }
+[dir="ltr"] .night-bar div { right: auto; left: 0; }
+.night-ayah { font-family: "Amiri", serif; font-size: 3.6vh; color: #8C7444; margin-top: 1.9vh; }
 
-.settings { border: 0; border-radius: 3vh; padding: 4vh 4vw; min-width: 50vw; background: #102542; color: var(--ink); font-size: 3vh; }
-.settings::backdrop { background: rgba(0, 0, 0, 0.6); }
-.settings h2 { font-size: 4vh; margin-bottom: 3vh; }
-.settings .row { display: flex; align-items: center; gap: 1.5vw; margin: 1.6vh 0; }
-.settings .row > span { flex: 1; color: var(--soft); }
-.settings button { font: inherit; color: inherit; background: var(--glass); border: 0.3vh solid transparent; border-radius: 1.6vh; padding: 1.2vh 2vw; min-width: 6vw; cursor: pointer; }
-.settings button:focus { outline: none; border-color: var(--gold); background: rgba(226, 184, 92, 0.25); }
-.settings .hint { font-size: 2.2vh; color: var(--soft); margin-top: 2vh; }
-.settings .close { margin-top: 3vh; width: 100%; }
+/* Settings: four big tiles, by remote. */
+.settings { position: fixed; top: 0; right: 0; bottom: 0; left: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; border: 0; padding: 8.9vh 9.4vw;
+  background: radial-gradient(120% 90% at 75% 35%, #12304A 0%, #0A1B2C 55%, #060F1A 100%); color: var(--ivory); font-family: inherit; }
+.settings::backdrop { background: transparent; }
+.s-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4.2vh; }
+.settings h2 { font-family: "Reem Kufi", sans-serif; font-size: 5.6vh; font-weight: 700; }
+.s-keys { font-size: 2.5vh; color: var(--soft); }
+.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3.3vh; }
+.tile { font: inherit; color: inherit; text-align: start; display: flex; align-items: center; gap: 1.9vw; padding: 4.2vh 2.7vw;
+  border-radius: 3.9vh; background: rgba(244, 238, 223, 0.07); border: 0.42vh solid transparent; cursor: pointer; }
+.tile:focus { outline: none; background: rgba(217, 178, 106, 0.20); border-color: var(--gold); box-shadow: 0 0 5.6vh rgba(217, 178, 106, 0.25); }
+.tile i { width: 8.9vh; height: 8.9vh; flex-shrink: 0; border-radius: 2.8vh; background: rgba(217, 178, 106, 0.14); display: flex; align-items: center; justify-content: center; }
+.tile svg { width: 4.4vh; height: 4.4vh; fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.tile span { display: flex; flex-direction: column; gap: 0.6vh; }
+.tile small { font-size: 2.8vh; color: var(--soft); }
+.tile b { font-size: 4.4vh; font-weight: 600; }
+.hint { font-size: 2.5vh; line-height: 1.6; color: var(--soft); margin-top: 4.2vh; }
 
-.tip { position: fixed; bottom: 1.5vh; inset-inline-start: 5vw; font-size: 1.8vh; color: rgba(255, 255, 255, 0.55); transition: opacity 1s; }
+.tip { position: fixed; bottom: 2vh; left: 50%; transform: translateX(-50%); font-size: 2vh; color: var(--dim); transition: opacity 1s; z-index: 2; }
 .tip.gone { opacity: 0; }
