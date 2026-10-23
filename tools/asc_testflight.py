@@ -51,6 +51,7 @@ def api(method: str, path: str, params: dict | None = None, body: dict | None = 
         except ValueError:
             summary = ""
         print(f"App Store Connect API {method} {path}: HTTP {e.code} {summary}")
+        e.summary = summary
         raise
 
 
@@ -112,8 +113,13 @@ def share_external(app_id: str, groups: list, build_id: str, version: str) -> No
         }})
         print(f"Submitted build {version} to Beta App Review for the public link.")
     except urllib.error.HTTPError as e:
-        # 409: already submitted or approved; otherwise usually the Test Information page is not filled in yet.
-        if e.code != 409:
+        # 409: already submitted or approved. 422 INVALID_QC_STATE: the build is already past Beta App Review (or
+        # not processed yet), nothing to do. Any other failure is usually the Test Information page left empty.
+        if e.code == 409:
+            pass
+        elif e.code == 422 and "INVALID_QC_STATE" in getattr(e, "summary", ""):
+            print(f"Build {version} needs no Beta App Review submission now (already reviewed or still processing).")
+        else:
             print(f"::warning::Beta App Review submission failed ({e.code}). Fill in App Store Connect → TestFlight → "
                   "Test Information (description, feedback email, contact), then run TestFlight status again.")
 
