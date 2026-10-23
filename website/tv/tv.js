@@ -526,11 +526,12 @@ function renderDaily(now) {
 function renderShelf() {
   const tx = t();
   const tiles = appList.map((a) => {
-    // A clean logo for the best-known apps, else the TV's own icon, else the app's initial on its colour.
+    // A clean logo for the best-known apps, else the TV's own icon over a blur of itself, else the app's initial on its colour.
     const b = apps.brand ? apps.brand(a.title || '') : null;
     const initial = html((a.title || '?').trim().charAt(0).toUpperCase());
-    const ic = b ? `<svg viewBox="0 0 24 24"><path d="${b.path}"/></svg>` : a.icon ? `<img src="${html(a.icon)}" alt="">` : initial;
-    const bg = b ? b.color : a.icon ? 'rgba(244, 238, 223, 0.08)' : html(a.color || '#24415E');
+    const ic = b ? `<svg viewBox="0 0 24 24"><path d="${b.path}"/></svg>`
+      : a.icon ? `<img class="wash" src="${html(a.icon)}" alt=""><img src="${html(a.icon)}" alt="">` : initial;
+    const bg = b ? b.color : a.icon ? '#1B2A3B' : html(a.color || '#24415E');
     return `<div class="app" data-app="${html(a.id)}"><div class="ic${b ? ' brand' : ''}" style="background:${bg}">${ic}</div><span>${html(a.title)}</span></div>`;
   });
   tiles.push(`<div class="app" data-act="tv-settings"><div class="ic">${svg('gear')}</div><span>${html(tx.tvSettings)}</span></div>`);
@@ -538,7 +539,9 @@ function renderShelf() {
   // An icon that doesn't load becomes the app's initial on its colour.
   Array.prototype.forEach.call($('#shelf').querySelectorAll('img'), (img) => {
     img.onerror = () => {
-      const box = img.parentNode, tile = box.parentNode;
+      const box = img.parentNode;
+      if (!box) return; // the other copy of the same icon failed first
+      const tile = box.parentNode;
       box.style.background = '#24415E';
       box.textContent = (tile.textContent || '?').trim().charAt(0).toUpperCase();
     };
