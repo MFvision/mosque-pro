@@ -24,6 +24,7 @@ SOURCES = os.path.join(ROOT, "packs", "sources")
 OUT = os.path.join(ROOT, "shared", "daily", "daily.json")
 AYAT = os.path.join(ROOT, "shared", "daily", "ayat.txt")
 FIXTURE = os.path.join(ROOT, "shared", "fixtures", "daily.json")
+TV = os.path.join(ROOT, "website", "tv", "daily.json")
 EPOCH = datetime.date(2026, 1, 1)
 
 LANGS = ["en", "es", "fr", "id", "tr", "ur"]
@@ -161,10 +162,20 @@ def build():
     }
 
 
+def build_tv(data):
+    """The TV web page's copy (website/tv/): Arabic and English only, so a TV's browser loads it quickly."""
+    return {
+        "epoch": data["epoch"],
+        "ayat": [{"ref": a["ref"], "surah": a["surahName"], "ar": a["ar"], "en": a["translations"]["en"]} for a in data["ayat"]],
+        "hadith": [{"ar": {k: h["ar"][k] for k in ("text", "grade", "source")}, "en": h["translations"]["en"]["text"]} for h in data["hadith"]],
+    }
+
+
 def main():
     data = build()
     outputs = {OUT: json.dumps(data, ensure_ascii=False, indent=1) + "\n",
-               FIXTURE: json.dumps(build_fixture(data), ensure_ascii=False, indent=2) + "\n"}
+               FIXTURE: json.dumps(build_fixture(data), ensure_ascii=False, indent=2) + "\n",
+               TV: json.dumps(build_tv(data), ensure_ascii=False, separators=(",", ":")) + "\n"}
     if "--check" in sys.argv:
         for path, text in outputs.items():
             with open(path, encoding="utf-8") as f:
