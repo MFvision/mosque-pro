@@ -13,7 +13,7 @@ struct QiblaLiveActivity: Widget {
             QiblaActivityContent(attributes: context.attributes, state: context.state)
                 .activityBackgroundTint(.clear)
                 .activitySystemActionForegroundColor(.white)
-                .widgetURL(URL(string: "nearmosque://qibla"))
+                .widgetURL(URL(string: "mosquepro://qibla"))
         } dynamicIsland: { context in
             let s = context.state, a = context.attributes
             let tint = IslandTint.of(a.style)
@@ -65,7 +65,7 @@ struct QiblaLiveActivity: Widget {
                     IslandArrow(turn: s.turn, facing: s.facing, tint: tint, size: 14)
                 }
             }
-            .widgetURL(URL(string: "nearmosque://qibla"))
+            .widgetURL(URL(string: "mosquepro://qibla"))
             .keylineTint(tint)
         }
         // Also in the Apple Watch Smart Stack: the arrow turns with the iPhone (the watch app has its own compass).

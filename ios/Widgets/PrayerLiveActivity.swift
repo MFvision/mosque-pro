@@ -11,7 +11,7 @@ struct PrayerLiveActivity: Widget {
             PrayerActivityContent(attributes: context.attributes, state: context.state, stale: context.isStale)
                 .activityBackgroundTint(.clear)
                 .activitySystemActionForegroundColor(.white)
-                .widgetURL(URL(string: "nearmosque://prayer"))
+                .widgetURL(URL(string: "mosquepro://prayer"))
         } dynamicIsland: { context in
             let s = context.state, a = context.attributes
             // Before its time the Adhan or iqama counted down to; once it has passed, the next Adhan.
@@ -68,14 +68,14 @@ struct PrayerLiveActivity: Widget {
                             Text(v.title).font(.title2.weight(.semibold)).foregroundStyle(gold)
                         }
                         HStack(spacing: 8) {
-                            Link(destination: URL(string: "nearmosque://qibla")!) {
+                            Link(destination: URL(string: "mosquepro://qibla")!) {
                                 Label(a.qiblaLabel, systemImage: "location.north.line.fill").font(.subheadline.weight(.semibold))
                                     .lineLimit(1).minimumScaleFactor(0.8)
                                     .frame(maxWidth: .infinity, minHeight: 32)
                                     .foregroundStyle(Color(red: 0.03, green: 0.11, blue: 0.16))
                                     .background(gold, in: Capsule())
                             }
-                            Link(destination: URL(string: "nearmosque://mosques")!) {
+                            Link(destination: URL(string: "mosquepro://mosques")!) {
                                 Label(a.mosqueLabel, systemImage: "building.columns").font(.subheadline.weight(.semibold))
                                     .lineLimit(1).minimumScaleFactor(0.8)
                                     .frame(maxWidth: .infinity, minHeight: 32)
@@ -116,7 +116,7 @@ struct PrayerLiveActivity: Widget {
                     Image(systemName: v.symbol).font(.system(size: 10, weight: .bold)).foregroundStyle(gold)
                 }
             }
-            .widgetURL(URL(string: "nearmosque://prayer"))
+            .widgetURL(URL(string: "mosquepro://prayer"))
             .keylineTint(gold)
         }
         // Also in the Apple Watch Smart Stack, with a layout made for the watch.

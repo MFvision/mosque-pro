@@ -39,5 +39,5 @@ struct NextPrayerIntent: AppIntent {
 }
 
 extension SharedState {
-    static let fallbackNoCity = "Open Near Mosque and choose your city first."
+    static let fallbackNoCity = "Open Mosque Pro and choose your city first."
 }

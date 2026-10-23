@@ -121,6 +121,12 @@ struct SettingsView: View {
                 }
 
                 Section {
+                    NavigationLink { HelpCenterView() } label: {
+                        SettingsRow(icon: "questionmark.circle.fill", tint: .green, title: l10n.t("help_center"), subtitle: l10n.t("help_center_note"))
+                    }
+                }
+
+                Section {
                     NavigationLink {
                         Form { Section { Text(l10n.t("privacy_body")) } }
                             .navigationTitle(l10n.t("privacy")).navigationBarTitleDisplayMode(.inline)
@@ -177,11 +183,11 @@ extension SettingsView {
     }
 }
 
-/// The publisher's details shown in Settings (the same as on the App Store page and nearmosque.net).
+/// The publisher's details shown in Settings (the same as on the App Store page and Mosque Pro's site).
 enum Publisher {
     static let name = "AVA ai"
     static let companyURL = URL(string: "https://avaai.sa")!
-    static let website = "nearmosque.net"
+    static let website = "nearmosque.net/mosque-pro"
     static let email = "app@vision.bz"
     static let phone = "+966579372403"
     /// Kept left to right inside Arabic text.
@@ -190,8 +196,8 @@ enum Publisher {
     static var emailURL: URL { URL(string: "mailto:\(email)")! }
     static var phoneURL: URL { URL(string: "tel:\(phone)")! }
     /// The site and its terms page, in Arabic for an Arabic interface.
-    static func websiteURL(_ language: String) -> URL { URL(string: "https://nearmosque.net/" + (language == "ar" ? "#ar" : ""))! }
-    static func termsURL(_ language: String) -> URL { URL(string: "https://nearmosque.net/terms.html" + (language == "ar" ? "#ar" : ""))! }
+    static func websiteURL(_ language: String) -> URL { URL(string: "https://nearmosque.net/mosque-pro/" + (language == "ar" ? "#ar" : ""))! }
+    static func termsURL(_ language: String) -> URL { URL(string: "https://nearmosque.net/mosque-pro/terms.html" + (language == "ar" ? "#ar" : ""))! }
 }
 
 /// A settings row: a coloured icon tile, the title (and a note), and the current value.

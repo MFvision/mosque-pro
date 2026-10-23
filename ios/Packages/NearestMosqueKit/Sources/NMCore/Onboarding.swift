@@ -1,7 +1,7 @@
 import Foundation
 
 // The "First Light" onboarding: its steps, where Back and Skip go, its timings, the weather preview samples, the
-// coming Friday's times and the "Also in Near Mosque" list. The same on every platform (mirrors core/Onboarding.kt,
+// coming Friday's times and the "Also in Mosque Pro" list. The same on every platform (mirrors core/Onboarding.kt,
 // which Android and the desktop use), so the order and the rules are tested once.
 
 public enum OnboardingStep: String, CaseIterable, Sendable {
@@ -145,7 +145,7 @@ public enum FridayPreview {
     }
 }
 
-/// What "Also in Near Mosque" can list, in its order. Each platform says which it has.
+/// What "Also in Mosque Pro" can list, in its order. Each platform says which it has.
 public enum OnboardingFeature: String, CaseIterable, Sendable {
     case iqama, beforePrayer, fajrAlarm, quiet, qiblaCompass, qiblaNorth, mosques, library, classics, hijri, tasbih, startAtSignIn
 

@@ -63,16 +63,16 @@ struct NearMosqueApp: App {
         .commands {
             // Mac menu bar and iPad keyboard shortcuts (⌘1, ⌘2, ⌘K, ⌘,).
             CommandGroup(replacing: .appSettings) {
-                Button(model.l10n.t("settings")) { open("nearmosque://settings") }.keyboardShortcut(",", modifiers: .command)
+                Button(model.l10n.t("settings")) { open("mosquepro://settings") }.keyboardShortcut(",", modifiers: .command)
             }
             CommandGroup(replacing: .textFormatting) {}
             CommandGroup(replacing: .newItem) {}
             CommandMenu(model.l10n.t("app_name")) {
-                Button(model.l10n.t("tab_prayer")) { open("nearmosque://prayer") }.keyboardShortcut("1", modifiers: .command)
-                Button(model.l10n.t("tab_mosques")) { open("nearmosque://mosques") }.keyboardShortcut("2", modifiers: .command)
-                Button(model.l10n.t("widget_kind_qibla")) { open("nearmosque://qibla") }.keyboardShortcut("3", modifiers: .command)
+                Button(model.l10n.t("tab_prayer")) { open("mosquepro://prayer") }.keyboardShortcut("1", modifiers: .command)
+                Button(model.l10n.t("tab_mosques")) { open("mosquepro://mosques") }.keyboardShortcut("2", modifiers: .command)
+                Button(model.l10n.t("widget_kind_qibla")) { open("mosquepro://qibla") }.keyboardShortcut("3", modifiers: .command)
                 Divider()
-                Button(model.l10n.t("widget_kind_ask")) { open("nearmosque://ask") }.keyboardShortcut("k", modifiers: .command)
+                Button(model.l10n.t("widget_kind_ask")) { open("mosquepro://ask") }.keyboardShortcut("k", modifiers: .command)
             }
         }
     }
@@ -168,8 +168,8 @@ struct RootView: View {
         }
         .tint(Theme.gold)
         .modifier(TabBarMinimize())
-        // Widgets: nearmosque://prayer, nearmosque://qibla, nearmosque://mosques, nearmosque://mosque?id=…,
-        // nearmosque://ask (optionally ?q=… to ask a question). Shortcuts: PendingRoute; controls: openQibla.
+        // Widgets: mosquepro://prayer, mosquepro://qibla, mosquepro://mosques, mosquepro://mosque?id=…,
+        // mosquepro://ask (optionally ?q=… to ask a question). Shortcuts: PendingRoute; controls: openQibla.
         .onOpenURL { open($0, trusted: false) }
         .onReceive(NotificationCenter.default.publisher(for: .openRoute)) { _ in PendingRoute.take().map { open($0, trusted: true) } }
         .onChange(of: model.ready) { _, ready in

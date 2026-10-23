@@ -5,8 +5,8 @@ import UIKit
 import WidgetKit
 #endif
 
-// "Near Mosque, everywhere" (the widgets, Siri, the Apple Watch and Ask, each only where the device has it) and "Also
-// in Near Mosque" (the rest, as tiles). Nothing here opens anything; the previews are the real views with this
+// "Mosque Pro, everywhere" (the widgets, Siri, the Apple Watch and Ask, each only where the device has it) and "Also
+// in Mosque Pro" (the rest, as tiles). Nothing here opens anything; the previews are the real views with this
 // person's place and style.
 
 // MARK: - Extras
@@ -380,7 +380,7 @@ struct AskCard: View {
 
 // MARK: - More
 
-/// "Also in Near Mosque": what the earlier steps did not show, as tiles (two columns; one when narrow or with the
+/// "Also in Mosque Pro": what the earlier steps did not show, as tiles (two columns; one when narrow or with the
 /// largest text). Quiet is left out when the Adhan step showed its switch; the Live Activity is on extras.
 struct MoreStep: View {
     let model: OnboardingModel

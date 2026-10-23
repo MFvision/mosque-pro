@@ -45,7 +45,7 @@ final class WeatherTests: XCTestCase {
 
     func testUserAgentAndHeaders() {
         let ua = Weather.userAgent(platform: "iOS", version: "1.4")
-        XCTAssertEqual(ua, "NearMosque/1.4 (iOS; +https://nearmosque.net/; app@vision.bz)")
+        XCTAssertEqual(ua, "MosquePro/1.4 (iOS; +https://nearmosque.net/mosque-pro/; app@vision.bz)")
         let cache = WeatherCache(key: key, lastModified: "Sat, 17 Oct 2026 13:17:28 GMT", lastAttempt: t("2026-10-17T13:17:40Z"))
         XCTAssertEqual(Weather.requestHeaders(userAgent: ua, cache: cache, key: key),
                        ["User-Agent": ua, "If-Modified-Since": "Sat, 17 Oct 2026 13:17:28 GMT"])

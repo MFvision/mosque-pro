@@ -6,7 +6,7 @@ import { places } from './places.js';
 import { resolveCity, schedule, nextPrayer, clock } from './prayer.js';
 
 const BASE = new URL('.', import.meta.url).href;
-const WEIGHTS = { world: 1.6, lines: 1.9, qibla: 1.5, kaaba: 2.1, sky: 1.9, weather: 1.4, welcome: 1.5, mosque: 1.4, ask: 1.4, library: 1.2, adhan: 1.2, glance: 1.4, watch: 1.3, devices: 1.5, privacy: 1.3, get: 1.7 };
+const WEIGHTS = { world: 1.6, lines: 1.9, qibla: 1.5, kaaba: 2.1, sky: 1.9, quran: 1.6, screen: 1.7, clean: 1.5, weather: 1.4, mosque: 1.4, ask: 1.4, library: 1.2, adhan: 1.2, glance: 1.4, watch: 1.3, devices: 1.5, help: 1.3, privacy: 1.3, get: 1.7 };
 const GLOBE_CH = new Set(['world', 'lines', 'get']);
 // The chapters that show the legend at the bottom of the screen (on phones their words stay above it).
 const HUD_CH = new Set(['world', 'lines', 'qibla', 'get']);
@@ -15,7 +15,7 @@ const store = { get: (k) => { try { return localStorage.getItem(k); } catch { re
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
-let lang = (location.hash === '#ar' || location.hash === '#en') ? location.hash.slice(1) : store.get('nm-lang') || ((navigator.languages || [navigator.language]).some((l) => /^ar/i.test(l)) ? 'ar' : 'en');
+let lang = (location.hash === '#ar' || location.hash === '#en') ? location.hash.slice(1) : store.get('mp-lang') || ((navigator.languages || [navigator.language]).some((l) => /^ar/i.test(l)) ? 'ar' : 'en');
 document.documentElement.classList.add('js');
 
 // Where the visitor is: the most populous built-in city in the browser's time zone (no location is asked for).
@@ -44,10 +44,8 @@ buildStates();
 
 const ICONS = {
   appStore: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2Zm6.2 4.2-4.6 8h2.1l.8-1.4h4.9l-1-1.8H10.6l2.5-4.4-1.9-.4Zm2.6 3.2-1 1.7 2.2 3.9h2.1l-3.3-5.6Z"/></svg>',
-  googlePlay: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 2.8v18.4c0 .6.6.9 1.1.6l15.4-8.9c.5-.3.5-1 0-1.3L5.1 2.2C4.6 1.9 4 2.2 4 2.8Z"/></svg>',
-  // Windows and Linux: plain shapes (a window, a terminal), not the systems' logos.
-  windows: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3h8.5v8.5H3zM12.5 3H21v8.5h-8.5zM3 12.5h8.5V21H3zM12.5 12.5H21V21h-8.5z"/></svg>',
-  linux: '<svg viewBox="0 0 24 24" aria-hidden="true"><path fill-rule="evenodd" d="M4 4h16a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm2.3 4.4L9.9 12l-3.6 3.6L7.7 17l5-5-5-5ZM13 15.2V17h5v-1.8Z"/></svg>',
+  // The TV screen: a plain screen on a stand.
+  tv: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-6v1.5h3V21H7v-1.5h3V18H4a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Zm0 2v10h16V6Z"/></svg>',
 };
 
 // A title's words, each in its own span (they come in one by one); [[…]] are highlighted in gold.
@@ -79,8 +77,13 @@ function mediaHTML(c, t) {
       const video = m.clip ? `<video muted playsinline loop preload="none" poster="${still}"><source src="${clip}.mp4" type="video/mp4"><source src="${clip}.webm" type="video/webm"></video>` : '';
       return `<div class="phone">${img(m.phone, plain(t.title))}${video}</div>`;
     }
-    // Android screenshots get a plain phone frame of their own, never the iPhone's.
-    if (m.android) return `<div class="droid">${img(m.android, plain(t.title))}</div>`;
+    // The TV screen (pictures of website/tv/), with a second, smaller TV in front for `inset`.
+    if (m.tv) return `<div class="tvset${m.inset ? ' two' : ''}"><figure><div class="screen">${img(m.tv, plain(t.title))}</div><div class="stand"></div></figure>${m.inset ? `<figure class="inset"><div class="screen">${img(m.inset, '')}</div></figure>` : ''}</div>`;
+    // A settings card drawn from the chapter's words (Clean network, the Help Center): no screenshot of it yet.
+    if (m.panel) {
+      const P = t.panel;
+      return `<div class="panel" role="img" aria-label="${esc(P.title)}"><div class="panel-head"><b>${esc(P.title)}</b>${P.on ? '<span class="switch" aria-hidden="true"></span>' : ''}</div>${P.on ? `<p class="panel-on">${esc(P.on)}</p>` : ''}<ul>${P.rows.map(([k, v]) => `<li><span>${esc(k)}</span><em>${esc(v)}</em></li>`).join('')}</ul></div>`;
+    }
     if (m.watch) return `<div class="watch">${img(m.watch, plain(t.title))}</div>`;
     if (m.devices) {
       const [iphone, ipad, mac, tv, vision] = m.devices;
@@ -97,9 +100,9 @@ function mediaHTML(c, t) {
   }).join('');
 }
 
-// The Windows and Linux buttons and the .deb are files on GitHub, so they download in place; pages open in a new tab.
-const FILES = new Set(['windows', 'linux', 'linuxDeb']);
-const target = (k) => (FILES.has(k) ? '' : ' target="_blank"');
+// The TV screen is a page of this site and opens in place; the stores open in a new tab.
+const HERE = new Set(['tv']);
+const target = (k) => (HERE.has(k) ? '' : ' target="_blank"');
 function storesHTML(t) {
   const more = Object.keys(t.storesMore).filter((k) => links[k])
     .map((k) => `<a href="${esc(links[k])}" rel="noopener"${target(k)}>${esc(t.storesMore[k])}</a>`);
@@ -138,6 +141,7 @@ function render() {
           <p>${esc(x.body)}</p>
           ${x.points ? `<ul>${x.points.map((p) => `<li>${esc(p)}</li>`).join('')}</ul>` : ''}
           ${x.note ? `<p class="note">${esc(x.note)}</p>` : ''}
+          ${x.actions ? `<p class="actions">${x.actions.map(([label, href]) => `<a href="${esc(/^[a-z]+:/.test(href) ? href : BASE + href)}"${/^https:/.test(href) ? ' rel="noopener" target="_blank"' : ''}>${esc(label)}</a>`).join('')}</p>` : ''}
           ${x.credit ? `<p class="credit"><a href="${esc(x.credit[1])}" rel="noopener" target="_blank">${esc(x.credit[0])}</a></p>` : ''}
           ${c.id === 'world' ? `<a class="cta-link" href="#get">${esc(x.cta)}</a><div class="scroll-cue">${esc(t.scroll)}</div>` : ''}
           ${c.id === 'get' ? storesHTML(t) : ''}
@@ -154,7 +158,8 @@ function render() {
       <div class="strip" tabindex="0" aria-label="${esc(t.index.title)}">${shots.map((s) => img(`iphone/${s}`, '')).join('')}${['01-watch-prayer', '02-watch-qibla', '05-watch-mosques', '06-watch-ask'].map((s) => img(`watch/${s}`, '')).join('')}</div>
       <div class="groups">${t.index.groups.map(([g, items]) => `<div class="group"><h3>${esc(g)}</h3><ul>${items.map((i) => `<li>${esc(i)}</li>`).join('')}</ul></div>`).join('')}</div>
     </div>`;
-  $('footer').innerHTML = `<div><nav>${[['privacy', t.footer.privacy], ['terms', t.footer.terms], ['support', t.footer.support], ['security', t.footer.security], ['credits', t.footer.credits]].map(([f, label]) => `<a href="${BASE}${f}.html${lang === 'ar' ? '#ar' : ''}">${esc(label)}</a>`).join('')}</nav></div>`;
+  const hash = lang === 'ar' ? '#ar' : '';
+  $('footer').innerHTML = `<div><nav>${[[`${BASE}privacy.html${hash}`, t.footer.privacy], [`${BASE}terms.html${hash}`, t.footer.terms], [`${BASE}tv/`, t.footer.tv], ['mailto:app@vision.bz', t.footer.contact]].map(([href, label]) => `<a href="${href}">${esc(label)}</a>`).join('')}</nav></div>`;
   chapters = [...document.querySelectorAll('.chapter')];
   document.querySelectorAll('.daynight button').forEach((b) => b.addEventListener('click', () => {
     nightPick = b.dataset.night === '1';
@@ -193,7 +198,7 @@ resolveCity(places, BASE + 'assets/zones.json', null).then((c) => { heroCity = c
 // Theme: the system's, or the viewer's choice.
 const THEMES = ['auto', 'light', 'dark'];
 const THEME_LABEL = { en: { auto: 'Auto', light: 'Light', dark: 'Dark' }, ar: { auto: 'تلقائي', light: 'فاتح', dark: 'داكن' } };
-let theme = store.get('nm-theme') || 'auto';
+let theme = store.get('mp-theme') || 'auto';
 function applyTheme() {
   if (theme === 'auto') delete document.documentElement.dataset.theme;
   else document.documentElement.dataset.theme = theme;
@@ -397,7 +402,7 @@ const hud = document.createElement('div');
 hud.className = 'hud off';
 document.body.appendChild(hud);
 let hudClock = null;
-let globeStyle = store.get('nm-globe') === 'dots' ? 'dots' : 'earth';
+let globeStyle = store.get('mp-globe') === 'dots' ? 'dots' : 'earth';
 function renderHud() {
   const t = story[lang], names = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
   hud.innerHTML = `<p class="hud-legend">${esc(t.hud.legend)}</p><ul>${names.map((n, k) => `<li><i style="background:${PRAYER_COLORS[k]}"></i>${esc(t.prayers[n])}</li>`).join('')}</ul>
@@ -406,7 +411,7 @@ function renderHud() {
   measureHud();
   hud.querySelectorAll('[data-style]').forEach((b) => b.addEventListener('click', () => {
     globeStyle = b.dataset.style;
-    store.set('nm-globe', globeStyle);
+    store.set('mp-globe', globeStyle);
     globe?.setStyle(globeStyle);
     hud.querySelectorAll('[data-style]').forEach((x) => x.setAttribute('aria-pressed', String(x.dataset.style === globeStyle)));
   }));
@@ -551,14 +556,14 @@ $('#sound').addEventListener('click', toggleSound);
 $('#lang').addEventListener('click', () => {
   const at = current, frac = chapters[at] ? (scrollY - tops[at]) / (heights[at] || 1) : 0;
   lang = lang === 'en' ? 'ar' : 'en';
-  store.set('nm-lang', lang);
+  store.set('mp-lang', lang);
   render();
   applyTheme();
   if (chapters[at]) scrollTo(0, tops[at] + frac * heights[at]);
 });
 $('#theme').addEventListener('click', () => {
   theme = THEMES[(THEMES.indexOf(theme) + 1) % THEMES.length];
-  store.set('nm-theme', theme);
+  store.set('mp-theme', theme);
   applyTheme();
 });
 matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applyTheme);
