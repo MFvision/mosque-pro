@@ -49,16 +49,22 @@
     });
   }
 
-  // Samsung: the apps the TV shows on its own home screen, by name.
+  // Samsung: apps from the store (a Tizen app id is a 10-letter package id and a name, or a store number), by name.
+  var SAMSUNG_OWN = /^(org\.tizen|com\.samsung|samsung|com\.tizen|tizen|org\.volt|com\.sec)\b/i;
   function tizenList(done) {
     try {
       window.tizen.application.getAppsInfo(function (infos) {
         var mine = '';
         try { mine = window.tizen.application.getCurrentApplication().appInfo.id; } catch (e) { /* unknown */ }
         var out = [];
+        var seen = {};
         infos.forEach(function (a) {
-          if (!a.show || a.id === mine || !a.name) return;
-          out.push({ id: a.id, title: a.name, icon: a.iconPath || '', color: '' });
+          if (!a.show || a.id === mine || !a.name || seen[a.name]) return;
+          // Samsung's own parts of the TV (settings, sources, the store, helpers) aren't apps to show; nor is
+          // anything without an icon.
+          if (SAMSUNG_OWN.test(a.id) || !a.iconPath) return;
+          seen[a.name] = true;
+          out.push({ id: a.id, title: a.name, icon: a.iconPath, color: '' });
         });
         out.sort(function (x, y) { return x.title.localeCompare(y.title); });
         done(out);
