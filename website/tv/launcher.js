@@ -1,7 +1,8 @@
 // The TV's apps for the Mosque Pro home screen: listing and opening them, the TV's settings, and Back.
 //  - LG webOS: the TV's service bus (Luna), as LG's own launcher does. Developer Mode apps on webOS 6 and newer may
 //    be refused the list; then the apps the TV says it has, from a short list of common ones, are shown.
-//  - Any other browser: sample apps, so the screen can be tried on a computer.
+//  - Samsung (Tizen) app and any other browser: sample apps, so the screen can be tried; Back on the home screen
+//    closes the Samsung app.
 // Plain script (no modules) so it loads the same in a TV app and on the web; it defines window.TVApps.
 (function () {
   'use strict';
@@ -69,6 +70,7 @@
     back: function () {
       if (window.PalmSystem && window.PalmSystem.platformBack) window.PalmSystem.platformBack();
       else if (webos) window.close();
+      else if (window.tizen && window.tizen.application) window.tizen.application.getCurrentApplication().exit();
     },
   };
 })();
