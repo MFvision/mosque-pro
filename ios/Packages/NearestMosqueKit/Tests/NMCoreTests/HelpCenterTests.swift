@@ -20,7 +20,7 @@ final class HelpCenterTests: XCTestCase {
         XCTAssertEqual(a.title("fr"), a.title.en)
         XCTAssertFalse(help.articles(for: .tv).contains { $0.id == "clean-network" })
         XCTAssertTrue(help.articles(for: .phone).contains { $0.id == "clean-network" })
-        XCTAssertEqual(help.contact.whatsapp.filter(\.isNumber), help.contact.whatsapp)
+        XCTAssertTrue(help.contact.email.contains("@"))
     }
 
     /// A fixed sequence, so a reference can be checked letter by letter.
@@ -62,18 +62,11 @@ final class HelpCenterTests: XCTestCase {
         XCTAssertEqual(parts.path, "app@vision.bz")
         XCTAssertEqual(parts.queryItems?.map(\.name), ["subject", "body"])
         XCTAssertEqual(parts.queryItems?.last?.value, r.body)
-
-        let wa = try XCTUnwrap(r.whatsAppURL(number: "+966 57 937 2403", subject: "S"))
-        XCTAssertEqual(wa.host, "wa.me")
-        XCTAssertEqual(wa.path, "/966579372403")
-        let text = try XCTUnwrap(URLComponents(url: wa, resolvingAgainstBaseURL: false)?.queryItems)
-        XCTAssertEqual(text.map(\.name), ["text"])
-        XCTAssertEqual(text.first?.value, "S\n\n" + r.body)
-        XCTAssertNil(r.whatsAppURL(number: "", subject: "S"))
     }
 
     func testHistoryKeepsNewestFirstAndRoundTrips() {
         var list: [SupportRequest] = []
+        // Sent with WhatsApp, before it was taken out: such requests still load.
         for i in 0..<5 {
             let r = SupportRequest(id: "MP-AAAAA\(i + 2)", kind: .idea, message: "idea \(i)", details: [],
                                    sent: Date(timeIntervalSince1970: Double(1_793_000_000 + i)), channel: .whatsapp)

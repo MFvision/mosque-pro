@@ -1,8 +1,7 @@
 {
   "_comment": "The Help Center's answers, in English and Arabic (other interface languages show English). Checked by tools/check_help.py; read by NMCore HelpCenter.swift. platforms: phone (iPhone, iPad, Mac, Apple Vision Pro) and tv (Apple TV). Keep the app's name as Mosque Pro / مسجد وأكثر.",
   "contact": {
-    "email": "app@vision.bz",
-    "whatsapp": "966579372403"
+    "email": "app@vision.bz"
   },
   "articles": [
     {

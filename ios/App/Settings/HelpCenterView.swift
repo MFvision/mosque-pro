@@ -13,8 +13,8 @@ enum Help {
 }
 
 /// Settings → Help Center: answers to common problems (searchable in Arabic and English), Report a problem, Suggest
-/// an idea, Ask us a question, and what the person has already sent with its reference. There is no server: messages
-/// go by email or WhatsApp, and we reply there.
+/// an idea, Ask us a question, and what the person has already sent with its reference. There is no server yet: messages
+/// go by email, and we reply there.
 struct HelpCenterView: View {
     @Environment(\.l10n) private var l10n
     @State private var query = ""
@@ -117,7 +117,7 @@ private struct SentRequestRow: View {
 }
 
 /// Report a problem, Suggest an idea or Ask us a question: the message, the app and device lines (shown, and left
-/// out with one switch), then email, WhatsApp or copy. The request is kept on this device with its reference.
+/// out with one switch), then email or copy. The request is kept on this device with its reference.
 struct SupportFormView: View {
     @Environment(\.appModel) private var app
     @Environment(\.l10n) private var l10n
@@ -132,7 +132,7 @@ struct SupportFormView: View {
     @FocusState private var editing: Bool
 
     private var contact: HelpCenter.Contact {
-        Help.center?.contact ?? HelpCenter.Contact(email: Publisher.email, whatsapp: Publisher.phone.filter(\.isNumber))
+        Help.center?.contact ?? HelpCenter.Contact(email: Publisher.email)
     }
 
     var body: some View {
@@ -178,9 +178,6 @@ struct SupportFormView: View {
             Section {
                 Button { send(.email) } label: {
                     Label(l10n.t("help_send_email"), systemImage: "envelope.fill")
-                }
-                Button { send(.whatsapp) } label: {
-                    Label(l10n.t("help_send_whatsapp"), systemImage: "message.fill")
                 }
                 Button { send(.copied) } label: {
                     Label(l10n.t("help_copy"), systemImage: "doc.on.doc")
@@ -230,10 +227,7 @@ struct SupportFormView: View {
                 if opened { done(r) } else { notice = l10n.t("help_no_mail", contact.email) }
             }
         case .whatsapp:
-            guard let url = r.whatsAppURL(number: contact.whatsapp, subject: subject) else { return }
-            openURL(url) { opened in
-                if opened { done(r) } else { notice = l10n.t("help_open_failed", contact.email) }
-            }
+            return  // only in requests sent before WhatsApp was taken out
         case .copied:
             UIPasteboard.general.string = subject + "\n\n" + r.body
             notice = l10n.t("help_copied", contact.email)

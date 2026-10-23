@@ -30,11 +30,9 @@ public struct HelpCenter: Decodable, Sendable {
 
     public struct Contact: Decodable, Hashable, Sendable {
         public let email: String
-        /// International number, digits only (wa.me links take it so).
-        public let whatsapp: String
 
-        public init(email: String, whatsapp: String) {
-            self.email = email; self.whatsapp = whatsapp
+        public init(email: String) {
+            self.email = email
         }
     }
 
@@ -83,12 +81,12 @@ public struct HelpCenter: Decodable, Sendable {
 }
 
 /// What a person sends us from the Help Center: a problem, an idea or a question, with a reference to quote and,
-/// if they leave them in, a few lines about the app and the device (never the location). There is no server: it goes
-/// by email or WhatsApp, and the app keeps a copy so the person can see what they sent and quote the reference.
+/// if they leave them in, a few lines about the app and the device (never the location). There is no server yet: it goes
+/// by email, and the app keeps a copy so the person can see what they sent and quote the reference.
 public struct SupportRequest: Codable, Hashable, Identifiable, Sendable {
     public enum Kind: String, Codable, CaseIterable, Sendable { case problem, idea, question }
 
-    /// How it left the device.
+    /// How it left the device. WhatsApp is no longer offered; the case stays so requests sent with it still load.
     public enum Channel: String, Codable, Sendable { case email, whatsapp, copied }
 
     /// The reference, "MP-" and six letters or digits that can't be mistaken for each other.
@@ -135,12 +133,6 @@ public struct SupportRequest: Codable, Hashable, Identifiable, Sendable {
 
     public func mailURL(to email: String, subject: String) -> URL? {
         URL(string: "mailto:\(email)?subject=\(Self.encode(subject))&body=\(Self.encode(body))")
-    }
-
-    public func whatsAppURL(number: String, subject: String) -> URL? {
-        let digits = number.filter(\.isNumber)
-        guard !digits.isEmpty else { return nil }
-        return URL(string: "https://wa.me/\(digits)?text=\(Self.encode(subject + "\n\n" + body))")
     }
 
     /// The person's sent requests, newest first, at most `limit` (older ones drop off).

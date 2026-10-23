@@ -81,8 +81,8 @@ def validate(data):
     contact = data.get("contact", {})
     if not re.fullmatch(r"[^@\s]+@[^@\s]+\.[a-z]+", contact.get("email", "")):
         errors.append("contact.email is not an email address")
-    if not re.fullmatch(r"\d{8,15}", contact.get("whatsapp", "")):
-        errors.append("contact.whatsapp must be the international number, digits only")
+    if set(contact) != {"email"}:
+        errors.append("contact holds only the email: reports and ideas stay in the apps and the website, not WhatsApp")
     seen = set()
     for a in data.get("articles", []):
         aid = a.get("id", "")
