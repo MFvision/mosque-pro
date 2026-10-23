@@ -43,7 +43,7 @@ def plain(js):
 
 def app_files():
     files = {}
-    for name in ('index.html', 'tv.css', 'daily.json', 'launcher.js'):
+    for name in ('index.html', 'tv.css', 'daily.json', 'launcher.js', 'wall.jpg'):
         files['tv/' + name] = read(SITE, 'tv', name)
     html = files['tv/index.html'].decode('utf-8')
     html = html.replace('<script type="module" src="tv.js"></script>', '<script src="app.js"></script>')
@@ -52,8 +52,9 @@ def app_files():
     parts = [plain(read(SITE, n).decode('utf-8')) for n in ('places.js', 'prayer.js')]
     parts.append(plain(read(SITE, 'tv', 'tv.js').decode('utf-8')))
     files['tv/app.js'] = ('(function () {\n"use strict";\n' + SHIM + '\n'.join(parts) + '\n})();\n').encode('utf-8')
-    for name in ('adhan.mp3', 'zones.json', 'icon-180.png'):
-        files['assets/' + name] = read(SITE, 'assets', name)
+    for name in ('adhan.mp3', 'zones.json', 'icon-180.png', 'kaaba-tawaf.mp4'):
+        if os.path.exists(os.path.join(SITE, 'assets', name)):  # an older sparse checkout may not have the film yet
+            files['assets/' + name] = read(SITE, 'assets', name)
     for name in ('appinfo.json', 'icon.png', 'largeIcon.png'):
         files[name] = read(HERE, name)
     return files

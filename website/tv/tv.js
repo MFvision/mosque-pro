@@ -30,6 +30,8 @@ const T = {
     city: 'المدينة', lang: 'اللغة', langName: 'العربية', sound: 'صوت الأذان', night: 'شاشة الليل',
     on: 'يعمل', off: 'متوقف', auto: 'تلقائي', autoCity: 'تلقائي (حسب التلفاز)', saudi: 'المملكة العربية السعودية', world: 'مدن أخرى',
     pickCity: 'اختر المدينة', pickKeys: '▲ ▼ للتنقّل · OK للاختيار · رجوع للإلغاء',
+    greet: (h) => (h >= 4 && h < 12 ? 'صباح الخير' : 'مساء الخير'), lockHint: 'اضغط أي زر للعودة',
+    lockNext: 'القادمة', lock: 'شاشة القفل', lockOn: 'بعد ٥ دقائق',
     hintApps: '◀ ▶ للتنقّل · OK للفتح · ▼ للمزيد', hintRows: '▲ ▼ بين الأقسام · ◀ ▶ داخلها · رجوع للأعلى', hintPrefs: 'OK للتغيير · رجوع للأعلى',
     wx: { clear: 'صافٍ', partly: 'غائم جزئيًا', cloudy: 'غائم', fog: 'ضباب', drizzle: 'رذاذ', rain: 'مطر', snow: 'ثلج', storm: 'عاصفة رعدية' },
     day: (d) => new Intl.DateTimeFormat('ar-SA-u-nu-latn', { weekday: 'short', timeZone: 'UTC' }).format(d), sourceSep: ' · ',
@@ -47,6 +49,8 @@ const T = {
     city: 'City', lang: 'Language', langName: 'English', sound: 'Adhan sound', night: 'Night screen',
     on: 'On', off: 'Off', auto: 'Automatic', autoCity: 'Automatic (from the TV)', saudi: 'Saudi Arabia', world: 'Other cities',
     pickCity: 'Choose the city', pickKeys: '▲ ▼ to move · OK to choose · Back to cancel',
+    greet: (h) => (h >= 4 && h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening'), lockHint: 'Press any key to go back',
+    lockNext: 'Next', lock: 'Lock screen', lockOn: 'After 5 minutes',
     hintApps: '◀ ▶ to move · OK to open · ▼ for more', hintRows: '▲ ▼ between rows · ◀ ▶ within · Back to the top', hintPrefs: 'OK to change · Back to the top',
     wx: { clear: 'Clear', partly: 'Partly cloudy', cloudy: 'Cloudy', fog: 'Fog', drizzle: 'Drizzle', rain: 'Rain', snow: 'Snow', storm: 'Thunderstorm' },
     day: (d) => new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' }).format(d), sourceSep: ' · ',
@@ -57,6 +61,7 @@ const IQAMA = { fajr: 25, dhuhr: 20, asr: 20, maghrib: 10, isha: 20 };
 const JUMUAH_SCREEN = 5; // On Friday the khutbah follows, so the Adhan screen shows only briefly.
 const MIN = 60e3;
 const WAKE = 3 * MIN; // a key press on the Adhan or night screen shows the home screen this long
+const LOCK_AFTER = 5 * MIN; // the lock screen comes up after this long without a key
 
 // More Saudi cities than the site's globe names, so the TV's list has the Kingdom's cities first.
 const SAUDI = [
@@ -77,6 +82,8 @@ const ALL = SAUDI.concat(WORLD);
 let lang = store.get('mp-tv-lang') || ((navigator.languages || [navigator.language]).some((l) => /^ar/i.test(l)) ? 'ar' : 'en');
 let sound = store.get('mp-tv-sound') === '1';
 let nightOn = store.get('mp-tv-night') !== '0';
+let lockOn = store.get('mp-tv-lock') !== '0';
+let lastKey = Date.now();
 let city = null, plan = null, planDay = '', daily = null, played = '', unlocked = false, mode = '';
 let appList = [], weather = null, netClean = null, wakeUntil = 0;
 let row = 0; const col = [0, 0, 0];
@@ -169,7 +176,42 @@ function nightSpan(now) {
 function show(next) {
   if (mode === next) return;
   mode = next;
-  ['board', 'adhan', 'night'].forEach((id) => { $('#' + id).hidden = id !== next; });
+  ['board', 'adhan', 'night', 'lock'].forEach((id) => { $('#' + id).hidden = id !== next; });
+  // The lock screen's film plays only while it shows.
+  const v = $('#lock-video');
+  if (next === 'lock') {
+    if (!v.getAttribute('src')) v.setAttribute('src', '../assets/kaaba-tawaf.mp4');
+    const p = v.play();
+    if (p && p.catch) p.catch(() => {});
+    const h = $('#lock-hint');
+    h.classList.remove('gone');
+    setTimeout(() => h.classList.add('gone'), 6000);
+  } else if (!v.paused) v.pause();
+}
+
+const hourIn = (d) => +new Intl.DateTimeFormat('en-GB', { timeZone: city.tz, hour: 'numeric', hourCycle: 'h23' }).format(d);
+
+// The lock screen: the time large over the Kaaba, the dates, the next prayer counting down, the verse of the day.
+// After Maghrib the film is dimmer and warmer, as the room is.
+function renderLock(now, next) {
+  const tx = t(), parts = at(now).split(' ');
+  $('#lock-greet').textContent = tx.greet(hourIn(now));
+  $('#lock-city').textContent = cityName();
+  $('#lock-clock').textContent = parts[0];
+  $('#lock-ampm').textContent = parts.slice(1).join(' ');
+  $('#lock-date').innerHTML = html($('#date').textContent) + ' · <b>' + html($('#hijri').textContent) + '</b>';
+  $('#lock-next-l').textContent = tx.lockNext;
+  $('#lock-next').textContent = name(next[0], next[1]);
+  $('#lock-in').textContent = countdown(next[1] - now);
+  $('#lock-hint').textContent = tx.lockHint;
+  const pick = dailyPick(now);
+  if (pick && $('#lock-ayah-ar').textContent !== pick.ayah.ar) {
+    $('#lock-ayah-ar').textContent = pick.ayah.ar;
+    $('#lock-ayah-ref').textContent = (rtl() ? 'سورة ' + pick.ayah.surah.ar : pick.ayah.surah.translit) + ' · ' + pick.ayah.ref;
+  }
+  const maghrib = plan.today[4][1], fajr = plan.today[0][1];
+  const evening = now >= maghrib || now < fajr;
+  $('#lock-video').style.filter = evening ? 'brightness(0.62) sepia(0.25) saturate(0.9)' : 'brightness(0.85)';
 }
 
 function playAdhan(key) {
@@ -222,8 +264,14 @@ function tick() {
     }
     return;
   }
+  if (lockOn && now - lastKey > LOCK_AFTER && $('#picker').hidden) {
+    show('lock');
+    renderLock(now, next);
+    return;
+  }
   if (mode !== 'board') { show('board'); place(); }
   $('#clock').textContent = at(now);
+  $('#greet').textContent = t().greet(hourIn(now));
   $('#next-name').textContent = name(next[0], next[1]);
   $('#next-at').textContent = at(next[1]);
   $('#countdown').textContent = countdown(next[1] - now);
@@ -355,6 +403,7 @@ function renderPrefs() {
     pref('lang', 'lang', tx.lang, tx.langName),
     pref('sound', 'sound', tx.sound, sound ? tx.on : tx.off),
     pref('night', 'moon', tx.night, nightOn ? tx.auto : tx.off),
+    pref('lock', 'clock', tx.lock, lockOn ? tx.lockOn : tx.off),
     pref('tv-settings', 'gear', tx.tvSettings, tx.open),
   ].join('');
   place();
@@ -402,6 +451,7 @@ function activate(el) {
   else if (act === 'lang') { lang = rtl() ? 'en' : 'ar'; store.set('mp-tv-lang', lang); render(); }
   else if (act === 'sound') { sound = !sound; store.set('mp-tv-sound', sound ? '1' : '0'); unlockAudio(); renderPrefs(); }
   else if (act === 'night') { nightOn = !nightOn; store.set('mp-tv-night', nightOn ? '1' : '0'); renderPrefs(); }
+  else if (act === 'lock') { lockOn = !lockOn; store.set('mp-tv-lock', lockOn ? '1' : '0'); renderPrefs(); }
 }
 
 // MARK: - The city list: the Kingdom's cities first, then the world's; Up and Down, OK, Back.
@@ -506,11 +556,14 @@ function unlockAudio() {
 const BACK = { Escape: 1, Backspace: 1, GoBack: 1, BrowserBack: 1 };
 const KEYS = { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 13: 'ok' };
 addEventListener('keydown', (e) => {
+  lastKey = Date.now();
+  if (mode === 'lock') { e.preventDefault(); tick(); return; } // any key: back from the lock screen
   const back = BACK[e.key] || e.keyCode === 10009 || e.keyCode === 461;
   const k = back ? 'back' : KEYS[e.keyCode];
   if (!k) return;
   e.preventDefault();
   unlockAudio();
+  lastKey = Date.now();
   // On the Adhan or night screen a key first wakes the home screen (OK first stops a playing Adhan).
   if (mode !== 'board') {
     if (k === 'ok' && stopAdhan()) { tick(); return; }
@@ -542,6 +595,7 @@ addEventListener('keydown', (e) => {
 // LG's Magic Remote points and clicks.
 addEventListener('click', (e) => {
   unlockAudio();
+  lastKey = Date.now();
   if (mode !== 'board') { wakeUntil = Date.now() + WAKE; tick(); return; }
   const li = e.target.closest ? e.target.closest('#picker-list li') : null;
   if (li && !li.classList.contains('group')) { pick = Array.prototype.indexOf.call(li.parentNode.children, li); choosePicker(); return; }

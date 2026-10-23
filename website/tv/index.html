@@ -12,10 +12,12 @@
 <body>
 
 <main id="board" class="screen board">
+ <div class="wall" aria-hidden="true"></div>
  <div id="page" class="page">
   <section class="hero">
     <header class="top">
       <div>
+        <p id="greet" class="greet"></p>
         <p id="city" class="city"></p>
         <p class="date"><span id="date"></span><span class="sep"> · </span><span id="hijri" class="gold"></span></p>
       </div>
@@ -91,6 +93,19 @@
   </div>
   <p id="adhan-foot" class="foot foot-start"></p>
   <p id="adhan-hint" class="foot foot-end"></p>
+</main>
+
+<main id="lock" class="screen lock" hidden>
+  <video id="lock-video" class="lock-video" muted loop playsinline preload="none" poster="wall.jpg"></video>
+  <div class="lock-shade"></div>
+  <div class="lock-top"><p id="lock-greet" class="lock-greet"></p><p id="lock-city" class="lock-city"></p></div>
+  <div class="lock-main">
+    <p class="lock-time"><span id="lock-clock"></span><span id="lock-ampm" class="lock-ampm"></span></p>
+    <p id="lock-date" class="lock-date"></p>
+    <p class="lock-next"><span id="lock-next-l"></span><b id="lock-next"></b><span id="lock-in" class="lock-in"></span></p>
+  </div>
+  <div class="lock-ayah"><p id="lock-ayah-ar" class="lock-ayah-ar" lang="ar" dir="rtl"></p><p id="lock-ayah-ref" class="lock-ayah-ref"></p></div>
+  <p id="lock-hint" class="lock-hint"></p>
 </main>
 
 <main id="night" class="screen night" hidden>
