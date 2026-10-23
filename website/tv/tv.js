@@ -771,6 +771,13 @@ function unlockAudio() {
   if (p && p.then) p.then(done, () => { a.muted = false; }); else done();
 }
 
+// In a TV's web browser the first press also hides the browser bar (the webOS app is full screen already).
+function fullScreen() {
+  const d = document.documentElement, f = d.requestFullscreen || d.webkitRequestFullscreen;
+  if (!f || document.fullscreenElement || document.webkitFullscreenElement) return;
+  try { const p = f.call(d); if (p && p.catch) p.catch(() => {}); } catch (err) { /* not allowed here */ }
+}
+
 const BACK = { Escape: 1, Backspace: 1, GoBack: 1, BrowserBack: 1 };
 const KEYS = { 37: 'left', 38: 'up', 39: 'right', 40: 'down', 13: 'ok' };
 addEventListener('keydown', (e) => {
@@ -781,6 +788,7 @@ addEventListener('keydown', (e) => {
   if (!k) return;
   e.preventDefault();
   unlockAudio();
+  fullScreen();
   lastKey = Date.now();
   // On the Adhan or night screen a key first wakes the home screen (OK first stops a playing Adhan).
   if (mode !== 'board') {

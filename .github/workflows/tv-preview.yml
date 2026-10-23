@@ -6,7 +6,7 @@ name: TV page preview
 on:
   push:
     branches: [main]
-    paths: ["website/tv/**", "website/prayer.js", "website/places.js", "website/sky.js", ".github/workflows/tv-preview.yml"]
+    paths: ["website/tv/**", "website/prayer.js", "website/places.js", "website/sky.js", "website/assets/kaaba-tawaf.mp4", ".github/workflows/tv-preview.yml"]
   workflow_dispatch:
 
 permissions:
@@ -31,7 +31,7 @@ jobs:
           mkdir -p _site/assets
           cp -R website/tv _site/tv
           cp website/prayer.js website/places.js website/sky.js _site/
-          cp website/assets/zones.json website/assets/adhan.mp3 website/assets/icon-180.png _site/assets/
+          cp website/assets/zones.json website/assets/adhan.mp3 website/assets/icon-180.png website/assets/kaaba-tawaf.mp4 _site/assets/
           printf '<!doctype html><meta charset="utf-8"><meta http-equiv="refresh" content="0; url=tv/"><title>Mosque Pro TV</title><a href="tv/">Mosque Pro TV</a>\n' > _site/index.html
           touch _site/.nojekyll
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
