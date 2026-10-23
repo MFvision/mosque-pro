@@ -180,8 +180,9 @@ struct TVSettingsView: View {
                 Section {
                     Toggle(l10n.t("tv_keep_awake"), isOn: $model.settings.keepAwake)
                     Toggle(l10n.t("tv_alert"), isOn: $model.settings.prayerAlert)
+                    Toggle(l10n.t("tv_lock_screen"), isOn: $model.settings.lockScreen)
                 } footer: {
-                    Text(l10n.t("tv_keep_awake_note") + " " + l10n.t("tv_alert_note"))
+                    Text(l10n.t("tv_keep_awake_note") + " " + l10n.t("tv_alert_note") + " " + l10n.t("tv_lock_screen_detail"))
                 }
                 Section {
                     Toggle(l10n.t("online_search"), isOn: $model.settings.onlineSearch)

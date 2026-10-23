@@ -63,6 +63,8 @@ targets:
         keychain-access-groups: [$(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared]
         # The Adhan, the iqama and the reminders before the prayer come through a Focus and the Scheduled Summary.
         com.apple.developer.usernotifications.time-sensitive: true
+        # Clean network: the app offers iOS an encrypted DNS setting (AdGuard DNS) that blocks ads and trackers.
+        com.apple.developer.networking.networkextension: [dns-settings]
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(APP_BUNDLE_ID)
@@ -105,7 +107,7 @@ targets:
         # Experimental Qibla compass in the Dynamic Island: the compass is read in the background for two minutes
         # after a tap on the Qibla widget (iOS shows the location indicator meanwhile).
         # fetch: a background refresh tops up the prayer reminders (ReminderRefresh); nothing is downloaded.
-        UIBackgroundModes: [location, fetch]
+        UIBackgroundModes: [location, fetch, audio]
         BGTaskSchedulerPermittedIdentifiers: [sa.zood.nearmosque.reminders]
         NSLocationWhenInUseUsageDescription: Your location is used on this phone for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         NSLocationUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
@@ -212,7 +214,7 @@ targets:
         CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
         CFBundleAllowMixedLocalizations: false
         ITSAppUsesNonExemptEncryption: false
-        UIBackgroundModes: [fetch]
+        UIBackgroundModes: [fetch, audio]
         BGTaskSchedulerPermittedIdentifiers: [sa.zood.nearmosque.reminders]
         NSLocationWhenInUseUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         UIApplicationSceneManifest:
@@ -230,6 +232,8 @@ targets:
       - path: Shared/SharedState.swift
       - path: Shared/StyleAccent.swift
       - path: App/Support/Daily.swift
+      - path: App/Support/QuranPlayer.swift
+      - path: App/Support/Seasons.swift
       - path: App/Support/Localization.swift
       - path: App/Support/Format.swift
       - path: App/Support/Sky.swift
@@ -246,6 +250,9 @@ targets:
         buildPhase: resources
       # Ayah and Hadith of the day on the prayer screen.
       - path: ../shared/daily/daily.json
+        buildPhase: resources
+      # The lock screen's film: the tawaf around the Kaaba.
+      - path: ../website/assets/kaaba-tawaf.mp4
         buildPhase: resources
     dependencies:
       - package: NearestMosqueKit
@@ -279,6 +286,8 @@ targets:
         CFBundleAllowMixedLocalizations: false
         ITSAppUsesNonExemptEncryption: false
         NSLocationWhenInUseUsageDescription: Your location is used on this Apple TV for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
+        # The Quran goes on playing while another app is open.
+        UIBackgroundModes: [audio]
         UIRequiredDeviceCapabilities: [arm64]
         UILaunchScreen:
           UIColorName: ""
