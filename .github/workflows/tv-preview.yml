@@ -1,13 +1,13 @@
 name: TV page preview
 
-# Puts Mosque Pro's own site on GitHub Pages, https://mfvision.github.io/mosque-pro/: the home page (website/home.html),
-# the privacy policy and terms the apps link to, and the TV page (website/tv/) for a TV's own browser. Only these and
-# the few files they use are published, not the rest of the website. Needs Settings > Pages > Source: GitHub Actions.
+# Puts Mosque Pro's site on GitHub Pages, https://mfvision.github.io/mosque-pro/: the home page, the privacy policy and
+# terms, and the TV page for a TV's own browser (tools/site_bundle.py; the same folder is nearmosque.net/mosque-pro/,
+# where the apps link). Only these and the few files they use are published. Needs Settings > Pages > Source: GitHub Actions.
 on:
   push:
     branches: [main]
     paths: ["website/tv/**", "website/prayer.js", "website/places.js", "website/sky.js", "website/home.html", "website/privacy.html",
-            "website/terms.html", "website/legal.*", ".github/workflows/tv-preview.yml"]
+            "website/terms.html", "website/legal.*", "tools/site_bundle.py", ".github/workflows/tv-preview.yml"]
   workflow_dispatch:
 
 permissions:
@@ -28,14 +28,7 @@ jobs:
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - name: Gather the site, the TV page and what they load
-        run: |
-          mkdir -p _site/assets
-          cp -R website/tv _site/tv
-          cp website/prayer.js website/places.js website/sky.js _site/
-          cp website/assets/zones.json website/assets/adhan.mp3 website/assets/icon-180.png _site/assets/
-          cp website/home.html _site/index.html
-          cp website/privacy.html website/terms.html website/legal.css website/legal.js _site/
-          touch _site/.nojekyll
+        run: python3 tools/site_bundle.py _site
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
       - uses: actions/upload-pages-artifact@56afc609e74202658d3ffba0e8f6dda462b719fa # v3
         with:

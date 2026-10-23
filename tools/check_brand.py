@@ -22,7 +22,8 @@ OLD_LOCAL = {
     "ar": ["«أقرب مسجد»", "تطبيق أقرب مسجد", "افتح أقرب مسجد"],
     "ur": ["قریبی مسجد کھولیں", "قریبی مسجد کے"],
 }
-OLD_DOMAIN = re.compile(r"nearmosque\.net|nearmosque://")
+# Mosque Pro's own pages live at nearmosque.net/mosque-pro/ until it has a domain; the rest of Near Mosque's site doesn't.
+OLD_DOMAIN = re.compile(r"nearmosque\.net(?!/mosque-pro\b)|nearmosque://")
 
 
 def strings_problems():

@@ -153,7 +153,7 @@ extension WeatherService {
         FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first?.appendingPathComponent(Weather.cacheFileName)
     }
 
-    /// "MosquePro/1.0.0 (iOS; +https://mfvision.github.io/mosque-pro/; app@vision.bz)": the publisher's contact, never the user's.
+    /// "MosquePro/1.0.0 (iOS; +https://nearmosque.net/mosque-pro/; app@vision.bz)": the publisher's contact, never the user's.
     static var appUserAgent: String {
         let version = Bundle.main.object(forInfoDictionaryKey: "CFBundleShortVersionString") as? String ?? "0"
         return Weather.userAgent(platform: platformName, version: version)

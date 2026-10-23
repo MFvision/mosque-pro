@@ -187,7 +187,7 @@ extension SettingsView {
 enum Publisher {
     static let name = "AVA ai"
     static let companyURL = URL(string: "https://avaai.sa")!
-    static let website = "mfvision.github.io/mosque-pro"
+    static let website = "nearmosque.net/mosque-pro"
     static let email = "app@vision.bz"
     static let phone = "+966579372403"
     /// Kept left to right inside Arabic text.
@@ -196,8 +196,8 @@ enum Publisher {
     static var emailURL: URL { URL(string: "mailto:\(email)")! }
     static var phoneURL: URL { URL(string: "tel:\(phone)")! }
     /// The site and its terms page, in Arabic for an Arabic interface.
-    static func websiteURL(_ language: String) -> URL { URL(string: "https://mfvision.github.io/mosque-pro/" + (language == "ar" ? "#ar" : ""))! }
-    static func termsURL(_ language: String) -> URL { URL(string: "https://mfvision.github.io/mosque-pro/terms.html" + (language == "ar" ? "#ar" : ""))! }
+    static func websiteURL(_ language: String) -> URL { URL(string: "https://nearmosque.net/mosque-pro/" + (language == "ar" ? "#ar" : ""))! }
+    static func termsURL(_ language: String) -> URL { URL(string: "https://nearmosque.net/mosque-pro/terms.html" + (language == "ar" ? "#ar" : ""))! }
 }
 
 /// A settings row: a coloured icon tile, the title (and a note), and the current value.

@@ -37,7 +37,8 @@ SERVICES = {
 }
 # Addresses that are not a service the app sends anything to.
 NOT_SERVICES = {
-    "mfvision.github.io",  # Mosque Pro's own site (the weather request's contact line and Settings → Website)
+    "mfvision.github.io",  # Mosque Pro's own site on GitHub Pages
+    "nearmosque.net",  # Mosque Pro's pages at nearmosque.net/mosque-pro/ (check_brand.py allows only that section)
     "avaai.sa",  # the publisher's site, opened only from Settings
     "www.w3.org",  # an XML namespace in an SVG
     "host", "x", "s", "l", "invalid", "example.org", "example.com",  # placeholders in code and doc comments

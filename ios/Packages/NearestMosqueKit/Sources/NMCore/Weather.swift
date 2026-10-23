@@ -106,7 +106,7 @@ public enum Weather {
     public static let cacheFileName = "weather-cache.json"
     public static let lineKey = "weather_line"
     public static let a11yKey = "weather_a11y"
-    static let publisherSite = "https://mfvision.github.io/mosque-pro/"
+    static let publisherSite = "https://nearmosque.net/mosque-pro/"
     static let publisherEmail = "app@vision.bz"
 
     private static let posix = Locale(identifier: "en_US_POSIX")
