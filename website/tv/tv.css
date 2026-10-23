@@ -59,7 +59,9 @@ p, h2 { margin: 0; }
 .daily-ref { font-size: 2vh; color: rgba(244, 238, 223, 0.6); }
 .chips { margin-top: auto; display: flex; gap: 1vw; }
 .chip { padding: 1.3vh 1.3vw; border-radius: 1.7vh; background: var(--glass); display: flex; flex-direction: column; gap: 0.2vh; }
-.chip[hidden] { display: none; }
+.chip[hidden], .chip.cap { display: none; }
+.chip-gold b { color: var(--gold); }
+.chip-play b { color: var(--mint); max-width: 20vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .chip span { font-size: 1.8vh; color: rgba(244, 238, 223, 0.6); }
 .chip b { font-size: 2.7vh; font-weight: 400; }
 
@@ -86,7 +88,7 @@ p, h2 { margin: 0; }
 .row { padding: 0 4.4vw 5vh; }
 .row-h { margin: 0 0 1.6vh; font-size: 2.5vh; font-weight: 400; color: var(--soft); letter-spacing: 0.05vh; }
 .shelf-clip { overflow: hidden; margin: -1.5vh -4.4vw; padding: 1.5vh 4.4vw; }
-.shelf { display: flex; gap: 1.3vw; transition: transform 0.3s ease; }
+.shelf { position: relative; display: flex; gap: 1.3vw; transition: transform 0.3s ease; }
 .app { flex: 0 0 12.6vw; height: 14.5vh; border-radius: 2.4vh; background: rgba(244, 238, 223, 0.07); border: 0.35vh solid transparent;
   display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2vh; transition: transform 0.24s cubic-bezier(0, 0, 0.2, 1), background 0.24s; }
 .app .ic { width: 7.6vh; height: 7.6vh; border-radius: 1.8vh; display: flex; align-items: center; justify-content: center;
@@ -109,8 +111,8 @@ p, h2 { margin: 0; }
 .days div { display: flex; flex-direction: column; align-items: center; gap: 0.4vh; font-size: 1.9vh; color: var(--soft); }
 .days svg { width: 3.4vh; height: 3.4vh; }
 .days b { font-size: 2.2vh; font-weight: 400; color: var(--ivory); direction: ltr; }
-.card.pref { flex-direction: row; align-items: center; gap: 1.4vw; min-height: 16vh; }
-.card.pref .ic { width: 7.6vh; height: 7.6vh; flex-shrink: 0; border-radius: 2.2vh; background: rgba(217, 178, 106, 0.14); display: flex; align-items: center; justify-content: center; }
+.card.pref { gap: 1.4vh; min-height: 19vh; }
+.card.pref .ic { width: 6.4vh; height: 6.4vh; flex-shrink: 0; border-radius: 2.2vh; background: rgba(217, 178, 106, 0.14); display: flex; align-items: center; justify-content: center; }
 .card.pref span { display: flex; flex-direction: column; gap: 0.4vh; min-width: 0; }
 .card.pref b { font-size: 3.2vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .app.focus span { color: var(--ivory); }
@@ -119,6 +121,33 @@ p, h2 { margin: 0; }
   box-shadow: 0 0 4vh rgba(217, 178, 106, 0.25); }
 .hint-bar { position: fixed; bottom: 0.8vh; left: 0; right: 0; text-align: center; font-size: 1.9vh; color: var(--dim); transition: opacity 0.6s; }
 .hint-bar.gone { opacity: 0; }
+
+/* The Quran: a wide "play for me" card, the radio, the reciter, then surahs by name. */
+.qcard { flex: 0 0 15vw; min-height: 23vh; }
+.qcard.lucky { flex-basis: 27vw; background: linear-gradient(135deg, rgba(217, 178, 106, 0.22), rgba(217, 178, 106, 0.06)); }
+.qcard.lucky b { font-family: "Amiri", "Reem Kufi", serif; font-size: 4.6vh; font-weight: 400; line-height: 1.3; }
+[lang="en"] .qcard.lucky b { font-family: "Reem Kufi", sans-serif; font-size: 3.8vh; font-weight: 500; }
+.qcard .go { margin-top: auto; display: flex; align-items: center; gap: 0.9vw; font-size: 2.3vh; color: var(--gold); }
+.qcard .go .ic { width: 4.6vh; height: 4.6vh; border-radius: 50%; background: var(--gold); display: flex; align-items: center; justify-content: center; }
+.qcard .go .ic svg { width: 2.4vh; height: 2.4vh; fill: var(--navy); stroke: none; }
+.qcard b { font-size: 3vh; }
+.qcard.surah { align-items: center; justify-content: center; text-align: center; gap: 0.6vh; }
+.qcard .num { position: relative; width: 4.8vh; height: 4.8vh; display: flex; align-items: center; justify-content: center; font-size: 1.9vh;
+  line-height: 1; color: var(--gold); }
+.qcard .num::before { content: ""; position: absolute; top: 0.6vh; right: 0.6vh; bottom: 0.6vh; left: 0.6vh; border: 0.18vh solid rgba(217, 178, 106, 0.7);
+  border-radius: 0.6vh; transform: rotate(45deg); }
+.qcard.surah .ar { font-family: "Amiri", "Traditional Arabic", serif; font-size: 5.4vh; font-weight: 400; line-height: 1.35; }
+.qcard.playing { border-color: rgba(127, 209, 191, 0.7); }
+.qcard.playing small, .qcard.playing .sub { color: var(--mint); }
+/* Three bars that move while a recitation plays. */
+.eq { display: inline-flex; align-items: flex-end; gap: 0.25vw; height: 2vh; margin-inline-end: 0.7vw; vertical-align: -0.2vh; }
+.eq i { width: 0.35vw; min-width: 3px; height: 100%; background: var(--mint); border-radius: 1px; animation: eq 0.9s ease-in-out infinite alternate; }
+.eq i:nth-child(2) { animation-delay: -0.3s; }
+.eq i:nth-child(3) { animation-delay: -0.6s; }
+@keyframes eq { from { transform: scaleY(0.25); } to { transform: scaleY(1); } }
+.eq i { transform-origin: bottom; }
+.card.ramadan { background: linear-gradient(160deg, rgba(217, 178, 106, 0.20), rgba(217, 178, 106, 0.04)); }
+.card.ramadan b { font-size: 3vh; }
 
 /* The city list: Up and Down, OK to pick, Back to leave. */
 .picker { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(4, 10, 18, 0.92); display: flex; align-items: center; justify-content: center; z-index: 5; }
@@ -187,6 +216,9 @@ p, h2 { margin: 0; }
 [dir="rtl"] .lock-next { align-self: flex-end; }
 .lock-next b { font-family: "Reem Kufi", sans-serif; font-size: 3.6vh; font-weight: 700; color: var(--ivory); }
 .lock-in { font-size: 3.2vh; font-weight: 300; color: var(--gold); direction: ltr; font-variant-numeric: tabular-nums; }
+.lock-play { align-self: flex-start; font-size: 2.4vh; color: var(--mint); text-shadow: 0 0.3vh 1.5vh rgba(0, 0, 0, 0.6); }
+[dir="rtl"] .lock-play { align-self: flex-end; }
+.lock-play[hidden] { display: none; }
 .lock-ayah { position: absolute; bottom: 13vh; left: 5vw; width: 36vw; text-align: left; }
 [dir="ltr"] .lock-ayah { left: auto; right: 5vw; text-align: right; }
 .lock-ayah-ar { font-family: "Amiri", serif; font-size: 3.6vh; line-height: 1.7; color: rgba(244, 238, 223, 0.92); max-height: 25vh; overflow: hidden;

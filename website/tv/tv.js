@@ -1,6 +1,8 @@
 // Mosque Pro on a TV: a home screen (in a TV's own browser, or the LG app tools/webos/build.py packs from this folder).
-// On top the prayer board; below it, rows the remote walks through: the TV's apps, today (the weather, the six times,
-// the Qibla, the network), and the settings. At the Adhan the Adhan screen counts to the iqama; late at night a dim
+// On top the prayer board; below it, rows the remote walks through: the TV's apps, the Quran (a surah picked for the
+// moment, the radio, a few surahs, the reciter), today (the weather, the six times, the Qibla, the network), and the
+// settings. In Ramadan the board counts to the iftar and the end of suhoor; on Friday it greets the day and offers
+// Al-Kahf. At the Adhan the Adhan screen counts to the iqama; late at night a dim
 // clock moves about the screen. Any key brings the home screen back for a few minutes. The times come from the same
 // formulas as the app (../prayer.js); the choices stay on the TV. The weather is Open-Meteo's (no key, no account).
 //
@@ -35,6 +37,13 @@ const T = {
     hintApps: '◀ ▶ للتنقّل · OK للفتح · ▼ للمزيد', hintRows: '▲ ▼ بين الأقسام · ◀ ▶ داخلها · رجوع للأعلى', hintPrefs: 'OK للتغيير · رجوع للأعلى',
     wx: { clear: 'صافٍ', partly: 'غائم جزئيًا', cloudy: 'غائم', fog: 'ضباب', drizzle: 'رذاذ', rain: 'مطر', snow: 'ثلج', storm: 'عاصفة رعدية' },
     day: (d) => new Intl.DateTimeFormat('ar-SA-u-nu-latn', { weekday: 'short', timeZone: 'UTC' }).format(d), sourceSep: ' · ',
+    quran: 'القرآن الكريم', lucky: 'شغّل لي', luckyFri: 'سنّة يوم الجمعة', luckyNight: 'قبل النوم', luckyAny: 'اختيار لك',
+    nowPlaying: 'يُتلى الآن', stopHint: 'OK للإيقاف', paused: 'متوقف · OK للمتابعة', radio: 'إذاعة القرآن الكريم', radioSub: 'بث مباشر على مدار الساعة',
+    reciter: 'القارئ', pickReciter: 'اختر القارئ', surah: (s) => 'سورة ' + s, playErr: 'تعذّر التشغيل · تأكّد من الإنترنت',
+    hintQuran: '◀ ▶ للتنقّل · OK للاستماع · ▼ للمزيد',
+    ramadan: 'رمضان كريم', iftar: 'موعد الإفطار', iftarChip: 'الإفطار', suhoor: 'السحور حتى الفجر', suhoorChip: 'السحور حتى',
+    ramadanDay: (d) => 'اليوم ' + d + ' من رمضان', taraweeh: 'التراويح بعد العشاء',
+    jumuah: 'جمعة مباركة', early: 'بكِّر إلى صلاة الجمعة', answerHour: 'ساعة إجابة · أكثِر من الدعاء', kahfDay: 'يوم الجمعة', kahf: 'سورة الكهف',
   },
   en: {
     prayers: { fajr: 'Fajr', sunrise: 'Sunrise', dhuhr: 'Dhuhr', jumuah: "Jumu'ah", asr: 'Asr', maghrib: 'Maghrib', isha: 'Isha' },
@@ -54,6 +63,13 @@ const T = {
     hintApps: '◀ ▶ to move · OK to open · ▼ for more', hintRows: '▲ ▼ between rows · ◀ ▶ within · Back to the top', hintPrefs: 'OK to change · Back to the top',
     wx: { clear: 'Clear', partly: 'Partly cloudy', cloudy: 'Cloudy', fog: 'Fog', drizzle: 'Drizzle', rain: 'Rain', snow: 'Snow', storm: 'Thunderstorm' },
     day: (d) => new Intl.DateTimeFormat('en-GB', { weekday: 'short', timeZone: 'UTC' }).format(d), sourceSep: ' · ',
+    quran: 'The Quran', lucky: 'Play for me', luckyFri: 'Sunnah on Friday', luckyNight: 'Before sleep', luckyAny: 'Picked for you',
+    nowPlaying: 'Now playing', stopHint: 'OK to stop', paused: 'Paused · OK to go on', radio: 'Quran radio', radioSub: 'Live, day and night',
+    reciter: 'Reciter', pickReciter: 'Choose the reciter', surah: (s) => 'Surah ' + s, playErr: "Couldn't play · check the internet",
+    hintQuran: '◀ ▶ to move · OK to listen · ▼ for more',
+    ramadan: 'Ramadan Kareem', iftar: 'Iftar', iftarChip: 'Iftar', suhoor: 'Suhoor until Fajr', suhoorChip: 'Suhoor until',
+    ramadanDay: (d) => 'Day ' + d + ' of Ramadan', taraweeh: 'Taraweeh after Isha',
+    jumuah: "Jumu'ah Mubarak", early: "Go early to Jumu'ah", answerHour: "An hour of answered du'a", kahfDay: 'Friday', kahf: 'Surah Al-Kahf',
   },
 };
 // Minutes from the Adhan to the iqama (the common ones in Saudi mosques); the Adhan screen stays up until then.
@@ -79,14 +95,36 @@ const SAUDI = [
 const WORLD = places.filter((p) => p[4] !== 'Asia/Riyadh');
 const ALL = SAUDI.concat(WORLD);
 
+// The Quran: whole surahs from mp3quran.net (free, no account), by reciter; Alafasy on QuranicAudio if a file fails.
+const RECITERS = [
+  ['afs', 'https://server8.mp3quran.net/afs/', 'مشاري العفاسي', 'Mishary Alafasy'],
+  ['maher', 'https://server12.mp3quran.net/maher/', 'ماهر المعيقلي', 'Maher Al-Muaiqly'],
+  ['sds', 'https://server11.mp3quran.net/sds/', 'عبدالرحمن السديس', 'Abdulrahman Al-Sudais'],
+  ['yasser', 'https://server11.mp3quran.net/yasser/', 'ياسر الدوسري', 'Yasser Al-Dosari'],
+  ['s_gmd', 'https://server7.mp3quran.net/s_gmd/', 'سعد الغامدي', 'Saad Al-Ghamdi'],
+  ['husr', 'https://server13.mp3quran.net/husr/', 'محمود خليل الحصري', 'Mahmoud Al-Husary'],
+  ['basit', 'https://server7.mp3quran.net/basit/', 'عبدالباسط عبدالصمد', 'Abdul Basit'],
+];
+const FALLBACK = 'https://download.quranicaudio.com/quran/mishaari_raashid_al_3afaasee/';
+const RADIO = 'https://backup.qurango.net/radio/mix';
+const SURAH = {
+  1: ['الفاتحة', 'Al-Fatihah'], 2: ['البقرة', 'Al-Baqarah'], 12: ['يوسف', 'Yusuf'], 18: ['الكهف', 'Al-Kahf'], 19: ['مريم', 'Maryam'],
+  32: ['السجدة', 'As-Sajdah'], 36: ['يس', 'Ya-Sin'], 55: ['الرحمن', 'Ar-Rahman'], 56: ['الواقعة', "Al-Waqi'ah"], 67: ['الملك', 'Al-Mulk'],
+  76: ['الإنسان', 'Al-Insan'], 78: ['النبأ', "An-Naba'"], 87: ['الأعلى', "Al-A'la"], 89: ['الفجر', 'Al-Fajr'], 93: ['الضحى', 'Ad-Duha'],
+};
+const SHOWN = [36, 55, 56, 67, 2, 12, 19, 1]; // the surahs on the row (Al-Kahf leads on Friday)
+const LUCKY = [12, 18, 19, 32, 36, 55, 56, 67, 76, 78, 87, 89, 93];
+
 let lang = store.get('mp-tv-lang') || ((navigator.languages || [navigator.language]).some((l) => /^ar/i.test(l)) ? 'ar' : 'en');
 let sound = store.get('mp-tv-sound') === '1';
 let nightOn = store.get('mp-tv-night') !== '0';
 let lockOn = store.get('mp-tv-lock') !== '0';
+let reciter = RECITERS.filter((r) => r[0] === store.get('mp-tv-reciter'))[0] || RECITERS[0];
+let playing = null, lucky = 0, quranKey = '', hushed = '';
 let lastKey = Date.now();
 let city = null, plan = null, planDay = '', daily = null, played = '', unlocked = false, mode = '';
 let appList = [], weather = null, netClean = null, wakeUntil = 0;
-let row = 0; const col = [0, 0, 0];
+let row = 0; const col = [0, 0, 0, 0];
 
 const t = () => T[lang];
 const rtl = () => lang === 'ar';
@@ -96,6 +134,8 @@ const ymd = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: city.tz, year: '
 const isFriday = (d) => new Intl.DateTimeFormat('en-US', { timeZone: city.tz, weekday: 'short' }).format(d) === 'Fri';
 const name = (k, d) => t().prayers[k === 'dhuhr' && isFriday(d) ? 'jumuah' : k];
 const side = () => (rtl() ? 'right' : 'left');
+const surahName = (n) => (rtl() ? SURAH[n][0] : SURAH[n][1]);
+const reciterName = (r) => (rtl() ? r[2] : r[3]);
 const html = (s) => String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
 
 function pad(n) { return n < 10 ? '0' + n : '' + n; }
@@ -125,6 +165,11 @@ const ICON = {
   compass: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM15.5 8.5l-2 5-5 2 2-5z',
   shield: 'M12 3l7 3v5c0 4.5-3 8.3-7 10-4-1.7-7-5.5-7-10V6zM9 12l2 2 4-4',
   clock: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM12 7v5l3 2',
+  play: 'M8 5v14l11-7z',
+  stop: 'M7 7h10v10H7z',
+  radio: 'M4 10h16v10H4zM8 10l9-5.5M8.5 17.5a2 2 0 1 0 0-4 2 2 0 0 0 0 4zM14 14h3M14 17h3',
+  mic: 'M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3zM5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21',
+  crescent: 'M14 3.5a8.5 8.5 0 1 0 6.5 13A7 7 0 0 1 14 3.5zM18.5 4l.5 1.3 1.3.5-1.3.5-.5 1.3-.5-1.3-1.3-.5 1.3-.5z',
   clear: 'M12 17a5 5 0 1 0 0-10 5 5 0 0 0 0 10zM12 1.5v2M12 20.5v2M4.6 4.6l1.4 1.4M18 18l1.4 1.4M1.5 12h2M20.5 12h2M4.6 19.4L6 18M18 6l1.4-1.4',
   partly: 'M8 4.5v1.5M3.8 6.3l1 1M2 10.5h1.5M12.2 7.3l1-1M6 13a4 4 0 0 1 7.2-2.4M9 20h9a3.5 3.5 0 0 0 0-7h-.3A5.5 5.5 0 0 0 7 14.5 3 3 0 0 0 9 20z',
   cloudy: 'M7 19h11a4 4 0 0 0 0-8h-.5A6 6 0 0 0 6 12.5 3.5 3.5 0 0 0 7 19z',
@@ -155,6 +200,139 @@ function dailyPick(now) {
   const mod = (n, c) => ((n % c) + c) % c;
   return { ayah: daily.ayat[mod(days, daily.ayat.length)], hadith: daily.hadith[mod(days, daily.hadith.length)] };
 }
+
+// MARK: - Ramadan and Friday
+
+// The Umm al-Qura month and day at a moment; null where the TV's browser lacks that calendar (it would quietly give
+// the Gregorian one, so that is checked).
+function hijri(d) {
+  try {
+    const f = new Intl.DateTimeFormat('en-US-u-ca-islamic-umalqura-nu-latn', { timeZone: city.tz, day: 'numeric', month: 'numeric' });
+    if (!/^islamic/.test(f.resolvedOptions().calendar) || !f.formatToParts) return null;
+    const o = {};
+    f.formatToParts(d).forEach((x) => { o[x.type] = +x.value; });
+    return o.month ? { m: o.month, d: o.day } : null;
+  } catch (e) { return null; }
+}
+const inRamadan = (d) => { const h = hijri(d); return !!h && h.m === 9; };
+const weekday = (d) => new Intl.DateTimeFormat('en-US', { timeZone: city.tz, weekday: 'short' }).format(d);
+// Al-Kahf is read from Thursday's Maghrib to Friday's.
+function kahfTime(now) {
+  const maghrib = plan.today[4][1], day = weekday(now);
+  return (day === 'Fri' && now < maghrib) || (day === 'Thu' && now >= maghrib);
+}
+function greeting(now) {
+  const tx = t();
+  if (isFriday(now)) return tx.jumuah;
+  if (inRamadan(now)) return tx.ramadan;
+  return tx.greet(hourIn(now));
+}
+// Over the next prayer in the arch: the iftar and the end of suhoor in Ramadan; on Friday, go early to the Jumu'ah,
+// and the last hour before Maghrib, an hour of answered du'a.
+function nextLabel(now, next) {
+  const tx = t(), k = next[0];
+  if (k === 'maghrib' && inRamadan(next[1])) return tx.iftar;
+  if (k === 'fajr' && inRamadan(next[1])) return tx.suhoor;
+  if (k === 'dhuhr' && isFriday(next[1]) && next[1] - now < 180 * MIN) return tx.early;
+  if (k === 'maghrib' && isFriday(now) && next[1] - now < 60 * MIN) return tx.answerHour;
+  return tx.next;
+}
+// The chips under the verse: what is playing, the iftar or suhoor (when the arch isn't already showing it), Al-Kahf.
+function renderChips(now, next) {
+  const tx = t(), maghrib = plan.today[4][1];
+  $('#chip-play').hidden = !playing;
+  if (playing) { $('#play-l').textContent = tx.nowPlaying; $('#play-now').textContent = playTitle(true); }
+  let fast = null;
+  if (now < maghrib && next[0] !== 'maghrib' && inRamadan(now)) fast = [tx.iftarChip, maghrib];
+  else if (now >= maghrib && next[0] !== 'fajr' && inRamadan(plan.tomorrowFajr)) fast = [tx.suhoorChip, plan.tomorrowFajr];
+  $('#chip-fast').hidden = !fast;
+  if (fast) { $('#fast-l').textContent = fast[0]; $('#fast-at').textContent = at(fast[1]); }
+  $('#chip-kahf').hidden = !kahfTime(now) || !!(playing && playing.n === 18);
+  $('#kahf-l').textContent = tx.kahfDay;
+  $('#kahf').textContent = tx.kahf;
+  // Four at most; the later ones give way.
+  let shown = 0;
+  Array.prototype.forEach.call(document.querySelectorAll('.chips .chip'), (c) => c.classList.toggle('cap', !c.hidden && ++shown > 4));
+}
+
+// MARK: - The Quran
+
+function suggestion(now) {
+  const tx = t();
+  if (kahfTime(now)) return { n: 18, why: tx.luckyFri };
+  if (now >= plan.today[5][1] || now < plan.today[0][1]) return { n: 67, why: tx.luckyNight };
+  if (!lucky) lucky = LUCKY[Math.floor(Math.random() * LUCKY.length)];
+  return { n: lucky, why: tx.luckyAny };
+}
+function playTitle(short) {
+  const tx = t();
+  if (!playing) return '';
+  if (playing.kind === 'radio') return tx.radio;
+  return (short ? surahName(playing.n) : tx.surah(surahName(playing.n))) + ' · ' + reciterName(playing.r);
+}
+
+function renderQuran() {
+  const tx = t(), s = suggestion(new Date());
+  quranKey = lang + '|' + s.n;
+  const eq = '<i class="eq"><i></i><i></i><i></i></i>';
+  const on = (n) => !!playing && playing.kind === 'surah' && playing.n === n;
+  const first = playing
+    ? `<div class="card qcard lucky playing" data-act="lucky"><small>${eq}${html(tx.nowPlaying)}</small>
+        <b>${html(playing.kind === 'radio' ? tx.radio : tx.surah(surahName(playing.n)))}</b>
+        <p class="sub">${html(playing.kind === 'radio' ? tx.radioSub : reciterName(playing.r))}</p>
+        <p class="go"><span class="ic">${svg('stop')}</span>${html(tx.stopHint)}</p></div>`
+    : `<div class="card qcard lucky" data-act="lucky"><small>${html(s.why)}</small>
+        <b>${html(tx.surah(surahName(s.n)))}</b><p class="sub">${html(reciterName(reciter))}</p>
+        <p class="go"><span class="ic">${svg('play')}</span>${html(tx.lucky)}</p></div>`;
+  const radioOn = !!playing && playing.kind === 'radio';
+  const radio = `<div class="card qcard${radioOn ? ' playing' : ''}" data-act="radio"><span class="ic">${svg('radio')}</span>
+    <b>${html(tx.radio)}</b><p class="sub">${radioOn ? eq : ''}${html(tx.radioSub)}</p></div>`;
+  const who = `<div class="card qcard" data-act="reciter"><span class="ic">${svg('mic')}</span><small>${html(tx.reciter)}</small>
+    <b>${html(reciterName(reciter))}</b></div>`;
+  const list = (kahfTime(new Date()) ? [18] : []).concat(SHOWN);
+  const surahs = list.map((n) => `<div class="card qcard surah${on(n) ? ' playing' : ''}" data-surah="${n}">
+    <span class="num">${n}</span><b class="ar" lang="ar">${html(SURAH[n][0])}</b><small>${on(n) ? eq : ''}${html(rtl() ? 'سورة' : SURAH[n][1])}</small></div>`);
+  $('#quran').innerHTML = [first, radio, who].concat(surahs).join('');
+  place();
+}
+
+function playQuran(p) {
+  const a = $('#quran-audio');
+  stopAdhan();
+  playing = p;
+  a.src = p.kind === 'radio' ? RADIO : (p.fallback ? FALLBACK : p.r[1]) + ('00' + p.n).slice(-3) + '.mp3';
+  const pr = a.play();
+  if (pr && pr.catch) pr.catch(() => {});
+  renderQuran();
+}
+function stopQuran() {
+  if (!playing) return false;
+  playing = null;
+  const a = $('#quran-audio');
+  a.pause();
+  a.removeAttribute('src');
+  try { a.load(); } catch (e) { /* nothing loaded */ }
+  renderQuran();
+  return true;
+}
+function toast(msg) {
+  const el = $('#hint');
+  el.textContent = msg;
+  el.classList.remove('gone');
+  clearTimeout(hintTimer);
+  hintTimer = setTimeout(() => el.classList.add('gone'), 6000);
+}
+(function () {
+  const a = $('#quran-audio');
+  a.addEventListener('ended', () => { if (playing && playing.kind === 'surah') stopQuran(); });
+  a.addEventListener('error', () => {
+    if (!playing || !a.getAttribute('src')) return;
+    // A reciter's file that won't load: the same surah by Alafasy from the second source, else say so.
+    if (playing.kind === 'surah' && !playing.fallback) { playQuran({ kind: 'surah', n: playing.n, r: RECITERS[0], fallback: true }); return; }
+    stopQuran();
+    toast(t().playErr);
+  });
+})();
 
 // Which screen: the Adhan from its time until the iqama, the night screen late at night, else the home screen.
 function adhanNow(now) {
@@ -195,12 +373,14 @@ const hourIn = (d) => +new Intl.DateTimeFormat('en-GB', { timeZone: city.tz, hou
 // After Maghrib the film is dimmer and warmer, as the room is.
 function renderLock(now, next) {
   const tx = t(), parts = at(now).split(' ');
-  $('#lock-greet').textContent = tx.greet(hourIn(now));
+  $('#lock-greet').textContent = greeting(now);
   $('#lock-city').textContent = cityName();
   $('#lock-clock').textContent = parts[0];
   $('#lock-ampm').textContent = parts.slice(1).join(' ');
   $('#lock-date').innerHTML = html($('#date').textContent) + ' · <b>' + html($('#hijri').textContent) + '</b>';
-  $('#lock-next-l').textContent = tx.lockNext;
+  $('#lock-next-l').textContent = next[0] === 'maghrib' && inRamadan(next[1]) ? tx.iftarChip : tx.lockNext;
+  $('#lock-play').hidden = !playing;
+  $('#lock-play').textContent = playing ? '♪  ' + playTitle(false) : '';
   $('#lock-next').textContent = name(next[0], next[1]);
   $('#lock-in').textContent = countdown(next[1] - now);
   $('#lock-hint').textContent = tx.lockHint;
@@ -229,6 +409,8 @@ function tick() {
   const now = new Date();
   if (ymd(now) !== planDay) { plan = schedule(city); planDay = ymd(now); renderToday(); }
   const tx = t(), adhan = adhanNow(now), awake = now < wakeUntil;
+  // At the Adhan the recitation stops, once; it can be started again after.
+  if (adhan && hushed !== planDay + adhan.k) { hushed = planDay + adhan.k; stopQuran(); }
   if (adhan) playAdhan(planDay + adhan.k);
   if (adhan && !awake) {
     show('adhan');
@@ -271,7 +453,8 @@ function tick() {
   }
   if (mode !== 'board') { show('board'); place(); }
   $('#clock').textContent = at(now);
-  $('#greet').textContent = t().greet(hourIn(now));
+  $('#greet').textContent = greeting(now);
+  $('#next-label').textContent = nextLabel(now, next);
   $('#next-name').textContent = name(next[0], next[1]);
   $('#next-at').textContent = at(next[1]);
   $('#countdown').textContent = countdown(next[1] - now);
@@ -282,6 +465,8 @@ function tick() {
   } else $('#chip-iqama').hidden = true;
   renderLine(now, next);
   renderDaily(now);
+  renderChips(now, next);
+  if (now.getSeconds() === 0 && quranKey !== lang + '|' + suggestion(now).n) renderQuran();
   if (now.getSeconds() === 0) renderTimesCard(now);
   // A few pixels' drift every three minutes, against burn-in on screens left on all day.
   if (now - lastShift > 3 * MIN) {
@@ -390,7 +575,16 @@ function renderToday() {
     <p class="big">${q.deg}°</p><p class="sub">${html(tx.fromNorth)}<br>${html(tx.toMakkah(q.km))}</p></div>`;
   const net = netClean === null ? '' : `<div class="card" data-act="none"><small>${html(tx.net)}</small><span class="ic">${svg('shield')}</span>
     <b class="${netClean ? 'mint' : ''}">${html(netClean ? tx.netClean : tx.netAds)}</b><p class="sub">${html(netClean ? tx.netOk : tx.netHow)}</p></div>`;
-  $('#today').innerHTML = wx + times + qib + net;
+  // In Ramadan the day's fast leads the row: the day of the month, the iftar, the end of suhoor.
+  const now = new Date(), h = hijri(now);
+  let ram = '';
+  if (h && h.m === 9) {
+    const fajr = now < plan.today[0][1] ? plan.today[0][1] : plan.tomorrowFajr;
+    ram = `<div class="card ramadan" data-act="none"><small>${html(tx.ramadan)}</small><span class="ic">${svg('crescent')}</span>
+      <b>${html(tx.ramadanDay(h.d))}</b><div class="times-list"><span>${html(tx.iftarChip)}</span><b>${html(at(plan.today[4][1]))}</b>
+      <span>${html(tx.suhoorChip)}</span><b>${html(at(fajr))}</b></div><p class="sub">${html(tx.taraweeh)}</p></div>`;
+  }
+  $('#today').innerHTML = ram + wx + times + qib + net;
   renderTimesCard();
   place();
 }
@@ -411,8 +605,10 @@ function renderPrefs() {
 
 // MARK: - Focus, by remote: the rows go up and down, the items in a row left and right.
 
-const ROWS = ['apps', 'today', 'settings'];
-const items = (r) => Array.prototype.slice.call(document.querySelectorAll(r === 0 ? '#shelf .app' : r === 1 ? '#today .card' : '#prefs .card'));
+const ROWS = ['apps', 'quran', 'today', 'settings'];
+const ITEMS = ['#shelf .app', '#quran .card', '#today .card', '#prefs .card'];
+const items = (r) => Array.prototype.slice.call(document.querySelectorAll(ITEMS[r]));
+const shift = [0, 0];
 
 function place() {
   Array.prototype.forEach.call(document.querySelectorAll('.focus'), (el) => el.classList.remove('focus'));
@@ -425,18 +621,21 @@ function place() {
   const most = $('#page').offsetHeight - window.innerHeight;
   const y = row === 0 ? 0 : Math.min(sec.offsetTop - window.innerHeight * 0.06, Math.max(0, most));
   $('#page').style.transform = `translateY(${-y}px)`;
-  // The shelf slides so the focused app stays on screen.
-  if (row === 0 && list.length > 1) {
-    const step = Math.abs(list[1].offsetLeft - list[0].offsetLeft), fit = Math.floor($('.shelf-clip').clientWidth / step) - 1;
-    const shift = Math.max(0, Math.min(col[0] - fit + 1, list.length - fit - 1)) * step;
-    $('#shelf').style.transform = `translateX(${rtl() ? shift : -shift}px)`;
+  // The apps and the Quran slide sideways so the focused one stays on screen.
+  if (row < 2) {
+    const shelf = row === 0 ? $('#shelf') : $('#quran'), el = list[col[row]], w = shelf.clientWidth;
+    const start = rtl() ? w - el.offsetLeft - el.offsetWidth : el.offsetLeft, end = start + el.offsetWidth;
+    if (col[row] === 0) shift[row] = 0;
+    else if (end - shift[row] > w) shift[row] = end - w;
+    else if (start < shift[row]) shift[row] = start;
+    shelf.style.transform = `translateX(${rtl() ? shift[row] : -shift[row]}px)`;
   }
 }
 
 let hintTimer = 0;
 function hint() {
   const tx = t(), el = $('#hint');
-  el.textContent = row === 0 ? tx.hintApps : row === 1 ? tx.hintRows : tx.hintPrefs;
+  el.textContent = [tx.hintApps, tx.hintQuran, tx.hintRows, tx.hintPrefs][row];
   el.classList.remove('gone');
   clearTimeout(hintTimer);
   hintTimer = setTimeout(() => el.classList.add('gone'), 6000);
@@ -444,9 +643,14 @@ function hint() {
 
 function activate(el) {
   if (!el) return;
-  const id = el.getAttribute('data-app'), act = el.getAttribute('data-act');
-  if (id) { apps.launch(id); return; }
-  if (act === 'tv-settings') apps.settings();
+  const id = el.getAttribute('data-app'), act = el.getAttribute('data-act'), n = +el.getAttribute('data-surah');
+  if (id) { stopQuran(); apps.launch(id); return; }
+  // OK plays; OK on what is playing stops it.
+  if (n) { const was = !!playing && playing.n === n; stopQuran(); if (!was) playQuran({ kind: 'surah', n, r: reciter }); return; }
+  if (act === 'lucky') { if (!stopQuran()) { const sg = suggestion(new Date()); lucky = 0; playQuran({ kind: 'surah', n: sg.n, r: reciter }); } }
+  else if (act === 'radio') { const was = !!playing && playing.kind === 'radio'; stopQuran(); if (!was) playQuran({ kind: 'radio' }); }
+  else if (act === 'reciter') openReciters();
+  else if (act === 'tv-settings') apps.settings();
   else if (act === 'city') openPicker();
   else if (act === 'lang') { lang = rtl() ? 'en' : 'ar'; store.set('mp-tv-lang', lang); render(); }
   else if (act === 'sound') { sound = !sound; store.set('mp-tv-sound', sound ? '1' : '0'); unlockAudio(); renderPrefs(); }
@@ -456,19 +660,33 @@ function activate(el) {
 
 // MARK: - The city list: the Kingdom's cities first, then the world's; Up and Down, OK, Back.
 
-let pick = 0, pickRows = [];
+let pick = 0, pickRows = [], pickDone = null;
+function openList(title, rows, current, done) {
+  pickRows = rows; pickDone = done; pick = Math.max(0, current);
+  $('#picker-h').textContent = title;
+  $('#picker-keys').textContent = t().pickKeys;
+  $('#picker-list').innerHTML = rows.map((r) => (r.group ? `<li class="group">${html(r.group)}</li>` : `<li>${html(r.label)}</li>`)).join('');
+  $('#picker').hidden = false;
+  movePicker(0);
+}
 function openPicker() {
   const tx = t(), saved = store.get('mp-tv-city');
-  pickRows = [{ auto: true, label: tx.autoCity }, { group: tx.saudi }]
+  const rows = [{ auto: true, label: tx.autoCity }, { group: tx.saudi }]
     .concat(SAUDI.map((p) => ({ p, label: rtl() ? p[1] : p[0] })))
     .concat([{ group: tx.world }])
     .concat(WORLD.map((p) => ({ p, label: rtl() ? p[1] : p[0] })));
-  pick = saved ? Math.max(0, pickRows.findIndex((r) => r.p && r.p[0] === saved)) : 0;
-  $('#picker-h').textContent = tx.pickCity;
-  $('#picker-keys').textContent = tx.pickKeys;
-  $('#picker-list').innerHTML = pickRows.map((r) => (r.group ? `<li class="group">${html(r.group)}</li>` : `<li>${html(r.label)}</li>`)).join('');
-  $('#picker').hidden = false;
-  movePicker(0);
+  openList(tx.pickCity, rows, saved ? rows.findIndex((r) => r.p && r.p[0] === saved) : 0, (r) => {
+    if (r.auto) store.set('mp-tv-city', null); else store.set('mp-tv-city', r.p[0]);
+    resolveCity(ALL, '../assets/zones.json', store.get('mp-tv-city')).then((c) => { city = c; weather = null; render(); loadWeather(); });
+  });
+}
+function openReciters() {
+  openList(t().pickReciter, RECITERS.map((r) => ({ r, label: reciterName(r) })), RECITERS.indexOf(reciter), (x) => {
+    reciter = x.r;
+    store.set('mp-tv-reciter', reciter[0]);
+    // A surah playing goes on in the new voice, from the start.
+    if (playing && playing.kind === 'surah') playQuran({ kind: 'surah', n: playing.n, r: reciter }); else renderQuran();
+  });
 }
 function movePicker(step) {
   let i = pick;
@@ -481,10 +699,8 @@ function movePicker(step) {
   list.scrollTop = li.offsetTop - list.clientHeight / 2 + li.offsetHeight / 2;
 }
 function choosePicker() {
-  const r = pickRows[pick];
   $('#picker').hidden = true;
-  if (r.auto) { store.set('mp-tv-city', null); } else store.set('mp-tv-city', r.p[0]);
-  resolveCity(ALL, '../assets/zones.json', store.get('mp-tv-city')).then((c) => { city = c; weather = null; render(); loadWeather(); });
+  pickDone(pickRows[pick]);
 }
 
 // MARK: - The rest
@@ -503,11 +719,13 @@ function render() {
   $('#net-l').textContent = tx.net;
   $('#net').textContent = tx.netClean;
   $('#apps-h').textContent = tx.apps;
+  $('#quran-h').textContent = tx.quran;
   $('#today-h').textContent = tx.today;
   $('#settings-h').textContent = tx.settings;
   plan = schedule(city); planDay = ymd(now);
   lineKey = ''; mode = '';
   renderShelf();
+  renderQuran();
   renderToday();
   renderPrefs();
   renderWeatherChip();
@@ -612,7 +830,7 @@ addEventListener('resize', () => { lineKey = ''; place(); tick(); });
 // request with "not now", as LG's video apps do.
 function keepAwake() { try { if (navigator.wakeLock) navigator.wakeLock.request('screen').catch(() => {}); } catch (e) { /* not offered */ } }
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState !== 'visible') return;
+  if (document.visibilityState !== 'visible') { stopQuran(); return; }
   keepAwake();
   // Back from an app: the apps may have changed, and the home screen starts at the top.
   row = 0; apps.list((l) => { appList = l; renderShelf(); });

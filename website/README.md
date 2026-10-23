@@ -35,11 +35,13 @@ the features by group.
 * `tv/`: Mosque Pro on a TV, in its own browser or as an LG app: a home screen. On top the prayer board (the next
   prayer in a mihrab arch with a countdown, both dates, the verse or hadith of the day, the iqama and the weather, and
   the day as a line from Fajr to Isha with the sun where now is); below it, rows the remote walks through: the TV's
-  apps (`tv/launcher.js` lists and opens them on LG), today (the weather from Open-Meteo, the six times, the Qibla,
+  apps (`tv/launcher.js` lists and opens them on LG), the Quran (a surah picked for the moment, Al-Kahf on Friday and
+  Al-Mulk at night, Quran radio, a few surahs and a choice of reciter, streamed from mp3quran.net), today (the weather from Open-Meteo, the six times, the Qibla,
   whether the network blocks ads), and the settings (a city list with the Kingdom's cities first, language, Adhan
   sound, night screen, the TV's settings). From the Adhan until the iqama the Adhan screen counts down in a ring (with
   the Makkah Adhan if sound is on); from 90 minutes after Isha until 30 minutes before Fajr a dim clock moves about the
-  screen; any key brings the home screen back for three minutes. `tv/daily.json` is made by `tools/build_daily.py`.
+  screen; any key brings the home screen back for three minutes. In Ramadan the board counts to the iftar and the end
+  of suhoor; on Friday it greets the day, offers Al-Kahf and marks the last hour before Maghrib. `tv/daily.json` is made by `tools/build_daily.py`.
   `.github/workflows/tv-preview.yml` puts it on GitHub Pages for testing; `tools/webos/build.py` packs it as an LG app
   and `tools/webos/install.py <TV IP>` installs it through the TV's Developer Mode.
 * `versions/`: one page that opens all four versions, for asking people which they prefer.
