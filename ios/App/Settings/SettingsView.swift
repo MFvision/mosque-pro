@@ -110,6 +110,10 @@ struct SettingsView: View {
                     }
                 } header: { Text(l10n.t("tab_mosques")) } footer: { Text(l10n.t("online_search_body")) }
 
+                if CleanNetwork.offered {
+                    CleanNetworkSection()
+                }
+
                 Section {
                     NavigationLink { DownloadsSettingsView() } label: {
                         SettingsRow(icon: "arrow.down.circle.fill", tint: .blue, title: l10n.t("downloads"), subtitle: l10n.t("downloads_body"))
@@ -391,5 +395,29 @@ private struct CompanionPicker: View {
             }
         }
         .padding(.vertical, 4)
+    }
+}
+
+/// Clean network in Settings: the switch, and while iOS waits for it, the one step left in iOS Settings.
+private struct CleanNetworkSection: View {
+    @Environment(\.l10n) private var l10n
+    @State private var net = CleanNetwork.shared
+    @Environment(\.scenePhase) private var phase
+
+    var body: some View {
+        Section {
+            Toggle(isOn: Binding(get: { net.isOn }, set: { on in Task { await net.set(on) } })) {
+                SettingsRow(icon: "shield.lefthalf.filled", tint: .green, title: l10n.t("clean_network"))
+            }
+            .disabled(net.busy)
+        } footer: {
+            switch net.state {
+            case .needsSettings: Text(l10n.t("clean_network_step"))
+            case .on: Text(l10n.t("clean_network_on"))
+            default: Text(l10n.t("clean_network_detail"))
+            }
+        }
+        .task { await net.refresh() }
+        .onChange(of: phase) { _, p in if p == .active { Task { await net.refresh() } } }
     }
 }

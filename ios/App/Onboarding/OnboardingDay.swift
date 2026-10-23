@@ -490,6 +490,9 @@ struct PrivacyStep: View {
                 }
                 .padding(.top, 4)
                 .onbEnter(2)
+                if CleanNetwork.offered {
+                    CleanNetworkRow().padding(.top, 10).onbEnter(3)
+                }
             }
         } footer: {
             VStack(spacing: 8) {
@@ -621,5 +624,23 @@ struct DoneStep: View {
         let a = app.settings.alerts
         let calls = model.notificationsAllowed && (!app.settings.reminders.isEmpty || a.adhan || a.fajrAdhan)
         return calls ? line + " " + l10n.t("onb2_done_notify") : line
+    }
+}
+
+/// Clean network on the privacy step: ads and trackers blocked in every app (see CleanNetwork). Once on, the line
+/// below says the one step left in iOS Settings.
+private struct CleanNetworkRow: View {
+    @Environment(\.l10n) private var l10n
+    @State private var net = CleanNetwork.shared
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 6) {
+            OnbSwitchRow(icon: .symbol("shield.lefthalf.filled"), title: l10n.t("clean_network"), subtitle: l10n.t("clean_network_detail"),
+                         isOn: net.isOn) { on in Task { await net.set(on) } }
+            if net.state == .needsSettings {
+                OnbFootnote(text: l10n.t("clean_network_step"))
+            }
+        }
+        .task { await net.refresh() }
     }
 }

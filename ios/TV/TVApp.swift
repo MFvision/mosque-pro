@@ -21,7 +21,7 @@ struct NearMosqueTVApp: App {
     }
 }
 
-enum TVTab: Hashable { case board, qibla, mosques, settings }
+enum TVTab: Hashable { case board, quran, qibla, mosques, settings }
 
 struct TVRoot: View {
     @Environment(TVModel.self) private var model
@@ -37,6 +37,7 @@ struct TVRoot: View {
             } else {
                 TabView(selection: $tab) {
                     Tab(l10n.t("prayer_section"), systemImage: "clock", value: TVTab.board) { BoardView() }
+                    Tab(l10n.t("quran_title"), systemImage: "book", value: TVTab.quran) { TVQuranView() }
                     Tab(l10n.t("qibla"), systemImage: "location.north.line", value: TVTab.qibla) { TVQiblaView() }
                     Tab(l10n.t("tab_mosques"), systemImage: "building.columns", value: TVTab.mosques) { TVMosquesView() }
                     Tab(l10n.t("settings"), systemImage: "gearshape", value: TVTab.settings) { TVSettingsView() }
@@ -68,6 +69,7 @@ struct TVRoot: View {
             switch url.host {
             case "qibla": tab = .qibla
             case "mosques": tab = .mosques
+            case "quran": tab = .quran
             default: tab = .board
             }
         }
@@ -83,6 +85,7 @@ struct TVRoot: View {
         case "qibla": tab = .qibla
         case "mosques": tab = .mosques
         case "settings": tab = .settings
+        case "quran": tab = .quran
         default: break
         }
         if UserDefaults.standard.bool(forKey: "demoAlert") { model.alert = PrayerAlert(event: .dhuhr, at: Date()) }

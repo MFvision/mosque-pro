@@ -28,6 +28,8 @@ struct TVSettings: Codable, Equatable {
     var prayerAlert = true
     /// Live results from Apple Maps added to the built-in mosque data (approximate location only).
     var onlineSearch = true
+    /// After five minutes on the board without a press, the Kaaba fills the screen with the time.
+    var lockScreen = true
 
     init() {}
 
@@ -39,6 +41,7 @@ struct TVSettings: Codable, Equatable {
         keepAwake = try c.decodeIfPresent(Bool.self, forKey: .keepAwake) ?? true
         prayerAlert = try c.decodeIfPresent(Bool.self, forKey: .prayerAlert) ?? true
         onlineSearch = try c.decodeIfPresent(Bool.self, forKey: .onlineSearch) ?? true
+        lockScreen = try c.decodeIfPresent(Bool.self, forKey: .lockScreen) ?? true
     }
 }
 
