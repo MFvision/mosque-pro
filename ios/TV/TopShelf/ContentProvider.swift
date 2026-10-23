@@ -2,7 +2,7 @@ import NMCore
 import SwiftUI
 import TVServices
 
-/// The Apple TV home screen row for Near Mosque: a banner with the city, both dates and today's six
+/// The Apple TV home screen row for Mosque Pro: a banner with the city, both dates and today's six
 /// times, drawn here from the city, method and language the app shares (keychain). Before a city is
 /// chosen, tvOS shows the static Top Shelf image from the asset catalog.
 final class ContentProvider: TVTopShelfContentProvider {
@@ -12,7 +12,7 @@ final class ContentProvider: TVTopShelfContentProvider {
             let item = TVTopShelfItem(identifier: "today")
             item.title = state.t("todays_times")
             item.setImageURL(url, for: [.screenScale1x, .screenScale2x])
-            item.displayAction = URL(string: "nearmosque://prayer").map { TVTopShelfAction(url: $0) }
+            item.displayAction = URL(string: "mosquepro://prayer").map { TVTopShelfAction(url: $0) }
             item.playAction = item.displayAction
             completionHandler(TVTopShelfInsetContent(items: [item]))
         }

@@ -9,7 +9,8 @@
 // Written for the older Chromium inside TVs: no top-level await, no ?. or ??; the LG build turns the modules into one
 // plain script, so they must stay import/export only. launcher.js (a plain script) gives window.TVApps.
 import { places } from '../places.js';
-import { resolveCity, schedule, nextPrayer, qibla, clock } from '../prayer.js';
+import { resolveCity, schedule, nextPrayer, qibla, clock, METHODS } from '../prayer.js';
+import { mosqueSettings, iqamaMinutes, adhanWindow, IQAMA_CHOICES, JUMUAH_CHOICES, OFFSET_CHOICES, MOSQUE_KEY } from './mosque.js';
 
 const $ = (s) => document.querySelector(s);
 const store = {
@@ -44,10 +45,17 @@ const T = {
     ramadan: 'رمضان كريم', iftar: 'موعد الإفطار', iftarChip: 'الإفطار', suhoor: 'السحور حتى الفجر', suhoorChip: 'السحور حتى',
     ramadanDay: (d) => 'اليوم ' + d + ' من رمضان', taraweeh: 'التراويح بعد العشاء',
     jumuah: 'جمعة مباركة', early: 'بكِّر إلى صلاة الجمعة', answerHour: 'ساعة إجابة · أكثِر من الدعاء', kahfDay: 'يوم الجمعة', kahf: 'سورة الكهف',
+    iqamaSet: 'الإقامة', calc: 'طريقة الحساب', methodL: 'الطريقة', asrL: 'العصر', adjust: 'دقائق تُضاف أو تُطرح',
+    asrStd: 'الجمهور (ظل المثل)', asrHanafi: 'الحنفي (ظل المثلين)', autoMethod: (m) => 'تلقائي · ' + m, jumuahL: 'الجمعة (من الأذان إلى الصلاة)',
+    usual: 'المعتادة', custom: 'حسب مسجدك',
+    short: { mwl: 'الرابطة', uaq: 'أم القرى', egypt: 'المصرية', karachi: 'كراتشي', isna: 'أمريكا الشمالية', dubai: 'دبي', kuwait: 'الكويت', qatar: 'قطر', sea: 'سنغافورة', turkey: 'تركيا' },
+    mins: (n) => n + ' د', minsSigned: (n) => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n) + ' د', noWait: 'بلا انتظار',
+    methods: { mwl: 'رابطة العالم الإسلامي', uaq: 'أم القرى (مكة المكرمة)', egypt: 'الهيئة المصرية العامة للمساحة', karachi: 'جامعة العلوم الإسلامية بكراتشي',
+      isna: 'الجمعية الإسلامية لأمريكا الشمالية', dubai: 'دبي', kuwait: 'الكويت', qatar: 'قطر', sea: 'سنغافورة وجنوب شرق آسيا', turkey: 'الشؤون الدينية التركية' },
     help: 'المساعدة', helpValue: 'تواصل معنا', helpWa: 'واتساب', helpMail: 'البريد',
     helpReply: 'نقرأ كل رسالة ونردّ بالبريد أو عبر واتساب حيث راسلتنا.',
     helpQA: [
-      ['المواقيت لا تطابق مسجدي', 'تُحسب بالطريقة المعتمدة في بلد المدينة (أم القرى في السعودية). تأكّد أن المدينة في الإعدادات صحيحة. ولضبط الطريقة والدقائق استخدم تطبيق «مسجد وأكثر» على Apple TV أو الجوال.'],
+      ['المواقيت لا تطابق مسجدي', 'تُحسب بالطريقة المعتمدة في بلد المدينة (أم القرى في السعودية). تأكّد أن المدينة في الإعدادات صحيحة، ثم اضبط الطريقة والعصر والدقائق من الإعدادات ← طريقة الحساب، والإقامة من الإعدادات ← الإقامة.'],
       ['لا أسمع الأذان', 'صوت الأذان متوقف في البداية. شغّله من الإعدادات ← صوت الأذان، ثم اضغط أي زر مرة ليسمح التلفاز بالصوت.'],
       ['القرآن لا يعمل', 'التلاوات تُبث عبر الإنترنت. تأكّد من اتصال التلفاز، أو جرّب قارئًا آخر.'],
     ],
@@ -77,10 +85,17 @@ const T = {
     ramadan: 'Ramadan Kareem', iftar: 'Iftar', iftarChip: 'Iftar', suhoor: 'Suhoor until Fajr', suhoorChip: 'Suhoor until',
     ramadanDay: (d) => 'Day ' + d + ' of Ramadan', taraweeh: 'Taraweeh after Isha',
     jumuah: "Jumu'ah Mubarak", early: "Go early to Jumu'ah", answerHour: "An hour of answered du'a", kahfDay: 'Friday', kahf: 'Surah Al-Kahf',
+    iqamaSet: 'Iqama', calc: 'Calculation', methodL: 'Method', asrL: 'Asr', adjust: 'Minutes added or taken away',
+    asrStd: "Standard (Shafi'i, Maliki, Hanbali)", asrHanafi: 'Hanafi', autoMethod: (m) => 'Automatic · ' + m, jumuahL: "Jumu'ah (Adhan to prayer)",
+    usual: 'Usual', custom: "Your mosque's",
+    short: { mwl: 'MWL', uaq: 'Umm al-Qura', egypt: 'Egypt', karachi: 'Karachi', isna: 'ISNA', dubai: 'Dubai', kuwait: 'Kuwait', qatar: 'Qatar', sea: 'Singapore', turkey: 'Diyanet' },
+    mins: (n) => n + ' min', minsSigned: (n) => (n > 0 ? '+' : n < 0 ? '−' : '') + Math.abs(n) + ' min', noWait: 'No wait',
+    methods: { mwl: 'Muslim World League', uaq: 'Umm al-Qura (Makkah)', egypt: 'Egyptian General Authority', karachi: 'University of Islamic Sciences, Karachi',
+      isna: 'ISNA (North America)', dubai: 'Dubai', kuwait: 'Kuwait', qatar: 'Qatar', sea: 'Singapore and Southeast Asia', turkey: 'Diyanet (Turkey)' },
     help: 'Help', helpValue: 'Contact', helpWa: 'WhatsApp', helpMail: 'Email',
     helpReply: 'We read every message and reply by email or WhatsApp, wherever you wrote from.',
     helpQA: [
-      ["The times don't match my mosque", "They use the method of the city's country (Umm al-Qura in Saudi Arabia). Check the city in Settings. To change the method or add minutes, use the Mosque Pro app on Apple TV or on a phone."],
+      ["The times don't match my mosque", "They use the method of the city's country (Umm al-Qura in Saudi Arabia). Check the city in Settings, then set the method, Asr and minutes in Settings, Calculation, and the iqama in Settings, Iqama."],
       ["I don't hear the Adhan", 'The Adhan sound starts off. Turn it on in Settings, Adhan sound, then press any key once so the TV allows sound.'],
       ["The Quran won't play", "Recitations are streamed. Check the TV's internet connection, or try another reciter."],
     ],
@@ -88,9 +103,6 @@ const T = {
 };
 // Where help requests go (the same as shared/help/help.json).
 const CONTACT = { email: 'app@vision.bz', whatsapp: '+966 57 937 2403' };
-// Minutes from the Adhan to the iqama (the common ones in Saudi mosques); the Adhan screen stays up until then.
-const IQAMA = { fajr: 25, dhuhr: 20, asr: 20, maghrib: 10, isha: 20 };
-const JUMUAH_SCREEN = 5; // On Friday the khutbah follows, so the Adhan screen shows only briefly.
 const MIN = 60e3;
 const WAKE = 3 * MIN; // a key press on the Adhan or night screen shows the home screen this long
 const LOCK_AFTER = 5 * MIN; // the lock screen comes up after this long without a key
@@ -135,6 +147,8 @@ let lang = store.get('mp-tv-lang') || ((navigator.languages || [navigator.langua
 let sound = store.get('mp-tv-sound') === '1';
 let nightOn = store.get('mp-tv-night') !== '0';
 let lockOn = store.get('mp-tv-lock') !== '0';
+// The mosque's iqama, Jumu'ah, method, Asr and minutes (website/tv/mosque.js).
+let mosque = mosqueSettings(store.get(MOSQUE_KEY));
 let reciter = RECITERS.filter((r) => r[0] === store.get('mp-tv-reciter'))[0] || RECITERS[0];
 let playing = null, lucky = 0, quranKey = '', hushed = '';
 let lastKey = Date.now();
@@ -352,15 +366,7 @@ function toast(msg) {
 })();
 
 // Which screen: the Adhan from its time until the iqama, the night screen late at night, else the home screen.
-function adhanNow(now) {
-  for (const [k, v] of plan.today) {
-    if (k === 'sunrise') continue;
-    const friday = k === 'dhuhr' && isFriday(now);
-    const end = +v + (friday ? JUMUAH_SCREEN : IQAMA[k]) * MIN;
-    if (now >= v && now < end) return { k, at: v, iqama: friday ? null : new Date(+v + IQAMA[k] * MIN) };
-  }
-  return null;
-}
+function adhanNow(now) { return adhanWindow(plan, now, mosque, isFriday); }
 function nightSpan(now) {
   const isha = plan.today.find(([k]) => k === 'isha')[1], fajr = plan.today.find(([k]) => k === 'fajr')[1];
   if (now >= +isha + 90 * MIN && now < +plan.tomorrowFajr - 30 * MIN) return [isha, plan.tomorrowFajr];
@@ -424,7 +430,7 @@ function stopAdhan() { const a = $('#adhan-audio'); if (!a.paused) { a.pause(); 
 let lastShift = 0;
 function tick() {
   const now = new Date();
-  if (ymd(now) !== planDay) { plan = schedule(city); planDay = ymd(now); renderToday(); }
+  if (ymd(now) !== planDay) { plan = schedule(city, mosque); planDay = ymd(now); renderToday(); }
   const tx = t(), adhan = adhanNow(now), awake = now < wakeUntil;
   // At the Adhan the recitation stops, once; it can be started again after.
   if (adhan && hushed !== planDay + adhan.k) { hushed = planDay + adhan.k; stopQuran(); }
@@ -435,7 +441,7 @@ function tick() {
     $('#adhan-name').textContent = name(adhan.k, now);
     $('#ring').hidden = !adhan.iqama;
     if (adhan.iqama) {
-      const total = IQAMA[adhan.k] * MIN, left = adhan.iqama - now;
+      const total = adhan.wait * MIN, left = adhan.iqama - now;
       $('#iqama-label').textContent = tx.iqama;
       $('#iqama-in').textContent = countdown(left);
       $('#ring-fg').style.strokeDashoffset = String(440 * (1 - left / total));
@@ -475,10 +481,11 @@ function tick() {
   $('#next-name').textContent = name(next[0], next[1]);
   $('#next-at').textContent = at(next[1]);
   $('#countdown').textContent = countdown(next[1] - now);
-  if (IQAMA[next[0]] && !(next[0] === 'dhuhr' && isFriday(next[1]))) {
+  const wait = iqamaMinutes(mosque, next[0], isFriday(next[1]));
+  if (wait) {
     $('#chip-iqama').hidden = false;
     $('#iqama-l').textContent = tx.iqamaOf(name(next[0], next[1]));
-    $('#iqama-at').textContent = at(new Date(+next[1] + IQAMA[next[0]] * MIN));
+    $('#iqama-at').textContent = at(new Date(+next[1] + wait * MIN));
   } else $('#chip-iqama').hidden = true;
   renderLine(now, next);
   renderDaily(now);
@@ -615,6 +622,8 @@ function renderPrefs() {
     pref('sound', 'sound', tx.sound, sound ? tx.on : tx.off),
     pref('night', 'moon', tx.night, nightOn ? tx.auto : tx.off),
     pref('lock', 'clock', tx.lock, lockOn ? tx.lockOn : tx.off),
+    pref('iqama', 'clock', tx.iqamaSet, JSON.stringify(mosque.iqama) === JSON.stringify(mosqueSettings(null).iqama) && !mosque.jumuah ? tx.usual : tx.custom),
+    pref('calc', 'compass', tx.calc, tx.short[plan ? plan.method : 'uaq']),
     pref('help', 'help', tx.help, tx.helpValue),
     pref('tv-settings', 'gear', tx.tvSettings, tx.open),
   ].join('');
@@ -669,6 +678,8 @@ function activate(el) {
   else if (act === 'radio') { const was = !!playing && playing.kind === 'radio'; stopQuran(); if (!was) playQuran({ kind: 'radio' }); }
   else if (act === 'reciter') openReciters();
   else if (act === 'help') openHelp();
+  else if (act === 'iqama') openIqama(0);
+  else if (act === 'calc') openCalc(0);
   else if (act === 'tv-settings') apps.settings();
   else if (act === 'city') openPicker();
   else if (act === 'lang') { lang = rtl() ? 'en' : 'ar'; store.set('mp-tv-lang', lang); render(); }
@@ -706,6 +717,48 @@ function openHelp() {
   const rows = [{ label: tx.helpWa + ' · ' + ltr(CONTACT.whatsapp) }, { label: tx.helpMail + ' · ' + ltr(CONTACT.email) }, { group: tx.helpReply }]
     .concat(tx.helpQA.map((qa) => ({ qa })));
   openList(tx.help, rows, 0, () => {});
+}
+// The mosque's timetable: the iqama after each Adhan and the Jumu'ah; the method, Asr and minutes. Each row opens
+// its choices, and OK on one goes back to the list with the new value.
+function saveMosque() {
+  store.set(MOSQUE_KEY, JSON.stringify(mosque));
+  plan = schedule(city, mosque); planDay = ymd(new Date());
+  renderToday(); renderPrefs(); tick();
+}
+function methodName() {
+  const tx = t();
+  return mosque.method === 'auto' ? tx.autoMethod(tx.methods[plan ? plan.method : 'uaq']) : tx.methods[mosque.method];
+}
+function openIqama(at) {
+  const tx = t(), keys = ['fajr', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const rows = keys.map((k) => ({ k, label: tx.prayers[k] + ' · ' + (mosque.iqama[k] ? tx.mins(mosque.iqama[k]) : tx.noWait) }))
+    .concat([{ k: 'jumuah', label: tx.jumuahL + ' · ' + (mosque.jumuah ? tx.mins(mosque.jumuah) : tx.noWait) }]);
+  openList(tx.iqamaSet, rows, at, (r) => {
+    const i = rows.indexOf(r), jum = r.k === 'jumuah', choices = jum ? JUMUAH_CHOICES : IQAMA_CHOICES;
+    const cur = jum ? mosque.jumuah : mosque.iqama[r.k];
+    openList(r.label.split(' · ')[0], choices.map((m) => ({ m, label: m ? tx.mins(m) : tx.noWait })), choices.indexOf(cur), (c) => {
+      if (jum) mosque.jumuah = c.m; else mosque.iqama[r.k] = c.m;
+      saveMosque(); openIqama(i);
+    });
+  });
+}
+function openCalc(at) {
+  const tx = t(), keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
+  const rows = [{ k: 'method', label: tx.methodL + ' · ' + methodName() }, { k: 'asr', label: tx.asrL + ' · ' + (mosque.asr === 'hanafi' ? tx.asrHanafi : tx.asrStd) },
+    { group: tx.adjust }].concat(keys.map((k) => ({ k, off: true, label: tx.prayers[k] + ' · ' + tx.minsSigned(mosque.offsets[k]) })));
+  openList(tx.calc, rows, at, (r) => {
+    const i = rows.indexOf(r), back = () => { saveMosque(); openCalc(i); };
+    if (r.k === 'method') {
+      const opts = [{ v: 'auto', label: tx.autoMethod(tx.methods[schedule(city).method]) }].concat(Object.keys(METHODS).map((v) => ({ v, label: tx.methods[v] })));
+      openList(tx.methodL, opts, opts.findIndex((o) => o.v === mosque.method), (o) => { mosque.method = o.v; back(); });
+    } else if (r.k === 'asr') {
+      const opts = [{ v: 'standard', label: tx.asrStd }, { v: 'hanafi', label: tx.asrHanafi }];
+      openList(tx.asrL, opts, mosque.asr === 'hanafi' ? 1 : 0, (o) => { mosque.asr = o.v; back(); });
+    } else if (r.off) {
+      openList(tx.prayers[r.k], OFFSET_CHOICES.map((v) => ({ v, label: tx.minsSigned(v) })), OFFSET_CHOICES.indexOf(mosque.offsets[r.k]),
+        (o) => { mosque.offsets[r.k] = o.v; back(); });
+    }
+  });
 }
 function openReciters() {
   openList(t().pickReciter, RECITERS.map((r) => ({ r, label: reciterName(r) })), RECITERS.indexOf(reciter), (x) => {
@@ -749,7 +802,7 @@ function render() {
   $('#quran-h').textContent = tx.quran;
   $('#today-h').textContent = tx.today;
   $('#settings-h').textContent = tx.settings;
-  plan = schedule(city); planDay = ymd(now);
+  plan = schedule(city, mosque); planDay = ymd(now);
   lineKey = ''; mode = '';
   renderShelf();
   renderQuran();

@@ -7,7 +7,7 @@
 Takes the TV page (website/tv/) with what it uses from the site (places, prayer times, the daily verse and hadith,
 the Adhan sound, the time zones) and packs it the way LG's ares-package does: an ar archive with control.tar.gz and
 data.tar.gz, so no LG tools are needed. A TV app runs from its own files (file://), where module scripts don't load,
-so the three modules become one plain script, app.js. Python 3 only. Packing after Free My TV's webos/build.py
+so the four modules become one plain script, app.js. Python 3 only. Packing after Free My TV's webos/build.py
 (github.com/simbasjungles/free-my-tv, MIT).
 """
 import io
@@ -50,6 +50,7 @@ def app_files():
     assert 'src="app.js"' in html, 'website/tv/index.html no longer loads tv.js as expected'
     files['tv/index.html'] = html.encode('utf-8')
     parts = [plain(read(SITE, n).decode('utf-8')) for n in ('places.js', 'prayer.js')]
+    parts.append(plain(read(SITE, 'tv', 'mosque.js').decode('utf-8')))
     parts.append(plain(read(SITE, 'tv', 'tv.js').decode('utf-8')))
     files['tv/app.js'] = ('(function () {\n"use strict";\n' + SHIM + '\n'.join(parts) + '\n})();\n').encode('utf-8')
     for name in ('adhan.mp3', 'zones.json', 'icon-180.png', 'kaaba-tawaf.mp4'):

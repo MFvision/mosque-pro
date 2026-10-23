@@ -3,9 +3,9 @@
  "promo": "Horarios de oración, qibla y mezquita cercana, con un cielo opcional que sigue el tiempo. Adhan, widgets y respuestas de libros con fuentes. Sin anuncios ni cuenta.",
  "promo_tv": "Los horarios de oración de hoy en tu televisor, la qibla de tu ciudad y las mezquitas cercanas. Un aviso a pantalla completa en cada oración. Sin anuncios ni cuenta.",
  "keywords": "adhan,azan,salat,oracion,qibla,mezquita,islam,musulman,coran,hijri,dua,ramadan,meca,tasbih,horario",
- "whats_new": "Novedad: Near Mosque en el Apple Watch, con complicaciones, la brújula de la alquibla y el tasbih. Un solo estilo para todo. Elígelo en Ajustes y lo siguen los botones de la app, cada widget, la pantalla bloqueada y la Dynamic Island. Nuevos estilos de widget: verde azulado y según la hora.",
+ "whats_new": "Novedad: Mosque Pro en el Apple Watch, con complicaciones, la brújula de la alquibla y el tasbih. Un solo estilo para todo. Elígelo en Ajustes y lo siguen los botones de la app, cada widget, la pantalla bloqueada y la Dynamic Island. Nuevos estilos de widget: verde azulado y según la hora.",
  "whats_new_other": "Un solo estilo para todo. Elígelo en Ajustes y lo siguen los botones y los acentos de la app. Nuevos estilos: verde azulado y según la hora.",
- "intro": "Near Mosque muestra los horarios de oración de hoy para tu ciudad, te indica la qibla y encuentra las mezquitas a tu alrededor. Los horarios y la qibla se calculan en tu dispositivo, así que funcionan sin internet.",
+ "intro": "Mosque Pro muestra los horarios de oración de hoy para tu ciudad, te indica la qibla y encuentra las mezquitas a tu alrededor. Los horarios y la qibla se calculan en tu dispositivo, así que funcionan sin internet.",
  "h_prayer": "HORARIOS DE ORACIÓN",
  "prayer": [
   "La próxima oración y el tiempo que falta, sobre un cielo que sigue la hora del día",
@@ -57,11 +57,11 @@
  "also_mac": "iPhone, iPad, Apple TV y Apple Vision Pro.",
  "also_vision": "iPhone, iPad, Mac y Apple TV.",
  "h_privacy": "PRIVACIDAD",
- "privacy": "Sin cuenta, sin anuncios, sin rastreo. La app solo se conecta para buscar mezquitas (con tu ubicación redondeada), mostrar el mapa, descargar lo que pidas, abrir los enlaces que elijas y, si activas «Cielo según el tiempo», obtener el tiempo de tu ciudad.",
+ "privacy": "Sin cuenta, sin anuncios, sin rastreo. La app solo se conecta para buscar mezquitas (con tu ubicación redondeada), mostrar el mapa, descargar lo que pidas, abrir los enlaces que elijas y, si activas «Cielo según el tiempo», obtener el tiempo de tu ciudad. El Corán se reproduce desde mp3quran.net, QuranicAudio o qurango.net, que ven tu dirección de internet. Con «Red limpia» activado, AdGuard ve los nombres de los sitios que consulta este dispositivo.",
  "languages": "36 idiomas.",
- "privacy_policy_text": "Near Mosque no tiene cuenta, anuncios, analíticas ni rastreo. Los horarios de oración y la qibla se calculan en tu dispositivo, y no tenemos ningún servidor para la app, así que nada sobre ti llega a nosotros. La app solo se conecta para buscar mezquitas, mostrar mapas, descargar lo que elijas y abrir los enlaces que escojas. En iPhone, iPad, Mac y Apple Vision Pro, la opción «Cielo según el tiempo» está desactivada hasta que la actives; entonces envía la ubicación de tu ciudad, redondeada a cerca de 1 km, a MET Norway para obtener el tiempo. La app de Apple TV no la usa. Política de privacidad completa: https://nearmosque.net/privacy.html",
+ "privacy_policy_text": "Mosque Pro no tiene cuenta, anuncios, analíticas ni rastreo. Los horarios de oración y la qibla se calculan en tu dispositivo, y no tenemos ningún servidor para la app, así que nada sobre ti llega a nosotros. La app solo se conecta para buscar mezquitas, mostrar mapas, descargar lo que elijas y abrir los enlaces que escojas. En iPhone, iPad, Mac y Apple Vision Pro, la opción «Cielo según el tiempo» está desactivada hasta que la actives; entonces envía la ubicación de tu ciudad, redondeada a cerca de 1 km, a MET Norway para obtener el tiempo. La app de Apple TV no la usa. El Corán se reproduce desde mp3quran.net, QuranicAudio o qurango.net, que ven tu dirección de internet. Con «Red limpia» activado, AdGuard ve los nombres de los sitios que consulta este dispositivo. Política de privacidad completa: https://mfvision.github.io/mosque-pro/privacy.html",
  "tv": {
-  "intro": "Near Mosque convierte tu televisor en un tablero de oraciones para casa o la sala de la mezquita: los horarios de hoy, la próxima oración y el tiempo que falta, legibles desde lejos.",
+  "intro": "Mosque Pro convierte tu televisor en un tablero de oraciones para casa o la sala de la mezquita: los horarios de hoy, la próxima oración y el tiempo que falta, legibles desde lejos.",
   "points": [
    "Un aviso a pantalla completa cuando llega la hora de cada oración",
    "La dirección de la qibla y la distancia a La Meca para tu ciudad",
@@ -69,7 +69,7 @@
    "Los horarios de hoy en el Top Shelf, sin abrir la app",
    "11 métodos de cálculo, Asr estándar o hanafí, fecha hégira y ajuste en minutos"
   ],
-  "privacy": "Sin cuenta, sin anuncios, sin rastreo. La app solo se conecta para buscar mezquitas (con tu ubicación redondeada), mostrar el mapa, descargar lo que pidas y abrir los enlaces que elijas.",
+  "privacy": "Sin cuenta, sin anuncios, sin rastreo. La app solo se conecta para buscar mezquitas (con tu ubicación redondeada), mostrar el mapa, descargar lo que pidas y abrir los enlaces que elijas. El Corán se reproduce desde mp3quran.net, QuranicAudio o qurango.net, que ven tu dirección de internet.",
   "keywords": "adhan,azan,salat,oracion,qibla,mezquita,islam,musulman,coran,hijri,dua,ramadan,meca,tasbih,horario"
  }
 }

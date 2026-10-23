@@ -3,9 +3,9 @@
  "promo": "Giờ cầu nguyện trên bầu trời có thể theo thời tiết, hướng Qibla và thánh đường gần nhất. Adhan, tiện ích và câu trả lời từ sách uy tín kèm nguồn. Không quảng cáo.",
  "promo_tv": "Giờ cầu nguyện hôm nay trên TV của bạn, hướng Qibla cho thành phố và các thánh đường gần đó. Thông báo toàn màn hình mỗi giờ cầu nguyện. Không quảng cáo, không tài khoản.",
  "keywords": "adhan,azan,salah,namaz,cau nguyen,qibla,thanh duong,masjid,hoi giao,islam,muslim,quran,ramadan",
- "whats_new": "Mới: Near Mosque trên Apple Watch, có tổ hợp, la bàn Qibla và tasbih. Một kiểu cho mọi thứ. Chọn trong Cài đặt, các nút của ứng dụng, mọi tiện ích, màn hình khóa và Dynamic Island sẽ theo kiểu đó. Kiểu tiện ích mới: xanh mòng két và theo thời điểm.",
+ "whats_new": "Mới: Mosque Pro trên Apple Watch, có tổ hợp, la bàn Qibla và tasbih. Một kiểu cho mọi thứ. Chọn trong Cài đặt, các nút của ứng dụng, mọi tiện ích, màn hình khóa và Dynamic Island sẽ theo kiểu đó. Kiểu tiện ích mới: xanh mòng két và theo thời điểm.",
  "whats_new_other": "Một kiểu cho mọi thứ. Chọn trong Cài đặt, các nút và màu nhấn của ứng dụng sẽ theo kiểu đó. Kiểu mới: xanh mòng két và theo thời điểm.",
- "intro": "Near Mosque hiển thị giờ cầu nguyện hôm nay cho thành phố của bạn, chỉ hướng Qibla và tìm các thánh đường quanh bạn. Giờ cầu nguyện và Qibla được tính trên thiết bị, nên dùng được cả khi không có internet.",
+ "intro": "Mosque Pro hiển thị giờ cầu nguyện hôm nay cho thành phố của bạn, chỉ hướng Qibla và tìm các thánh đường quanh bạn. Giờ cầu nguyện và Qibla được tính trên thiết bị, nên dùng được cả khi không có internet.",
  "h_prayer": "GIỜ CẦU NGUYỆN",
  "prayer": [
   "Lần cầu nguyện tiếp theo và thời gian còn lại, trên bầu trời thay đổi theo giờ trong ngày",
@@ -57,11 +57,11 @@
  "also_mac": "iPhone, iPad, Apple TV và Apple Vision Pro.",
  "also_vision": "iPhone, iPad, Mac và Apple TV.",
  "h_privacy": "QUYỀN RIÊNG TƯ",
- "privacy": "Không tài khoản, không quảng cáo, không theo dõi. Ứng dụng chỉ kết nối mạng để tìm thánh đường (với vị trí đã làm tròn), hiển thị bản đồ, tải những gì bạn yêu cầu, mở liên kết bạn chọn và, nếu bạn bật “Bầu trời theo thời tiết”, lấy thời tiết cho thành phố của bạn.",
+ "privacy": "Không tài khoản, không quảng cáo, không theo dõi. Ứng dụng chỉ kết nối mạng để tìm thánh đường (với vị trí đã làm tròn), hiển thị bản đồ, tải những gì bạn yêu cầu, mở liên kết bạn chọn và, nếu bạn bật “Bầu trời theo thời tiết”, lấy thời tiết cho thành phố của bạn. Kinh Qur'an phát từ mp3quran.net, QuranicAudio hoặc qurango.net, những nơi này thấy địa chỉ internet của bạn. Khi bật “Mạng sạch”, AdGuard thấy tên các trang mà thiết bị này tra cứu.",
  "languages": "36 ngôn ngữ.",
- "privacy_policy_text": "Near Mosque không có tài khoản, không quảng cáo, không phân tích và không theo dõi. Giờ cầu nguyện và Qibla được tính trên thiết bị của bạn, và chúng tôi không vận hành máy chủ nào cho ứng dụng, nên không thông tin nào về bạn đến được với chúng tôi. Ứng dụng chỉ kết nối mạng để tìm thánh đường, hiển thị bản đồ, tải những gì bạn yêu cầu và mở liên kết bạn chọn. Trên iPhone, iPad, Mac và Apple Vision Pro, tính năng tùy chọn “Bầu trời theo thời tiết” tắt cho đến khi bạn bật; khi đó, nó gửi vị trí thành phố của bạn, làm tròn đến khoảng 1 km, đến MET Norway để lấy thời tiết. Ứng dụng Apple TV không dùng tính năng này. Chính sách quyền riêng tư đầy đủ: https://nearmosque.net/privacy.html",
+ "privacy_policy_text": "Mosque Pro không có tài khoản, không quảng cáo, không phân tích và không theo dõi. Giờ cầu nguyện và Qibla được tính trên thiết bị của bạn, và chúng tôi không vận hành máy chủ nào cho ứng dụng, nên không thông tin nào về bạn đến được với chúng tôi. Ứng dụng chỉ kết nối mạng để tìm thánh đường, hiển thị bản đồ, tải những gì bạn yêu cầu và mở liên kết bạn chọn. Trên iPhone, iPad, Mac và Apple Vision Pro, tính năng tùy chọn “Bầu trời theo thời tiết” tắt cho đến khi bạn bật; khi đó, nó gửi vị trí thành phố của bạn, làm tròn đến khoảng 1 km, đến MET Norway để lấy thời tiết. Ứng dụng Apple TV không dùng tính năng này. Kinh Qur'an phát từ mp3quran.net, QuranicAudio hoặc qurango.net, những nơi này thấy địa chỉ internet của bạn. Khi bật “Mạng sạch”, AdGuard thấy tên các trang mà thiết bị này tra cứu. Chính sách quyền riêng tư đầy đủ: https://mfvision.github.io/mosque-pro/privacy.html",
  "tv": {
-  "intro": "Near Mosque biến TV của bạn thành bảng giờ cầu nguyện cho gia đình hoặc sảnh thánh đường: giờ hôm nay, lần cầu nguyện tiếp theo và thời gian còn lại, đọc được từ xa.",
+  "intro": "Mosque Pro biến TV của bạn thành bảng giờ cầu nguyện cho gia đình hoặc sảnh thánh đường: giờ hôm nay, lần cầu nguyện tiếp theo và thời gian còn lại, đọc được từ xa.",
   "points": [
    "Thông báo toàn màn hình khi đến giờ cầu nguyện",
    "Hướng Qibla và khoảng cách đến Makkah cho thành phố của bạn",
@@ -69,7 +69,7 @@
    "Giờ hôm nay trên Top Shelf mà không cần mở ứng dụng",
    "11 phương pháp tính, Asr thông thường hoặc Hanafi, ngày Hijri và chỉnh phút"
   ],
-  "privacy": "Không tài khoản, không quảng cáo, không theo dõi. Ứng dụng chỉ kết nối mạng để tìm thánh đường (với vị trí đã làm tròn), hiển thị bản đồ, tải những gì bạn yêu cầu và mở liên kết bạn chọn.",
+  "privacy": "Không tài khoản, không quảng cáo, không theo dõi. Ứng dụng chỉ kết nối mạng để tìm thánh đường (với vị trí đã làm tròn), hiển thị bản đồ, tải những gì bạn yêu cầu và mở liên kết bạn chọn. Kinh Qur'an phát từ mp3quran.net, QuranicAudio hoặc qurango.net, những nơi này thấy địa chỉ internet của bạn.",
   "keywords": "adhan,azan,salah,namaz,cau nguyen,qibla,thanh duong,masjid,hoi giao,islam,muslim,quran,ramadan"
  }
 }

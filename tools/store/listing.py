@@ -30,7 +30,7 @@ LIMITS = {"name": 30, "subtitle": 30, "promotionalText": 170, "keywords": 100, "
 PLATFORMS = ["IOS", "MAC_OS", "VISION_OS", "TV_OS"]
 # The app-level fields (appInfoLocalizations) under each locale's "APP_INFO", and the full policy they link to.
 APP_INFO = "APP_INFO"
-POLICY_URL = "https://nearmosque.net/privacy.html"
+POLICY_URL = "https://mfvision.github.io/mosque-pro/privacy.html"
 
 
 def bullets(items):

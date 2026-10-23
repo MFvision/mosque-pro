@@ -3,9 +3,9 @@
  "promo": "Imaidők az időjárást is mutató égbolton, ha kéred, kibla és a legközelebbi mecset. Ezán, widgetek és válaszok megbízható könyvekből, forrásokkal. Hirdetés és fiók nélkül.",
  "promo_tv": "A mai imaidők a tévén, a városod kiblája és a közeli mecsetek. Teljes képernyős értesítés minden imánál. Hirdetés és fiók nélkül.",
  "keywords": "ezan,adhan,ima,imaido,kibla,mecset,iszlam,muszlim,korán,hidzsra,dua,ramadan,mekka,tasbih,időjárás",
- "whats_new": "Új: Near Mosque Apple Watchon, komplikációkkal, kibla-iránytűvel és tasbihhal. Egy stílus mindenhez. Válaszd ki a Beállításokban, és az alkalmazás gombjai, minden widget, a zárolási képernyő és a Dynamic Island követi. Új widgetstílusok: kékeszöld és napszak szerint.",
+ "whats_new": "Új: Mosque Pro Apple Watchon, komplikációkkal, kibla-iránytűvel és tasbihhal. Egy stílus mindenhez. Válaszd ki a Beállításokban, és az alkalmazás gombjai, minden widget, a zárolási képernyő és a Dynamic Island követi. Új widgetstílusok: kékeszöld és napszak szerint.",
  "whats_new_other": "Egy stílus mindenhez. Válaszd ki a Beállításokban, és az alkalmazás gombjai és kiemelései követik. Új stílusok: kékeszöld és napszak szerint.",
- "intro": "A Near Mosque megmutatja a városod mai imaidőit, a kibla irányát és a környező mecseteket. Az imaidők és a kibla a készülékeden számolódnak, így internet nélkül is működnek.",
+ "intro": "A Mosque Pro megmutatja a városod mai imaidőit, a kibla irányát és a környező mecseteket. Az imaidők és a kibla a készülékeden számolódnak, így internet nélkül is működnek.",
  "h_prayer": "IMAIDŐK",
  "prayer": [
   "A következő ima és a hátralévő idő, a napszakot követő égbolton",
@@ -57,11 +57,11 @@
  "also_mac": "iPhone-on, iPaden, Apple TV-n és Apple Vision Prón.",
  "also_vision": "iPhone-on, iPaden, Macen és Apple TV-n.",
  "h_privacy": "ADATVÉDELEM",
- "privacy": "Nincs fiók, nincs hirdetés, nincs követés. Az alkalmazás csak mecsetkereséshez (kerekített helyzettel), a térképhez, a kért letöltésekhez, az általad választott linkekhez és, ha bekapcsolod az „Időjárás szerinti égbolt” funkciót, a városod időjárásához használ internetet.",
+ "privacy": "Nincs fiók, nincs hirdetés, nincs követés. Az alkalmazás csak mecsetkereséshez (kerekített helyzettel), a térképhez, a kért letöltésekhez, az általad választott linkekhez és, ha bekapcsolod az „Időjárás szerinti égbolt” funkciót, a városod időjárásához használ internetet. A Korán az mp3quran.net, a QuranicAudio vagy a qurango.net oldaláról szól, és ezek látják az internetcímét. Bekapcsolt „Tiszta hálózat” mellett az AdGuard látja azoknak az oldalaknak a nevét, amelyeket ez az eszköz lekér.",
  "languages": "36 nyelv.",
- "privacy_policy_text": "A Near Mosque-ban nincs fiók, nincs hirdetés, nincs analitika és nincs követés. Az imaidők és a kibla a készülékeden számolódnak, és nem üzemeltetünk szervert az alkalmazáshoz, így rólad semmi sem jut el hozzánk. Az alkalmazás csak mecsetkereséshez, a térképekhez, az általad választott letöltésekhez és az általad választott linkek megnyitásához használ internetet. iPhone-on, iPaden, Macen és Apple Vision Prón a választható „Időjárás szerinti égbolt” ki van kapcsolva, amíg be nem kapcsolod; utána az időjáráshoz elküldi a városod kb. 1 km-re kerekített helyét a MET Norwaynek. Az Apple TV-alkalmazás nem használja. A teljes adatvédelmi szabályzat: https://nearmosque.net/privacy.html",
+ "privacy_policy_text": "A Mosque Pro-ban nincs fiók, nincs hirdetés, nincs analitika és nincs követés. Az imaidők és a kibla a készülékeden számolódnak, és nem üzemeltetünk szervert az alkalmazáshoz, így rólad semmi sem jut el hozzánk. Az alkalmazás csak mecsetkereséshez, a térképekhez, az általad választott letöltésekhez és az általad választott linkek megnyitásához használ internetet. iPhone-on, iPaden, Macen és Apple Vision Prón a választható „Időjárás szerinti égbolt” ki van kapcsolva, amíg be nem kapcsolod; utána az időjáráshoz elküldi a városod kb. 1 km-re kerekített helyét a MET Norwaynek. Az Apple TV-alkalmazás nem használja. A Korán az mp3quran.net, a QuranicAudio vagy a qurango.net oldaláról szól, és ezek látják az internetcímét. Bekapcsolt „Tiszta hálózat” mellett az AdGuard látja azoknak az oldalaknak a nevét, amelyeket ez az eszköz lekér. A teljes adatvédelmi szabályzat: https://mfvision.github.io/mosque-pro/privacy.html",
  "tv": {
-  "intro": "A Near Mosque imatáblává teszi a tévédet otthonra vagy a mecset termébe: a mai imaidők, a következő ima és a hátralévő idő, messziről is olvashatóan.",
+  "intro": "A Mosque Pro imatáblává teszi a tévédet otthonra vagy a mecset termébe: a mai imaidők, a következő ima és a hátralévő idő, messziről is olvashatóan.",
   "points": [
    "Teljes képernyős értesítés, amikor eljön az ima ideje",
    "A kibla iránya és a távolság Mekkáig a városodhoz",
@@ -69,7 +69,7 @@
    "A mai imaidők a Top Shelfen, az alkalmazás megnyitása nélkül",
    "11 számítási mód, általános vagy hanafita aszr, hidzsra dátum és percnyi igazítás"
   ],
-  "privacy": "Nincs fiók, nincs hirdetés, nincs követés. Az alkalmazás csak mecsetkereséshez (kerekített helyzettel), a térképhez, a kért letöltésekhez és az általad választott linkekhez használ internetet.",
+  "privacy": "Nincs fiók, nincs hirdetés, nincs követés. Az alkalmazás csak mecsetkereséshez (kerekített helyzettel), a térképhez, a kért letöltésekhez és az általad választott linkekhez használ internetet. A Korán az mp3quran.net, a QuranicAudio vagy a qurango.net oldaláról szól, és ezek látják az internetcímét.",
   "keywords": "ezan,adhan,ima,imaido,kibla,mecset,iszlam,muszlim,korán,hidzsra,dua,ramadan,mekka,tasbih"
  }
 }

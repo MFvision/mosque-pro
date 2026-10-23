@@ -3,9 +3,9 @@
  "promo": "Prayer times, the Qibla and the nearest mosque in one calm app, with an optional sky that follows the weather. Adhan, widgets, answers with sources. No ads, no account.",
  "promo_tv": "Today's prayer times on your TV, the Qibla for your city and the mosques nearby. A full-screen alert at each prayer. No ads, no account.",
  "keywords": "adhan,azan,salah,namaz,qibla,mosque,masjid,islam,muslim,quran,hijri,dua,ramadan,makkah,tasbih",
- "whats_new": "New: Near Mosque on Apple Watch, with complications, the Qibla compass and the tasbih. One style for everything. Pick it in Settings and the app's buttons, every widget, the Lock Screen and the Dynamic Island follow it. New widget looks: teal and time of day.",
+ "whats_new": "New: Mosque Pro on Apple Watch, with complications, the Qibla compass and the tasbih. One style for everything. Pick it in Settings and the app's buttons, every widget, the Lock Screen and the Dynamic Island follow it. New widget looks: teal and time of day.",
  "whats_new_other": "One style for everything. Pick it in Settings and the app's buttons and highlights follow it. New looks: teal and time of day.",
- "intro": "Near Mosque shows today's prayer times for your city, points you to the Qibla, and finds the mosques around you. Prayer times and the Qibla are worked out on your device, so they work without internet.",
+ "intro": "Mosque Pro shows today's prayer times for your city, points you to the Qibla, and finds the mosques around you. Prayer times and the Qibla are worked out on your device, so they work without internet.",
  "h_prayer": "PRAYER TIMES",
  "prayer": ["The next prayer and the time left, on a sky that follows the time of day", "Sky follows the weather (optional): see today's weather in your prayer city on the sky above the prayer times, with the temperature and the wind. It stays off until you turn it on; then the city's location, rounded to about 1 km, is sent to MET Norway. Weather data: MET Norway (CC BY 4.0).", "11 calculation methods, standard or Hanafi Asr, Hijri date and minute adjustments for each prayer", "Adhan from Masjid al-Haram or Al-Masjid an-Nabawi, reminders before each prayer, and a Fajr alarm"],
  "h_qibla": "QIBLA",
@@ -27,13 +27,13 @@
  "also_mac": "iPhone, iPad, Apple TV and Apple Vision Pro.",
  "also_vision": "iPhone, iPad, Mac and Apple TV.",
  "h_privacy": "PRIVACY",
- "privacy": "No account, no ads, no tracking. The app goes online only to search for mosques (with your location rounded), to show the map, to download what you ask for, to open links you choose, and, if you turn on \"Sky follows the weather\", to get the weather for your city.",
+ "privacy": "No account, no ads, no tracking. The app goes online only to search for mosques (with your location rounded), to show the map, to download what you ask for, to open links you choose, and, if you turn on \"Sky follows the weather\", to get the weather for your city. The Quran plays from mp3quran.net, QuranicAudio or qurango.net, which see your internet address. With Clean network on, AdGuard sees the names of the sites this device looks up.",
  "languages": "36 languages.",
- "privacy_policy_text": "Near Mosque has no account, no ads, no analytics and no tracking. Prayer times and the Qibla are worked out on your device, and we run no server for the app, so nothing about you reaches us. The app goes online only to search for mosques, show maps, download what you choose and open links you pick. On iPhone, iPad, Mac and Apple Vision Pro, the optional \"Sky follows the weather\" is off until you turn it on; it then sends your city's location, rounded to about 1 km, to MET Norway to get the weather. The Apple TV app does not use it. Full privacy policy: https://nearmosque.net/privacy.html",
+ "privacy_policy_text": "Mosque Pro has no account, no ads, no analytics and no tracking. Prayer times and the Qibla are worked out on your device, and we run no server for the app, so nothing about you reaches us. The app goes online only to search for mosques, show maps, download what you choose and open links you pick. On iPhone, iPad, Mac and Apple Vision Pro, the optional \"Sky follows the weather\" is off until you turn it on; it then sends your city's location, rounded to about 1 km, to MET Norway to get the weather. The Apple TV app does not use it. The Quran plays from mp3quran.net, QuranicAudio or qurango.net, which see your internet address. With Clean network on, AdGuard sees the names of the sites this device looks up. Full privacy policy: https://mfvision.github.io/mosque-pro/privacy.html",
  "tv": {
-  "intro": "Near Mosque turns your TV into a prayer board for your home or the mosque hall: today's times, the next prayer and the time left, readable from across the room.",
+  "intro": "Mosque Pro turns your TV into a prayer board for your home or the mosque hall: today's times, the next prayer and the time left, readable from across the room.",
   "points": ["A full-screen alert when a prayer time comes", "The Qibla direction and the distance to Makkah for your city", "Mosques near your city, with a code to scan for directions on your phone", "Today's times on the Top Shelf, without opening the app", "11 calculation methods, standard or Hanafi Asr, Hijri date and minute adjustments"],
-  "privacy": "No account, no ads, no tracking. The app goes online only to search for mosques (with your location rounded), to show the map, to download what you ask for, and to open links you choose.",
+  "privacy": "No account, no ads, no tracking. The app goes online only to search for mosques (with your location rounded), to show the map, to download what you ask for, and to open links you choose. The Quran plays from mp3quran.net, QuranicAudio or qurango.net, which see your internet address.",
   "keywords": "adhan,azan,salah,namaz,qibla,mosque,masjid,islam,muslim,quran,hijri,dua,ramadan,makkah,tasbih"
  }
 }

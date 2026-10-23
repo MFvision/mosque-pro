@@ -51,7 +51,7 @@ struct WatchExtras: Codable, Equatable {
     }
 }
 
-/// The watch app's screens, for complications, controls and links (nearmosque://qibla and so on).
+/// The watch app's screens, for complications, controls and links (mosquepro://qibla and so on).
 enum WatchScreen: String, AppEnum {
     case prayer, qibla, spirit, tasbih, mosques, ask
 
@@ -61,10 +61,10 @@ enum WatchScreen: String, AppEnum {
         .ask: "widget_kind_ask",
     ]
 
-    var url: URL { URL(string: "nearmosque://\(rawValue)")! }
+    var url: URL { URL(string: "mosquepro://\(rawValue)")! }
 
     init?(url: URL) {
-        guard url.scheme == "nearmosque", let host = url.host else { return nil }
+        guard url.scheme == "mosquepro", let host = url.host else { return nil }
         self.init(rawValue: host == "mosque" ? "mosques" : host)
     }
 }

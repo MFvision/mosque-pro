@@ -34,10 +34,10 @@ enum PrayerWidgetKind {
     /// Where a tap on the widget (outside its own links) goes.
     func url(_ state: SharedState?) -> URL? {
         switch self {
-        case .mosque: return URL(string: state?.mosques?.first.map { "nearmosque://mosque?id=\(Self.encode($0.id))" } ?? "nearmosque://mosques")
-        case .ask: return URL(string: "nearmosque://ask")
-        case .qibla: return URL(string: "nearmosque://qibla")
-        default: return URL(string: "nearmosque://prayer")
+        case .mosque: return URL(string: state?.mosques?.first.map { "mosquepro://mosque?id=\(Self.encode($0.id))" } ?? "mosquepro://mosques")
+        case .ask: return URL(string: "mosquepro://ask")
+        case .qibla: return URL(string: "mosquepro://qibla")
+        default: return URL(string: "mosquepro://prayer")
         }
     }
 
@@ -657,7 +657,7 @@ extension PrayerWidgetView {
                     Label(s.name, systemImage: "mappin.circle.fill").font(.caption.weight(.semibold)).foregroundStyle(p.secondary).lineLimit(1)
                 }
                 ForEach(Array(list.prefix(3).enumerated()), id: \.offset) { i, m in
-                    Link(destination: URL(string: "nearmosque://mosque?id=\(PrayerWidgetKind.encode(m.id))")!) {
+                    Link(destination: URL(string: "mosquepro://mosque?id=\(PrayerWidgetKind.encode(m.id))")!) {
                         HStack(spacing: 8) {
                             Image(decorative: "MosqueTab").renderingMode(.template).resizable().scaledToFit().frame(width: 16, height: 16)
                                 .foregroundStyle(i == 0 ? p.onPill : p.accent)
@@ -698,10 +698,10 @@ extension PrayerWidgetView {
             .frame(maxWidth: .infinity, alignment: .leading)
         } else {
             VStack(alignment: .leading, spacing: 6) {
-                Link(destination: URL(string: "nearmosque://ask")!) { bar }
+                Link(destination: URL(string: "mosquepro://ask")!) { bar }
                 Text(s.t("widget_ask_suggested")).font(.caption.weight(.semibold)).foregroundStyle(p.secondary)
                 ForEach(s.todaysQuestions(entry.date), id: \.self) { q in
-                    Link(destination: URL(string: "nearmosque://ask?q=\(PrayerWidgetKind.encode(q))&t=\(PrayerWidgetKind.encode(s.linkToken ?? ""))")!) {
+                    Link(destination: URL(string: "mosquepro://ask?q=\(PrayerWidgetKind.encode(q))&t=\(PrayerWidgetKind.encode(s.linkToken ?? ""))")!) {
                         HStack(spacing: 6) {
                             Image(systemName: "questionmark.bubble").foregroundStyle(p.accent)
                             Text(q).font(.subheadline.weight(.medium)).foregroundStyle(p.ink).lineLimit(1)
@@ -778,9 +778,9 @@ extension PrayerWidgetView {
 
     @ViewBuilder func actionsView(_ s: SharedState?, _ p: WidgetPalette) -> some View {
         let items: [(String, String, Bool, String)] = [
-            (s?.t("tab_ask_short") ?? "Ask", "sparkles", false, "nearmosque://ask"),
-            (s?.t("tab_mosques") ?? "Nearest Mosque", "MosqueTab", true, "nearmosque://mosques"),
-            (s?.t("tab_prayer") ?? "Prayer & Qibla", "location.north.circle", false, "nearmosque://qibla"),
+            (s?.t("tab_ask_short") ?? "Ask", "sparkles", false, "mosquepro://ask"),
+            (s?.t("tab_mosques") ?? "Nearest Mosque", "MosqueTab", true, "mosquepro://mosques"),
+            (s?.t("tab_prayer") ?? "Prayer & Qibla", "location.north.circle", false, "mosquepro://qibla"),
         ]
         HStack(spacing: 8) {
             ForEach(items, id: \.3) { item in

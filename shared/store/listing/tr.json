@@ -3,9 +3,9 @@
  "promo": "İsterseniz hava durumunu gösteren gökyüzünde namaz vakitleri, kıble ve en yakın cami. Ezan, widget'lar ve güvenilir kitaplardan kaynaklı cevaplar. Reklam yok, hesap yok.",
  "promo_tv": "Bugünün namaz vakitleri televizyonunuzda, şehrinizin kıblesi ve yakındaki camiler. Her namazda tam ekran uyarı. Reklam yok, hesap yok.",
  "keywords": "ezan,namaz,vakit,kible,cami,mescit,islam,musluman,kuran,hicri,dua,ramazan,mekke,tesbih,imsakiye,hava",
- "whats_new": "Yeni: Apple Watch'ta Near Mosque; komplikasyonlar, kıble pusulası ve tesbih. Her şey için tek stil. Ayarlar'dan seçin; uygulamanın düğmeleri, tüm widget'lar, kilitli ekran ve Dynamic Island ona uyar. Yeni widget görünümleri: camgöbeği ve günün saatine göre.",
+ "whats_new": "Yeni: Apple Watch'ta Mosque Pro; komplikasyonlar, kıble pusulası ve tesbih. Her şey için tek stil. Ayarlar'dan seçin; uygulamanın düğmeleri, tüm widget'lar, kilitli ekran ve Dynamic Island ona uyar. Yeni widget görünümleri: camgöbeği ve günün saatine göre.",
  "whats_new_other": "Her şey için tek stil. Ayarlar'dan seçin; uygulamanın düğmeleri ve vurguları ona uyar. Yeni görünümler: camgöbeği ve günün saatine göre.",
- "intro": "Near Mosque şehriniz için bugünün namaz vakitlerini gösterir, kıbleyi bulur ve çevrenizdeki camileri listeler. Vakitler ve kıble cihazınızda hesaplanır, bu yüzden internetsiz de çalışır.",
+ "intro": "Mosque Pro şehriniz için bugünün namaz vakitlerini gösterir, kıbleyi bulur ve çevrenizdeki camileri listeler. Vakitler ve kıble cihazınızda hesaplanır, bu yüzden internetsiz de çalışır.",
  "h_prayer": "NAMAZ VAKİTLERİ",
  "prayer": [
   "Sıradaki namaz ve kalan süre, günün saatine göre değişen bir gökyüzünde",
@@ -57,11 +57,11 @@
  "also_mac": "iPhone, iPad, Apple TV ve Apple Vision Pro.",
  "also_vision": "iPhone, iPad, Mac ve Apple TV.",
  "h_privacy": "GİZLİLİK",
- "privacy": "Hesap yok, reklam yok, takip yok. Uygulama yalnızca cami aramak (yuvarlanmış konumla), haritayı göstermek, istediğinizi indirmek, seçtiğiniz bağlantıları açmak ve “Hava durumuna göre gökyüzü” açıksa şehrinizin hava durumunu almak için internete bağlanır.",
+ "privacy": "Hesap yok, reklam yok, takip yok. Uygulama yalnızca cami aramak (yuvarlanmış konumla), haritayı göstermek, istediğinizi indirmek, seçtiğiniz bağlantıları açmak ve “Hava durumuna göre gökyüzü” açıksa şehrinizin hava durumunu almak için internete bağlanır. Kuran mp3quran.net, QuranicAudio veya qurango.net üzerinden çalınır; bu siteler internet adresinizi görür. “Temiz ağ” açıkken AdGuard bu cihazın aradığı sitelerin adlarını görür.",
  "languages": "36 dil.",
- "privacy_policy_text": "Near Mosque'ta hesap, reklam, analiz ve takip yok. Namaz vakitleri ve kıble cihazınızda hesaplanır; uygulama için sunucu çalıştırmıyoruz, bu yüzden sizinle ilgili hiçbir şey bize ulaşmaz. Uygulama yalnızca cami aramak, harita göstermek, istediğinizi indirmek ve seçtiğiniz bağlantıları açmak için internete bağlanır. iPhone, iPad, Mac ve Apple Vision Pro'da isteğe bağlı “Hava durumuna göre gökyüzü” siz açana kadar kapalıdır; açtığınızda hava durumunu almak için şehrinizin yaklaşık 1 km'ye yuvarlanmış konumunu MET Norway'e gönderir. Apple TV uygulaması bunu kullanmaz. Gizlilik politikasının tamamı: https://nearmosque.net/privacy.html",
+ "privacy_policy_text": "Mosque Pro'ta hesap, reklam, analiz ve takip yok. Namaz vakitleri ve kıble cihazınızda hesaplanır; uygulama için sunucu çalıştırmıyoruz, bu yüzden sizinle ilgili hiçbir şey bize ulaşmaz. Uygulama yalnızca cami aramak, harita göstermek, istediğinizi indirmek ve seçtiğiniz bağlantıları açmak için internete bağlanır. iPhone, iPad, Mac ve Apple Vision Pro'da isteğe bağlı “Hava durumuna göre gökyüzü” siz açana kadar kapalıdır; açtığınızda hava durumunu almak için şehrinizin yaklaşık 1 km'ye yuvarlanmış konumunu MET Norway'e gönderir. Apple TV uygulaması bunu kullanmaz. Kuran mp3quran.net, QuranicAudio veya qurango.net üzerinden çalınır; bu siteler internet adresinizi görür. “Temiz ağ” açıkken AdGuard bu cihazın aradığı sitelerin adlarını görür. Gizlilik politikasının tamamı: https://mfvision.github.io/mosque-pro/privacy.html",
  "tv": {
-  "intro": "Near Mosque televizyonunuzu eviniz veya cami salonu için bir namaz panosuna çevirir: bugünün vakitleri, sıradaki namaz ve kalan süre, uzaktan okunur.",
+  "intro": "Mosque Pro televizyonunuzu eviniz veya cami salonu için bir namaz panosuna çevirir: bugünün vakitleri, sıradaki namaz ve kalan süre, uzaktan okunur.",
   "points": [
    "Her namaz vakti girdiğinde tam ekran uyarı",
    "Şehriniz için kıble yönü ve Mekke'ye mesafe",
@@ -69,7 +69,7 @@
    "Uygulamayı açmadan Top Shelf'te bugünün vakitleri",
    "11 hesaplama yöntemi, standart veya Hanefi ikindi, hicri tarih ve dakika ayarı"
   ],
-  "privacy": "Hesap yok, reklam yok, takip yok. Uygulama yalnızca cami aramak (yuvarlanmış konumla), haritayı göstermek, istediğinizi indirmek ve seçtiğiniz bağlantıları açmak için internete bağlanır.",
+  "privacy": "Hesap yok, reklam yok, takip yok. Uygulama yalnızca cami aramak (yuvarlanmış konumla), haritayı göstermek, istediğinizi indirmek ve seçtiğiniz bağlantıları açmak için internete bağlanır. Kuran mp3quran.net, QuranicAudio veya qurango.net üzerinden çalınır; bu siteler internet adresinizi görür.",
   "keywords": "ezan,namaz,vakit,kible,cami,mescit,islam,musluman,kuran,hicri,dua,ramazan,mekke,tesbih,imsakiye"
  }
 }

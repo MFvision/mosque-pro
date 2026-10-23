@@ -171,6 +171,14 @@ struct TVSettingsView: View {
                     NavigationLink(l10n.t("minute_adjustments")) { TVOffsetsView() }
                 }
                 Section {
+                    Toggle(l10n.t("iqama_show"), isOn: $model.settings.iqama.enabled)
+                    if model.settings.iqama.enabled {
+                        NavigationLink(l10n.t("iqama_section")) { TVIqamaView() }
+                    }
+                } footer: {
+                    Text(l10n.t("iqama_note"))
+                }
+                Section {
                     NavigationLink {
                         TVLanguagePicker()
                     } label: {
@@ -224,5 +232,27 @@ struct TVOffsetsView: View {
             }
         }
         .navigationTitle(l10n.t("minute_adjustments"))
+    }
+}
+
+/// The wait from each Adhan to its iqama, and how long the prayer shows after it, to match the mosque.
+struct TVIqamaView: View {
+    @Environment(TVModel.self) private var model
+
+    var body: some View {
+        @Bindable var model = model
+        let l10n = model.l10n
+        Form {
+            ForEach(PrayerEvent.prayers, id: \.self) { e in
+                Picker(l10n.t(Format.prayerKey(e)), selection: Binding(get: { model.settings.iqama.wait(e) },
+                                                                       set: { model.settings.iqama.setWait(e, $0) })) {
+                    ForEach(IqamaSettings.choices, id: \.self) { Text(l10n.t("minutes_value", $0)).tag($0) }
+                }
+            }
+            Picker(l10n.t("iqama_prayer_minutes"), selection: $model.settings.iqama.prayerMinutes) {
+                ForEach(IqamaSettings.prayerChoices, id: \.self) { Text(l10n.t("minutes_value", $0)).tag($0) }
+            }
+        }
+        .navigationTitle(l10n.t("iqama_section"))
     }
 }

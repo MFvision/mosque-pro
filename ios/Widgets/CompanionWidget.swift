@@ -31,7 +31,7 @@ struct CompanionView: View {
         CompanionFace(entry: entry, family: family) { event, date, label in
             AnyView(Button(intent: CompanionMarkIntent(event: event, date: date)) { label }.buttonStyle(.plain))
         }
-        .widgetURL(URL(string: "nearmosque://prayer"))
+        .widgetURL(URL(string: "mosquepro://prayer"))
     }
 }
 
