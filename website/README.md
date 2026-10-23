@@ -32,15 +32,16 @@ the features by group.
 * `4/`: version 4, Ask first: four of the app's common questions typed in and answered as the app answers them,
   with their Qur'an and HadeethEnc sources and the review label. `4/questions.json` comes from
   `shared/content/common-questions.json` through `tools/site/build_ask_sample.py`.
-* `tv/`: Mosque Pro on a TV, in its own browser or as an LG app: the prayer board (the next prayer in a mihrab arch
-  with a countdown, both dates, the verse or hadith of the day, the iqama and Qibla, and the day as a line from Fajr to
-  Isha with the sun where now is), the Adhan screen from the Adhan until the iqama with a ring counting down (with the
-  Makkah Adhan if sound is on), and a dim night screen from 90 minutes after Isha until 30 minutes before Fajr that
-  moves every minute. "Clean · no ads" shows only when an ad server is blocked on the TV's network. OK on the remote
-  opens four tiles (city, language, sound, night screen), kept on that TV only. `tv/daily.json` is made by
-  `tools/build_daily.py` (Arabic and English of `shared/daily/daily.json`). `.github/workflows/tv-preview.yml` puts
-  it on GitHub Pages for testing; `tools/webos/build.py` packs it as an LG app and `tools/webos/install.py <TV IP>`
-  installs it through the TV's Developer Mode.
+* `tv/`: Mosque Pro on a TV, in its own browser or as an LG app: a home screen. On top the prayer board (the next
+  prayer in a mihrab arch with a countdown, both dates, the verse or hadith of the day, the iqama and the weather, and
+  the day as a line from Fajr to Isha with the sun where now is); below it, rows the remote walks through: the TV's
+  apps (`tv/launcher.js` lists and opens them on LG), today (the weather from Open-Meteo, the six times, the Qibla,
+  whether the network blocks ads), and the settings (a city list with the Kingdom's cities first, language, Adhan
+  sound, night screen, the TV's settings). From the Adhan until the iqama the Adhan screen counts down in a ring (with
+  the Makkah Adhan if sound is on); from 90 minutes after Isha until 30 minutes before Fajr a dim clock moves about the
+  screen; any key brings the home screen back for three minutes. `tv/daily.json` is made by `tools/build_daily.py`.
+  `.github/workflows/tv-preview.yml` puts it on GitHub Pages for testing; `tools/webos/build.py` packs it as an LG app
+  and `tools/webos/install.py <TV IP>` installs it through the TV's Developer Mode.
 * `versions/`: one page that opens all four versions, for asking people which they prefer.
 * `prayer.js`: prayer times, the Qibla and the sky's moment for versions 2 and 3.
 * Shared by all four versions: `devices.css` with `assets/frames/` (the iPhone and Apple Watch frames drawn round

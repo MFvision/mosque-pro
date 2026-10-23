@@ -43,7 +43,7 @@ def plain(js):
 
 def app_files():
     files = {}
-    for name in ('index.html', 'tv.css', 'daily.json'):
+    for name in ('index.html', 'tv.css', 'daily.json', 'launcher.js'):
         files['tv/' + name] = read(SITE, 'tv', name)
     html = files['tv/index.html'].decode('utf-8')
     html = html.replace('<script type="module" src="tv.js"></script>', '<script src="app.js"></script>')

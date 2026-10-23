@@ -12,39 +12,67 @@
 <body>
 
 <main id="board" class="screen board">
-  <header class="top">
-    <div>
-      <p id="city" class="city"></p>
-      <p class="date"><span id="date"></span><span class="sep"> · </span><span id="hijri" class="gold"></span></p>
-    </div>
-    <p class="clock"><span id="clock"></span></p>
-  </header>
+ <div id="page" class="page">
+  <section class="hero">
+    <header class="top">
+      <div>
+        <p id="city" class="city"></p>
+        <p class="date"><span id="date"></span><span class="sep"> · </span><span id="hijri" class="gold"></span></p>
+      </div>
+      <p class="clock"><span id="clock"></span></p>
+    </header>
 
-  <section class="arch" aria-live="off">
-    <p id="next-label" class="label"></p>
-    <p id="next-name" class="next-name"></p>
-    <p id="next-at" class="next-at"></p>
-    <p class="remain"><span id="countdown" class="countdown"></span><span id="remain-l" class="label"></span></p>
+    <section class="arch" aria-live="off">
+      <p id="next-label" class="label"></p>
+      <p id="next-name" class="next-name"></p>
+      <p id="next-at" class="next-at"></p>
+      <p class="remain"><span id="countdown" class="countdown"></span><span id="remain-l" class="label"></span></p>
+    </section>
+
+    <section id="daily" class="daily">
+      <p class="daily-head"><i></i><span id="daily-label"></span></p>
+      <p id="daily-ar" class="daily-ar" lang="ar" dir="rtl"></p>
+      <p id="daily-tr" class="daily-tr"></p>
+      <p id="daily-ref" class="daily-ref"></p>
+      <div class="chips">
+        <p class="chip" id="chip-iqama"><span id="iqama-l"></span><b id="iqama-at"></b></p>
+        <p class="chip" id="chip-wx" hidden><span id="wx-chip-l"></span><b id="wx-chip"></b></p>
+        <p class="chip" id="chip-net" hidden><span id="net-l"></span><b id="net" class="mint"></b></p>
+      </div>
+    </section>
+
+    <section class="line" aria-hidden="true">
+      <div class="rail"></div><div id="rail-done" class="rail-done"></div>
+      <div id="marks"></div>
+      <div id="sun" class="sun"></div>
+    </section>
   </section>
 
-  <section id="daily" class="daily">
-    <p class="daily-head"><i></i><span id="daily-label"></span></p>
-    <p id="daily-ar" class="daily-ar" lang="ar" dir="rtl"></p>
-    <p id="daily-tr" class="daily-tr"></p>
-    <p id="daily-ref" class="daily-ref"></p>
-    <div class="chips">
-      <p class="chip" id="chip-iqama"><span id="iqama-l"></span><b id="iqama-at"></b></p>
-      <p class="chip"><span id="qibla-l"></span><b id="qibla"></b></p>
-      <p class="chip" id="chip-net" hidden><span id="net-l"></span><b id="net" class="mint"></b></p>
-    </div>
+  <section class="row" data-row="apps">
+    <h3 id="apps-h" class="row-h"></h3>
+    <div class="shelf-clip"><div id="shelf" class="shelf"></div></div>
   </section>
 
-  <section class="line" aria-hidden="true">
-    <div class="rail"></div><div id="rail-done" class="rail-done"></div>
-    <div id="marks"></div>
-    <div id="sun" class="sun"></div>
+  <section class="row" data-row="today">
+    <h3 id="today-h" class="row-h"></h3>
+    <div id="today" class="cards"></div>
   </section>
+
+  <section class="row" data-row="settings">
+    <h3 id="settings-h" class="row-h"></h3>
+    <div id="prefs" class="cards"></div>
+  </section>
+ </div>
+ <p id="hint" class="hint-bar"></p>
 </main>
+
+<div id="picker" class="picker" hidden>
+  <div class="picker-box">
+    <h2 id="picker-h"></h2>
+    <ol id="picker-list" class="picker-list"></ol>
+    <p id="picker-keys" class="picker-keys"></p>
+  </div>
+</div>
 
 <main id="adhan" class="screen adhan" hidden>
   <div class="arch-big"></div>
@@ -75,20 +103,10 @@
   </div>
 </main>
 
-<dialog id="settings" class="settings">
-  <div class="s-head"><h2 id="s-title"></h2><p id="s-keys" class="s-keys"></p></div>
-  <div class="tiles">
-    <button id="s-city" type="button" class="tile"><i><svg viewBox="0 0 24 24"><path d="M12 21s-6.5-5.6-6.5-11a6.5 6.5 0 0 1 13 0c0 5.4-6.5 11-6.5 11zM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5z"/></svg></i><span><small id="s-city-l"></small><b id="s-city-v"></b></span></button>
-    <button id="s-lang" type="button" class="tile"><i><svg viewBox="0 0 24 24"><path d="M4 5h10M9 3v2M6 5c1 4 4 7 7 8M12 5c-1 4-4 7-8 8M13 21l4-10 4 10M14.5 17h5"/></svg></i><span><small id="s-lang-l"></small><b id="s-lang-v"></b></span></button>
-    <button id="s-sound" type="button" class="tile"><i><svg viewBox="0 0 24 24"><path d="M11 5L6 9H3v6h3l5 4V5zM15.5 8.5a5 5 0 0 1 0 7M18.5 5.5a9 9 0 0 1 0 13"/></svg></i><span><small id="s-sound-l"></small><b id="s-sound-v"></b></span></button>
-    <button id="s-night" type="button" class="tile"><i><svg viewBox="0 0 24 24"><path d="M15.5 3.5a8.5 8.5 0 1 0 5 13.6A7 7 0 0 1 15.5 3.5z"/></svg></i><span><small id="s-night-l"></small><b id="s-night-v"></b></span></button>
-  </div>
-  <p id="s-hint" class="hint"></p>
-</dialog>
 
-<p id="tip" class="tip"></p>
 <audio id="adhan-audio" src="../assets/adhan.mp3" preload="none"></audio>
 
+<script src="launcher.js"></script>
 <script type="module" src="tv.js"></script>
 </body>
 </html>

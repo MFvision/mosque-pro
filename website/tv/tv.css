@@ -3,7 +3,7 @@
 :root { --gold: #D9B26A; --ivory: #F4EEDF; --soft: rgba(244, 238, 223, 0.72); --dim: rgba(244, 238, 223, 0.55);
   --glass: rgba(244, 238, 223, 0.06); --mint: #7FD1BF; --navy: #0A1B2C; }
 * { box-sizing: border-box; }
-html, body { margin: 0; height: 100%; overflow: hidden; background: #060F1A; color: var(--ivory); cursor: none;
+html, body { margin: 0; height: 100%; overflow: hidden; background: #060F1A; color: var(--ivory);
   font-family: "IBM Plex Sans Arabic", "Segoe UI", "Noto Sans Arabic", "Noto Sans", Tahoma, sans-serif; }
 p, h2 { margin: 0; }
 .gold { color: var(--gold); }
@@ -19,59 +19,112 @@ p, h2 { margin: 0; }
 .board::before, .adhan::before { content: ""; position: absolute; top: 0; right: 0; bottom: 0; left: 0; opacity: 0.05; background-size: 11.1vh 11.1vh;
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80'%3E%3Cpath d='M40 8 L48 32 L72 40 L48 48 L40 72 L32 48 L8 40 L32 32 Z M40 20 L60 40 L40 60 L20 40 Z' fill='none' stroke='%23D9B26A' stroke-width='1.2'/%3E%3C/svg%3E"); }
 
-/* Board */
+/* Board: the home screen. The hero (the prayer board) on top, then rows the remote moves through: the apps, today
+   (weather, the times, the Qibla), the settings. The page slides up to the focused row. */
 .board { transition: transform 2s ease; }
-.top { position: absolute; top: 5.6vh; left: 4.4vw; right: 4.4vw; display: flex; justify-content: space-between; align-items: flex-start; }
+.page { position: absolute; top: 0; left: 0; right: 0; transition: transform 0.45s ease; }
+.hero { position: relative; height: 75vh; }
+.top { position: absolute; top: 4.5vh; left: 4.4vw; right: 4.4vw; display: flex; justify-content: space-between; align-items: flex-start; }
 .city { font-family: "Reem Kufi", sans-serif; font-size: 4.7vh; font-weight: 700; }
 .date { font-size: 2.5vh; color: var(--soft); margin-top: 0.6vh; }
-.clock { font-size: 10vh; font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; direction: ltr; }
+.clock { font-size: 9vh; font-weight: 200; line-height: 1; font-variant-numeric: tabular-nums; direction: ltr; }
 
-.arch { position: absolute; top: 19.2vh; right: 4.4vw; width: 37.5vw; height: 55.6vh; padding: 0 2.5vw 4.7vh;
-  border: 0.21vh solid rgba(217, 178, 106, 0.55); border-radius: 18.75vw 18.75vw 3.9vh 3.9vh;
+.arch { position: absolute; top: 18vh; right: 4.4vw; width: 34vw; height: 42vh; padding: 0 2.5vw 3.5vh;
+  border: 0.21vh solid rgba(217, 178, 106, 0.55); border-radius: 17vw 17vw 3.9vh 3.9vh;
   background: linear-gradient(180deg, rgba(217, 178, 106, 0.10) 0%, rgba(217, 178, 106, 0.02) 100%);
   display: flex; flex-direction: column; align-items: center; justify-content: flex-end; text-align: center; }
 [dir="ltr"] .arch { right: auto; left: 4.4vw; }
-.next-name { font-family: "Reem Kufi", sans-serif; font-size: 15.6vh; font-weight: 700; line-height: 1.05; }
-[lang="en"] .next-name { font-size: 12vh; }
-.next-at { font-size: 3.6vh; font-weight: 600; color: var(--gold); }
-.remain { margin-top: 1.9vh; display: flex; align-items: baseline; gap: 1vw; }
-.countdown { font-size: 9.2vh; font-weight: 200; line-height: 1; direction: ltr; font-variant-numeric: tabular-nums; }
+.next-name { font-family: "Reem Kufi", sans-serif; font-size: 12.5vh; font-weight: 700; line-height: 1.05; }
+[lang="en"] .next-name { font-size: 10vh; }
+.next-at { font-size: 3.3vh; font-weight: 600; color: var(--gold); }
+.remain { margin-top: 1.2vh; display: flex; align-items: baseline; gap: 1vw; }
+.countdown { font-size: 7.5vh; font-weight: 200; line-height: 1; direction: ltr; font-variant-numeric: tabular-nums; }
 
-.daily { position: absolute; top: 22vh; left: 4.4vw; width: 48.4vw; display: flex; flex-direction: column; gap: 1.9vh; }
+.daily { position: absolute; top: 16vh; left: 4.4vw; width: 52vw; height: 43vh; display: flex; flex-direction: column; gap: 1.4vh; }
 [dir="ltr"] .daily { left: auto; right: 4.4vw; }
-.daily-head { display: flex; align-items: center; gap: 1vw; font-size: 2.4vh; letter-spacing: 0.1vh; color: var(--gold); }
+.daily[hidden] { display: none; }
+.daily-head { display: flex; align-items: center; gap: 1vw; font-size: 2.3vh; letter-spacing: 0.1vh; color: var(--gold); }
 .daily-head i { width: 2.2vw; height: 0.21vh; background: var(--gold); }
-.daily-ar { font-family: "Amiri", "Traditional Arabic", "Noto Naskh Arabic", serif; font-size: 5.3vh; line-height: 1.6;
-  max-height: 34vh; overflow: hidden; }
-.daily-ar.long { font-size: 4.1vh; }
-.daily-ar.longer { font-size: 3.4vh; }
-.daily-tr { font-size: 2.4vh; color: var(--soft); max-height: 10vh; overflow: hidden; }
+.daily-ar { font-family: "Amiri", "Traditional Arabic", "Noto Naskh Arabic", serif; font-size: 4.6vh; line-height: 1.6;
+  max-height: 22vh; overflow: hidden; }
+.daily-ar.long { font-size: 3.7vh; }
+.daily-ar.longer { font-size: 3vh; }
+.daily-tr { font-size: 2.2vh; color: var(--soft); max-height: 6.6vh; overflow: hidden; }
 .daily-tr:empty { display: none; }
-.daily-ref { font-size: 2.2vh; color: rgba(244, 238, 223, 0.6); }
-.chips { margin-top: 1.2vh; display: flex; gap: 1.1vw; }
-.chip { padding: 1.7vh 1.4vw; border-radius: 1.9vh; background: var(--glass); display: flex; flex-direction: column; gap: 0.3vh; }
+.daily-ref { font-size: 2vh; color: rgba(244, 238, 223, 0.6); }
+.chips { margin-top: auto; display: flex; gap: 1vw; }
+.chip { padding: 1.3vh 1.3vw; border-radius: 1.7vh; background: var(--glass); display: flex; flex-direction: column; gap: 0.2vh; }
 .chip[hidden] { display: none; }
-.chip span { font-size: 1.9vh; color: rgba(244, 238, 223, 0.6); }
-.chip b { font-size: 3vh; font-weight: 400; }
+.chip span { font-size: 1.8vh; color: rgba(244, 238, 223, 0.6); }
+.chip b { font-size: 2.7vh; font-weight: 400; }
 
-.line { position: absolute; left: 6.25vw; right: 6.25vw; bottom: 7.5vh; height: 13.3vh; }
-.rail, .rail-done { position: absolute; top: 6.4vh; height: 0.28vh; }
+.line { position: absolute; left: 6.25vw; right: 6.25vw; top: 61.5vh; height: 12vh; }
+.rail, .rail-done { position: absolute; top: 5.6vh; height: 0.28vh; }
 .rail { left: 0; right: 0; background: rgba(244, 238, 223, 0.16); }
 .rail-done { right: 0; background: linear-gradient(270deg, rgba(217, 178, 106, 0.2), var(--gold)); }
 [dir="ltr"] .rail-done { right: auto; left: 0; background: linear-gradient(90deg, rgba(217, 178, 106, 0.2), var(--gold)); }
-.mark { position: absolute; top: 0; width: 9.4vw; margin: 0 -4.7vw; display: flex; flex-direction: column; align-items: center; gap: 1.1vh; }
-.mark span { height: 4.2vh; display: flex; align-items: flex-end; font-size: 2.5vh; }
+.mark { position: absolute; top: 0; width: 9.4vw; margin: 0 -4.7vw; display: flex; flex-direction: column; align-items: center; gap: 0.9vh; }
+.mark span { height: 3.8vh; display: flex; align-items: flex-end; font-size: 2.3vh; }
 .mark i { width: 1.4vh; height: 1.4vh; border-radius: 50%; border: 0.21vh solid rgba(244, 238, 223, 0.5); background: var(--navy); }
-.mark b { font-size: 2.5vh; font-weight: 400; direction: ltr; color: rgba(244, 238, 223, 0.85); }
+.mark b { font-size: 2.3vh; font-weight: 400; direction: ltr; color: rgba(244, 238, 223, 0.85); }
 .mark.past span, .mark.past b { color: var(--dim); }
 .mark.past i { background: var(--gold); border-color: var(--gold); }
 .mark.sunrise { opacity: 0.8; }
-.mark.next span { font-size: 3vh; font-weight: 700; color: var(--gold); }
+.mark.next span { font-size: 2.8vh; font-weight: 700; color: var(--gold); }
 .mark.next i { width: 1.9vh; height: 1.9vh; border-color: var(--gold); }
 .mark.next b { color: var(--ivory); }
-.sun { position: absolute; top: 5.1vh; width: 2.8vh; height: 2.8vh; margin: 0 -1.4vh; border-radius: 50%; background: #FFE3A3;
+.sun { position: absolute; top: 4.3vh; width: 2.8vh; height: 2.8vh; margin: 0 -1.4vh; border-radius: 50%; background: #FFE3A3;
   box-shadow: 0 0 2.5vh 0.8vh rgba(255, 214, 130, 0.45); }
 .sun[hidden] { display: none; }
+
+/* Rows */
+.row { padding: 0 4.4vw 5vh; }
+.row-h { margin: 0 0 1.6vh; font-size: 2.5vh; font-weight: 400; color: var(--soft); letter-spacing: 0.05vh; }
+.shelf-clip { overflow: hidden; margin: -1.5vh -4.4vw; padding: 1.5vh 4.4vw; }
+.shelf { display: flex; gap: 1.3vw; transition: transform 0.3s ease; }
+.app { flex: 0 0 12.6vw; height: 14.5vh; border-radius: 2.4vh; background: rgba(244, 238, 223, 0.07); border: 0.35vh solid transparent;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.2vh; transition: transform 0.2s ease, background 0.2s; }
+.app .ic { width: 7.6vh; height: 7.6vh; border-radius: 1.8vh; display: flex; align-items: center; justify-content: center;
+  font-family: "Reem Kufi", sans-serif; font-size: 3.6vh; font-weight: 700; color: #fff; overflow: hidden; }
+.app .ic img { width: 100%; height: 100%; object-fit: contain; }
+.app .ic svg { width: 4.4vh; height: 4.4vh; fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
+.app span { font-size: 2vh; max-width: 11vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.cards { display: flex; gap: 1.3vw; }
+.card { flex: 1 1 0; min-width: 0; min-height: 24vh; border-radius: 2.8vh; background: rgba(244, 238, 223, 0.07); border: 0.35vh solid transparent;
+  padding: 2.6vh 1.6vw; display: flex; flex-direction: column; gap: 0.9vh; transition: transform 0.2s ease, background 0.2s; }
+.card small { font-size: 2vh; color: var(--soft); }
+.card b { font-size: 3.6vh; font-weight: 600; }
+.card .big { font-size: 7vh; font-weight: 200; line-height: 1; direction: ltr; }
+.card .sub { font-size: 2.1vh; color: var(--soft); line-height: 1.5; }
+.card .ic svg, .wx svg { width: 5vh; height: 5vh; fill: none; stroke: var(--gold); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.card .times-list { display: grid; grid-template-columns: auto auto; gap: 0.5vh 1.4vw; font-size: 2.2vh; }
+.card .times-list b { font-size: 2.2vh; font-weight: 400; direction: ltr; text-align: end; }
+.card .times-list .is-next { color: var(--gold); }
+.days { display: flex; gap: 1.2vw; margin-top: auto; }
+.days div { display: flex; flex-direction: column; align-items: center; gap: 0.4vh; font-size: 1.9vh; color: var(--soft); }
+.days svg { width: 3.4vh; height: 3.4vh; }
+.days b { font-size: 2.2vh; font-weight: 400; color: var(--ivory); direction: ltr; }
+.card.pref { flex-direction: row; align-items: center; gap: 1.4vw; min-height: 16vh; }
+.card.pref .ic { width: 7.6vh; height: 7.6vh; flex-shrink: 0; border-radius: 2.2vh; background: rgba(217, 178, 106, 0.14); display: flex; align-items: center; justify-content: center; }
+.card.pref span { display: flex; flex-direction: column; gap: 0.4vh; min-width: 0; }
+.card.pref b { font-size: 3.2vh; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.focus { background: rgba(217, 178, 106, 0.20) !important; border-color: var(--gold) !important; transform: scale(1.06);
+  box-shadow: 0 0 4vh rgba(217, 178, 106, 0.25); }
+.hint-bar { position: fixed; bottom: 0.8vh; left: 0; right: 0; text-align: center; font-size: 1.9vh; color: var(--dim); transition: opacity 0.6s; }
+.hint-bar.gone { opacity: 0; }
+
+/* The city list: Up and Down, OK to pick, Back to leave. */
+.picker { position: fixed; top: 0; right: 0; bottom: 0; left: 0; background: rgba(4, 10, 18, 0.92); display: flex; align-items: center; justify-content: center; z-index: 5; }
+.picker[hidden] { display: none; }
+.picker-box { width: 46vw; display: flex; flex-direction: column; gap: 2.4vh; }
+.picker h2 { font-family: "Reem Kufi", sans-serif; font-size: 5vh; font-weight: 700; text-align: center; }
+.picker-list { list-style: none; margin: 0; padding: 0; height: 63vh; overflow: hidden; position: relative; }
+.picker-list li { height: 9vh; display: flex; align-items: center; justify-content: space-between; padding: 0 2vw; border-radius: 2.2vh;
+  font-size: 3.4vh; border: 0.35vh solid transparent; }
+.picker-list li small { font-size: 2.1vh; color: var(--soft); }
+.picker-list li.group { height: 6vh; font-size: 2.2vh; color: var(--gold); padding-top: 1.5vh; }
+.picker-list li.on { background: rgba(217, 178, 106, 0.20); border-color: var(--gold); }
+.picker-keys { text-align: center; font-size: 2.2vh; color: var(--soft); }
 
 /* Adhan */
 .adhan { background: radial-gradient(80% 80% at 50% 45%, #163A52 0%, var(--navy) 60%, #050C15 100%); }
@@ -111,23 +164,3 @@ p, h2 { margin: 0; }
 [dir="ltr"] .night-bar div { right: auto; left: 0; }
 .night-ayah { font-family: "Amiri", serif; font-size: 3.6vh; color: #8C7444; margin-top: 1.9vh; }
 
-/* Settings: four big tiles, by remote. */
-.settings { position: fixed; top: 0; right: 0; bottom: 0; left: 0; width: 100vw; height: 100vh; max-width: none; max-height: none; margin: 0; border: 0; padding: 8.9vh 9.4vw;
-  background: radial-gradient(120% 90% at 75% 35%, #12304A 0%, #0A1B2C 55%, #060F1A 100%); color: var(--ivory); font-family: inherit; }
-.settings::backdrop { background: transparent; }
-.s-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4.2vh; }
-.settings h2 { font-family: "Reem Kufi", sans-serif; font-size: 5.6vh; font-weight: 700; }
-.s-keys { font-size: 2.5vh; color: var(--soft); }
-.tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 3.3vh; }
-.tile { font: inherit; color: inherit; text-align: start; display: flex; align-items: center; gap: 1.9vw; padding: 4.2vh 2.7vw;
-  border-radius: 3.9vh; background: rgba(244, 238, 223, 0.07); border: 0.42vh solid transparent; cursor: pointer; }
-.tile:focus { outline: none; background: rgba(217, 178, 106, 0.20); border-color: var(--gold); box-shadow: 0 0 5.6vh rgba(217, 178, 106, 0.25); }
-.tile i { width: 8.9vh; height: 8.9vh; flex-shrink: 0; border-radius: 2.8vh; background: rgba(217, 178, 106, 0.14); display: flex; align-items: center; justify-content: center; }
-.tile svg { width: 4.4vh; height: 4.4vh; fill: none; stroke: var(--gold); stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; }
-.tile span { display: flex; flex-direction: column; gap: 0.6vh; }
-.tile small { font-size: 2.8vh; color: var(--soft); }
-.tile b { font-size: 4.4vh; font-weight: 600; }
-.hint { font-size: 2.5vh; line-height: 1.6; color: var(--soft); margin-top: 4.2vh; }
-
-.tip { position: fixed; bottom: 2vh; left: 50%; transform: translateX(-50%); font-size: 2vh; color: var(--dim); transition: opacity 1s; z-index: 2; }
-.tip.gone { opacity: 0; }
