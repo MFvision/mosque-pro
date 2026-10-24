@@ -24,6 +24,8 @@ final class CleanNetwork {
 
     private(set) var state: State = CleanNetwork.offered ? .off : .unavailable
     private(set) var busy = false
+    /// Why iOS refused the setting, in the system's own words (shown under the switch), or nil.
+    private(set) var problem: String?
 
     /// AdGuard DNS, the default servers (ads and trackers blocked).
     static let dohURL = URL(string: "https://dns.adguard-dns.com/dns-query")!
@@ -49,6 +51,7 @@ final class CleanNetwork {
             state = m.dnsSettings == nil ? .off : (m.isEnabled ? .on : .needsSettings)
         } catch {
             state = .off
+            problem = error.localizedDescription
         }
         #endif
     }
@@ -58,6 +61,7 @@ final class CleanNetwork {
         busy = true
         defer { busy = false }
         let m = NEDNSSettingsManager.shared()
+        problem = nil
         do {
             try await m.loadFromPreferences()
             if on {
@@ -70,7 +74,9 @@ final class CleanNetwork {
                 try await m.removeFromPreferences()
             }
         } catch {
-            // Refused or not allowed: the state below says what is really set.
+            // Refused or not allowed: say why, and drop what iOS didn't take so the state below is what is really set.
+            problem = error.localizedDescription
+            m.dnsSettings = nil
         }
         await refresh()
         #endif
