@@ -438,10 +438,12 @@ enum PrayerAlarms {
             // A ringing alarm stays, and so does its record (its silent notification's buttons stop it).
             var records = scheduled.filter { UUID(uuidString: $0.id).map(ringing.contains) ?? false }
             var kept: Set<UUID> = ringing
-            for a in plan where a.kind == .adhan || a.kind == .fajrAlarm {
+            // The Adhan only where it is set to ring as an alarm; the Fajr alarm always.
+            for a in plan where (a.kind == .adhan && alerts.adhanAlarm) || a.kind == .fajrAlarm {
                 let days = a.kind == .adhan ? adhanDays : fajrAlarmDays
                 guard !covered.contains(a.identifier), a.at <= now.addingTimeInterval(Double(days) * 86400) else { continue }
-                let twin = plan.first { $0.at == a.at && $0.event == a.event && $0.kind != a.kind && ($0.kind == .adhan || $0.kind == .fajrAlarm) }
+                let twin = !alerts.adhanAlarm ? nil
+                    : plan.first { $0.at == a.at && $0.event == a.event && $0.kind != a.kind && ($0.kind == .adhan || $0.kind == .fajrAlarm) }
                 let adhan = a.kind == .adhan || twin != nil
                 let file = adhan ? AudioCatalog.available(AudioCatalog.adhan(a.event, alerts)) : nil
                 let name = l10n.t(Format.prayerKey(a.event))
