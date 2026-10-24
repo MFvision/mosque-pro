@@ -637,7 +637,9 @@ private struct CleanNetworkRow: View {
         VStack(alignment: .leading, spacing: 6) {
             OnbSwitchRow(icon: .symbol("shield.lefthalf.filled"), title: l10n.t("clean_network"), subtitle: l10n.t("clean_network_detail"),
                          isOn: net.isOn) { on in Task { await net.set(on) } }
-            if net.state == .needsSettings {
+            if let problem = net.problem {
+                OnbFootnote(text: problem)
+            } else if net.state == .needsSettings {
                 OnbFootnote(text: l10n.t("clean_network_step"))
             }
         }

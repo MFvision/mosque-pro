@@ -317,22 +317,39 @@ struct PageSwipe: ViewModifier {
     var edgeOnly: Bool
     var forward: (() -> Void)? = nil
     var back: (() -> Void)? = nil
-    @State private var width: CGFloat = 0
+    @State private var frame: CGRect = .zero
+    @State private var rows: [CGRect] = []
 
     func body(content: Content) -> some View {
         content
-            .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
+            .onGeometryChange(for: CGRect.self) { $0.frame(in: .global) } action: { frame = $0 }
+            .onPreferenceChange(SideScrollRows.self) { rows = $0 }
             .simultaneousGesture(
-                DragGesture(minimumDistance: 30, coordinateSpace: .local).onEnded { v in
+                DragGesture(minimumDistance: 30, coordinateSpace: .global).onEnded { v in
                     let dx = v.translation.width, dy = v.translation.height
                     guard abs(dx) > 90, abs(dx) > abs(dy) * 2 else { return }
+                    // A swipe along a sideways row (the surahs, say) scrolls the row, not the page.
+                    guard !rows.contains(where: { $0.contains(v.startLocation) }) else { return }
                     if edgeOnly {
-                        let start = v.startLocation.x
-                        guard dx > 0 ? start < 44 : start > width - 44 else { return }
+                        let start = v.startLocation.x - frame.minX
+                        guard dx > 0 ? start < 44 : start > frame.width - 44 else { return }
                     }
                     let towardsNext = direction == .rightToLeft ? dx > 0 : dx < 0
                     withAnimation(.snappy) { (towardsNext ? forward : back)?() }
                 }
             )
+    }
+}
+
+/// Where the sideways scrolling rows of a page are (in the window), so PageSwipe leaves swipes on them alone.
+struct SideScrollRows: PreferenceKey {
+    static let defaultValue: [CGRect] = []
+    static func reduce(value: inout [CGRect], nextValue: () -> [CGRect]) { value += nextValue() }
+}
+
+extension View {
+    /// Marks a sideways scrolling row on a main page: a swipe on it scrolls the row and never turns the page.
+    func sideScrollRow() -> some View {
+        background(GeometryReader { g in Color.clear.preference(key: SideScrollRows.self, value: [g.frame(in: .global)]) })
     }
 }
