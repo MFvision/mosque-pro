@@ -370,6 +370,9 @@ enum PrayerAlarms {
         let kind: Int
         /// The sound file, or "alarm" for the alarm tone.
         let sound: String
+        /// What the alarm was set with (prayer, time, sound, buttons, title): a rebuild keeps an alarm whose key it
+        /// would set again. Nil for alarms set by builds before this one.
+        var key: String? = nil
     }
 
     static var permission: Permission {
@@ -399,28 +402,40 @@ enum PrayerAlarms {
         return false
     }
 
-    /// Replaces the app's alarms with one for each Adhan and Fajr alarm of `plan` in their days (a Fajr alarm at the
-    /// Fajr time itself, with the Fajr Adhan on, is one alarm playing the Adhan). Returns the identifiers of the planned
-    /// alerts that got an alarm: those become silent notifications with the buttons, the others sounding ones. Never
-    /// asks (see requestAuthorization).
+    /// Makes the app's alarms one for each Adhan and Fajr alarm of `plan` in their days (a Fajr alarm at the Fajr time
+    /// itself, with the Fajr Adhan on, is one alarm playing the Adhan). Returns the identifiers of the planned alerts
+    /// that have an alarm: those become silent notifications with the buttons, the others sounding ones. Never asks
+    /// (see requestAuthorization).
+    ///
+    /// An alarm that is already set as wanted stays; only new ones are set, and only then are the ones no longer
+    /// wanted cancelled. A rebuild cut short (iOS suspends the app soon after it leaves the screen) so never leaves a
+    /// prayer without its alarm while its silent notification waits, as cancelling every alarm first and setting them
+    /// all again could.
     static func reschedule(_ plan: [PlannedAlert], alerts: AlertSettings, silence: SilenceSettings, iqama: IqamaSettings,
                            l10n: Localization, now: Date) async -> Set<String> {
         #if canImport(AlarmKit) && !targetEnvironment(macCatalyst) && !os(visionOS)
         if #available(iOS 26.0, *) {
             let manager = AlarmManager.shared
-            // Every alarm the app owns goes, also any left by an older build or a rebuild cut short; one ringing now stays.
             let all = (try? manager.alarms) ?? []
+            let live = Set(all.map(\.id))
             let ringing = Set(all.filter { if case .alerting = $0.state { return true } else { return false } }.map(\.id))
-            let noted = ((UserDefaults.standard.stringArray(forKey: oldKey) ?? []) + scheduled.map(\.id)).compactMap(UUID.init(uuidString:))
-            for id in Set(all.map(\.id) + noted).subtracting(ringing) { try? manager.cancel(id: id) }
-            UserDefaults.standard.removeObject(forKey: oldKey)
+            let noted = (UserDefaults.standard.stringArray(forKey: oldKey) ?? []).compactMap(UUID.init(uuidString:))
             guard manager.authorizationState == .authorized else {
+                for id in Set(all.map(\.id) + noted + scheduled.compactMap { UUID(uuidString: $0.id) }).subtracting(ringing) { try? manager.cancel(id: id) }
+                UserDefaults.standard.removeObject(forKey: oldKey)
                 save([])
                 return []
+            }
+            // The alarms set before that are still there, by what they were set with.
+            var standing: [String: Record] = [:]
+            for r in scheduled {
+                guard let key = r.key, let id = UUID(uuidString: r.id), live.contains(id), !ringing.contains(id), standing[key] == nil else { continue }
+                standing[key] = r
             }
             var covered: Set<String> = []
             // A ringing alarm stays, and so does its record (its silent notification's buttons stop it).
             var records = scheduled.filter { UUID(uuidString: $0.id).map(ringing.contains) ?? false }
+            var kept: Set<UUID> = ringing
             for a in plan where a.kind == .adhan || a.kind == .fajrAlarm {
                 let days = a.kind == .adhan ? adhanDays : fajrAlarmDays
                 guard !covered.contains(a.identifier), a.at <= now.addingTimeInterval(Double(days) * 86400) else { continue }
@@ -428,12 +443,23 @@ enum PrayerAlarms {
                 let adhan = a.kind == .adhan || twin != nil
                 let file = adhan ? AudioCatalog.available(AudioCatalog.adhan(a.event, alerts)) : nil
                 let name = l10n.t(Format.prayerKey(a.event))
-                let id = UUID()
                 // What the Adhan notification's buttons did: Silence where the silence begins here, else the whole
                 // Adhan in the app (not with the short Adhan, which the alarm plays whole). Prayed and Remind me are on
                 // its silent notification.
                 let silences = adhan && silence.offersAction(.adhan, event: a.event, date: a.date, iqama: iqama)
                 let full = adhan && !silences && !alerts.shortAdhan
+                let title = adhan ? l10n.t("reminder_title", name) : name
+                let key = [a.identifier, "\(a.at.timeIntervalSince1970)", file ?? "alarm", "\(silences)", "\(full)", title,
+                           l10n.t("alarm_stop"), l10n.t("alarm_silence"), l10n.t("alarm_full_adhan"),
+                           (a.event == .fajr ? alerts.fajrAdhanSource : alerts.adhanSource).rawValue].joined(separator: "|")
+                if let r = standing.removeValue(forKey: key), let id = UUID(uuidString: r.id) {
+                    kept.insert(id)
+                    records.append(r)
+                    covered.insert(a.identifier)
+                    if let twin { covered.insert(twin.identifier) }
+                    continue
+                }
+                let id = UUID()
                 let second: AlarmButton? = silences
                     ? AlarmButton(text: LocalizedStringResource(stringLiteral: l10n.t("alarm_silence")), textColor: .white, systemImageName: "moon.fill")
                     : full ? AlarmButton(text: LocalizedStringResource(stringLiteral: l10n.t("alarm_full_adhan")), textColor: .white,
@@ -442,7 +468,7 @@ enum PrayerAlarms {
                     alarmID: id.uuidString, event: a.event.rawValue, date: "\(a.date)", silence: silences, file: AudioCatalog.adhan(a.event, alerts),
                     source: (a.event == .fajr ? alerts.fajrAdhanSource : alerts.adhanSource).rawValue, at: a.at)
                 let alert = AlarmPresentation.Alert(
-                    title: LocalizedStringResource(stringLiteral: adhan ? l10n.t("reminder_title", name) : name),
+                    title: LocalizedStringResource(stringLiteral: title),
                     stopButton: AlarmButton(text: LocalizedStringResource(stringLiteral: l10n.t("alarm_stop")), textColor: .white, systemImageName: "stop.circle"),
                     secondaryButton: second, secondaryButtonBehavior: second == nil ? nil : .custom)
                 let attributes = AlarmAttributes<PrayerAlarmMetadata>(presentation: AlarmPresentation(alert: alert), tintColor: Color(hex: 0xD4A843))
@@ -459,11 +485,18 @@ enum PrayerAlarms {
                     // Not set: this one stays a notification.
                     continue
                 }
+                kept.insert(id)
                 covered.insert(a.identifier)
                 if let twin { covered.insert(twin.identifier) }
                 records.append(Record(id: id.uuidString, at: a.at, event: a.event.rawValue,
-                                      kind: (adhan ? AlertKind.adhan : AlertKind.fajrAlarm).rawValue, sound: file ?? "alarm"))
+                                      kind: (adhan ? AlertKind.adhan : AlertKind.fajrAlarm).rawValue, sound: file ?? "alarm", key: key))
+                // Saved as it goes, together with the alarms not yet cancelled: cut short here, the next rebuild still
+                // knows every alarm the app owns.
+                save(records + Array(standing.values))
             }
+            // Only now, with every wanted alarm set: the ones no longer wanted go, also any left by an older build.
+            for id in Set(all.map(\.id) + noted).subtracting(kept) { try? manager.cancel(id: id) }
+            UserDefaults.standard.removeObject(forKey: oldKey)
             save(records)
             return covered
         }
