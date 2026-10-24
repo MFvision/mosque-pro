@@ -98,6 +98,8 @@ enum Reminders {
         if Task.isCancelled { return 0 }
         // Alarms need no notification permission; an alert that got one is at most its silent notification (below).
         let alarmed = await PrayerAlarms.reschedule(plan, alerts: alerts, silence: silence, iqama: iqama, l10n: l10n, now: now)
+        // Cut short while the alarms were set: the old alarms all stay, so the old notifications stay with them.
+        if Task.isCancelled { return 0 }
         let alarmedAdhans = plan.filter { $0.kind == .adhan && alarmed.contains($0.identifier) }
         // An alarm has no Prayed or Remind me of its own: a silent notification at the same moment carries the Adhan
         // notification's buttons, and opened it carries the whole Adhan on in the app. One per alarm (a Fajr alarm
@@ -494,6 +496,9 @@ enum PrayerAlarms {
                 // knows every alarm the app owns.
                 save(records + Array(standing.values))
             }
+            // Cut short (the background refresh ran out of time): the alarms set so far stay with the old ones, all on
+            // record, and the next rebuild tidies up.
+            if Task.isCancelled { return covered }
             // Only now, with every wanted alarm set: the ones no longer wanted go, also any left by an older build.
             for id in Set(all.map(\.id) + noted).subtracting(kept) { try? manager.cancel(id: id) }
             UserDefaults.standard.removeObject(forKey: oldKey)

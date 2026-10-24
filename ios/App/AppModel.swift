@@ -604,6 +604,13 @@ final class AppModel {
 
     private func performReschedule() async {
         ReminderRefresh.submit()
+        // Time to finish if the app leaves the screen meanwhile (iOS suspends it soon after otherwise).
+        var background = UIBackgroundTaskIdentifier.invalid
+        background = UIApplication.shared.beginBackgroundTask(withName: "reminders") {
+            UIApplication.shared.endBackgroundTask(background)
+            background = .invalid
+        }
+        defer { if background != .invalid { UIApplication.shared.endBackgroundTask(background) } }
         // Read first: a change while the rebuild runs is caught at the next look.
         let access = await readAlertAccess()
         let lang = l10n.language
