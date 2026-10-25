@@ -59,6 +59,14 @@ final class CleanNetwork {
         #endif
     }
 
+    #if os(iOS) && !targetEnvironment(macCatalyst)
+    /// The save was refused only because iOS already holds this exact setting. NetworkExtension reports that from its
+    /// configuration service with no public error code, in these words.
+    private static func unchanged(_ error: Error) -> Bool {
+        (error as NSError).localizedDescription.localizedCaseInsensitiveContains("configuration is unchanged")
+    }
+    #endif
+
     func set(_ on: Bool) async {
         #if os(iOS) && !targetEnvironment(macCatalyst)
         busy = true
@@ -76,7 +84,7 @@ final class CleanNetwork {
             } else if m.dnsSettings != nil {
                 try await m.removeFromPreferences()
             }
-        } catch NEDNSSettingsManagerError.configurationUnchanged {
+        } catch let error where Self.unchanged(error) {
             // iOS already holds exactly this setting: it is set.
         } catch {
             // Refused or not allowed: say why, and drop what iOS didn't take so the state below is what is really set.
