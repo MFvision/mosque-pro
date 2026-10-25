@@ -46,9 +46,9 @@ final class CleanNetwork {
     func refresh() async {
         #if os(iOS) && !targetEnvironment(macCatalyst)
         let m = NEDNSSettingsManager.shared()
-        // Loading keeps what is in memory when iOS has nothing saved, so clear it first: only what iOS really
-        // holds counts (otherwise a refused save still read as "waiting for Settings").
-        m.dnsSettings = nil
+        // Not cleared before loading: a load can leave what is in memory as it is, so clearing it made a setting iOS
+        // holds read as off (and turning it on again then failed with "configuration is unchanged"). A refused save
+        // clears it instead (set).
         do {
             try await m.loadFromPreferences()
             state = m.dnsSettings == nil ? .off : (m.isEnabled ? .on : .needsSettings)
@@ -76,6 +76,8 @@ final class CleanNetwork {
             } else if m.dnsSettings != nil {
                 try await m.removeFromPreferences()
             }
+        } catch NEDNSSettingsManagerError.configurationUnchanged {
+            // iOS already holds exactly this setting: it is set.
         } catch {
             // Refused or not allowed: say why, and drop what iOS didn't take so the state below is what is really set.
             problem = error.localizedDescription
