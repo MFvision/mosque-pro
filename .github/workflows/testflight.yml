@@ -140,6 +140,13 @@ jobs:
             -authenticationKeyPath "$ASC_KEY_PATH" -authenticationKeyID "$ASC_KEY_ID" -authenticationKeyIssuerID "$ASC_ISSUER_ID" \
             2>&1 | tee export.log | grep -E "error|Upload|EXPORT (SUCCEEDED|FAILED)" || true
           grep -q "EXPORT SUCCEEDED" export.log
+          # Clean network needs the DNS settings entitlement in the signed app, or iOS refuses the setting.
+          # The export uploads straight to Apple, so this reads the archive, signed from the same App ID.
+          APP=$(ls -d build/NearMosque.xcarchive/Products/Applications/*.app | head -1)
+          codesign -d --entitlements - --xml "$APP" 2>/dev/null | plutil -p - | grep -A2 "networkextension" || true
+          codesign -d --entitlements - "$APP" 2>/dev/null | grep -q "dns-settings" \
+            && echo "Clean network: the DNS settings entitlement is signed in." \
+            || echo "::warning::The DNS settings entitlement is missing from the signed app, so Clean network cannot work."
           echo "Uploaded build $BUILD_NUMBER of $BUNDLE_ID. It appears in TestFlight after Apple finishes processing (usually 5-30 minutes)."
 
       # The Mac app (Mac Catalyst, same bundle id): a separate macOS build in TestFlight. Allowed to fail

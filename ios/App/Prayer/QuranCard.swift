@@ -54,6 +54,7 @@ struct QuranCard: View {
                 .padding(.vertical, 2)
             }
             .scrollIndicators(.hidden)
+            .sideScrollRow()
 
             if player.failed {
                 Text(l10n.t("quran_play_error")).font(.footnote).foregroundStyle(Color(hex: 0xF2B8B5))

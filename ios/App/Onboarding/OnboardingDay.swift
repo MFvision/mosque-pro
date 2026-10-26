@@ -490,6 +490,17 @@ struct PrivacyStep: View {
                 }
                 .padding(.top, 4)
                 .onbEnter(2)
+                // An Adhan chosen, where the device has alarms: it can ring as an alarm, even on silent (asked on Allow).
+                if PrayerAlarms.permission != .unavailable, app.settings.alerts.adhan || app.settings.alerts.fajrAdhan {
+                    OnbSwitchRow(icon: .symbol("alarm"), title: l10n.t("adhan_alarm_toggle"), subtitle: l10n.t("adhan_alarm_note"),
+                                 isOn: app.settings.alerts.adhanAlarm) { on in
+                        var a = app.settings.alerts
+                        a.adhanAlarm = on
+                        app.setAlerts(a, askPermission: false)
+                    }
+                    .padding(.top, 10)
+                    .onbEnter(3)
+                }
                 if CleanNetwork.offered {
                     CleanNetworkRow().padding(.top, 10).onbEnter(3)
                 }
@@ -637,7 +648,9 @@ private struct CleanNetworkRow: View {
         VStack(alignment: .leading, spacing: 6) {
             OnbSwitchRow(icon: .symbol("shield.lefthalf.filled"), title: l10n.t("clean_network"), subtitle: l10n.t("clean_network_detail"),
                          isOn: net.isOn) { on in Task { await net.set(on) } }
-            if net.state == .needsSettings {
+            if let problem = net.problem {
+                OnbFootnote(text: problem)
+            } else if net.state == .needsSettings {
                 OnbFootnote(text: l10n.t("clean_network_step"))
             }
         }

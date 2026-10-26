@@ -23,6 +23,8 @@ OLD_LOCAL = {
     "ur": ["قریبی مسجد کھولیں", "قریبی مسجد کے"],
 }
 # Mosque Pro's own pages live at nearmosque.net/mosque-pro/ until it has a domain; the rest of Near Mosque's site doesn't.
+# Strings where «أقرب مسجد» is the Nearest Mosque tab, named in quotes beside «الصلاة والقبلة», not the app.
+TAB_NAME_KEYS = {"menu_start_note"}
 OLD_DOMAIN = re.compile(r"nearmosque\.net(?!/mosque-pro\b)|nearmosque://")
 
 
@@ -34,6 +36,8 @@ def strings_problems():
             if not isinstance(text, str):
                 continue
             for old in OLD_NAMES + OLD_LOCAL.get(lang, []):
+                if old == "«أقرب مسجد»" and key in TAB_NAME_KEYS:
+                    continue
                 if old in text:
                     out.append(f"strings.json {key} [{lang}]: says {old!r}")
             if OLD_DOMAIN.search(text):
@@ -83,6 +87,8 @@ def apple_problems():
             out.append(f"ios/project.yml:{n}: Near Mosque identifier ({line.strip()})")
     for p in (REPO / "ios").rglob("*.xcstrings"):
         text = p.read_text()
+        for key in TAB_NAME_KEYS:  # the tab's name, checked above in strings.json
+            text = text.replace(json.loads((REPO / "shared/i18n/strings.json").read_text())["strings"][key]["ar"], "")
         for old in OLD_NAMES + OLD_LOCAL["ar"]:
             if old in text:
                 out.append(f"{p.relative_to(REPO)}: says {old!r} (run tools/gen_strings.py)")

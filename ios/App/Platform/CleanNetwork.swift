@@ -24,6 +24,8 @@ final class CleanNetwork {
 
     private(set) var state: State = CleanNetwork.offered ? .off : .unavailable
     private(set) var busy = false
+    /// Why iOS refused the setting, in the system's own words (shown under the switch), or nil.
+    private(set) var problem: String?
 
     /// AdGuard DNS, the default servers (ads and trackers blocked).
     static let dohURL = URL(string: "https://dns.adguard-dns.com/dns-query")!
@@ -44,20 +46,33 @@ final class CleanNetwork {
     func refresh() async {
         #if os(iOS) && !targetEnvironment(macCatalyst)
         let m = NEDNSSettingsManager.shared()
+        // Not cleared before loading: a load can leave what is in memory as it is, so clearing it made a setting iOS
+        // holds read as off (and turning it on again then failed with "configuration is unchanged"). A refused save
+        // clears it instead (set).
         do {
             try await m.loadFromPreferences()
             state = m.dnsSettings == nil ? .off : (m.isEnabled ? .on : .needsSettings)
         } catch {
             state = .off
+            problem = error.localizedDescription
         }
         #endif
     }
+
+    #if os(iOS) && !targetEnvironment(macCatalyst)
+    /// The save was refused only because iOS already holds this exact setting. NetworkExtension reports that from its
+    /// configuration service with no public error code, in these words.
+    private static func unchanged(_ error: Error) -> Bool {
+        (error as NSError).localizedDescription.localizedCaseInsensitiveContains("configuration is unchanged")
+    }
+    #endif
 
     func set(_ on: Bool) async {
         #if os(iOS) && !targetEnvironment(macCatalyst)
         busy = true
         defer { busy = false }
         let m = NEDNSSettingsManager.shared()
+        problem = nil
         do {
             try await m.loadFromPreferences()
             if on {
@@ -69,8 +84,12 @@ final class CleanNetwork {
             } else if m.dnsSettings != nil {
                 try await m.removeFromPreferences()
             }
+        } catch let error where Self.unchanged(error) {
+            // iOS already holds exactly this setting: it is set.
         } catch {
-            // Refused or not allowed: the state below says what is really set.
+            // Refused or not allowed: say why, and drop what iOS didn't take so the state below is what is really set.
+            problem = error.localizedDescription
+            m.dnsSettings = nil
         }
         await refresh()
         #endif

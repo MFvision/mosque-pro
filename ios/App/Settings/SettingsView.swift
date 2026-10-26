@@ -39,6 +39,8 @@ struct SettingsView: View {
                     .pickerStyle(.menu)
                 } header: { Text(l10n.t("settings_general")) }
 
+                StartSettingsSection()
+
                 if ContentDownloadCard.offered(l10n.language, app) {
                     Section { ContentDownloadCard(lang: l10n.language) }
                 }
@@ -417,10 +419,14 @@ private struct CleanNetworkSection: View {
             }
             .disabled(net.busy)
         } footer: {
-            switch net.state {
-            case .needsSettings: Text(l10n.t("clean_network_step"))
-            case .on: Text(l10n.t("clean_network_on"))
-            default: Text(l10n.t("clean_network_detail"))
+            if let problem = net.problem {
+                Text(problem).foregroundStyle(.red)
+            } else {
+                switch net.state {
+                case .needsSettings: Text(l10n.t("clean_network_step"))
+                case .on: Text(l10n.t("clean_network_on"))
+                default: Text(l10n.t("clean_network_detail"))
+                }
             }
         }
         .task { await net.refresh() }
