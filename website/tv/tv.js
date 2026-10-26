@@ -27,7 +27,7 @@ const T = {
     netHow: 'لحجبها: إعدادات التلفاز ← الشبكة ← DNS ‏94.140.14.14', netOk: 'تُحجب الإعلانات والمتتبعات على هذه الشبكة',
     nightNext: (name, time, left) => `${name} ${time} · بعد ${left}`, hours: (h, m) => (h ? h + ' س و ' : '') + m + ' د',
     adhanHint: 'الأذان يعمل · اضغط OK لإيقافه',
-    apps: 'تطبيقاتك', appsHere: 'افتح التطبيقات من زر الرئيسية في التلفاز', today: 'اليوم', settings: 'الإعدادات', tvSettings: 'إعدادات التلفاز', open: 'فتح',
+    apps: 'تطبيقاتك', appsHere: 'افتح التطبيقات من زر الرئيسية في التلفاز', settingsRemote: 'افتح الإعدادات من زر الإعدادات ⚙ في الريموت', today: 'اليوم', settings: 'الإعدادات', tvSettings: 'إعدادات التلفاز', open: 'فتح',
     weather: 'الطقس', hiLo: (h, l) => `العظمى ${h}° · الصغرى ${l}°`, times: 'مواقيت اليوم',
     qibla: 'القبلة', fromNorth: 'من الشمال', toMakkah: (km) => km.toLocaleString('ar-SA-u-nu-latn') + ' كم إلى مكة المكرمة',
     city: 'المدينة', lang: 'اللغة', langName: 'العربية', sound: 'صوت الأذان', night: 'شاشة الليل',
@@ -67,7 +67,7 @@ const T = {
     netHow: 'To block them: TV settings → Network → DNS 94.140.14.14', netOk: 'Ads and trackers are blocked on this network',
     nightNext: (name, time, left) => `${name} ${time} · in ${left}`, hours: (h, m) => (h ? h + 'h ' : '') + m + 'm',
     adhanHint: 'Adhan playing · press OK to stop',
-    apps: 'Your apps', appsHere: "Open apps from the TV's Home button", today: 'Today', settings: 'Settings', tvSettings: 'TV settings', open: 'Open',
+    apps: 'Your apps', appsHere: "Open apps from the TV's Home button", settingsRemote: 'Open the settings with the ⚙ Settings button on the remote', today: 'Today', settings: 'Settings', tvSettings: 'TV settings', open: 'Open',
     weather: 'Weather', hiLo: (h, l) => `High ${h}° · Low ${l}°`, times: "Today's times",
     qibla: 'Qibla', fromNorth: 'from north', toMakkah: (km) => km.toLocaleString('en-US') + ' km to Makkah',
     city: 'City', lang: 'Language', langName: 'English', sound: 'Adhan sound', night: 'Night screen',
@@ -550,17 +550,22 @@ function renderDaily(now) {
 function renderShelf() {
   const tx = t();
   const tiles = appList.map((a) => {
+    // A clean logo for the best-known apps, else the TV's own icon over a blur of itself, else the app's initial on its colour.
+    const b = apps.brand ? apps.brand(a.title || '') : null;
     const initial = html((a.title || '?').trim().charAt(0).toUpperCase());
-    const ic = a.icon ? `<img src="${html(a.icon)}" alt="">` : initial;
-    const bg = a.icon ? 'transparent' : html(a.color || '#24415E');
-    return `<div class="app" data-app="${html(a.id)}"><div class="ic" style="background:${bg}">${ic}</div><span>${html(a.title)}</span></div>`;
+    const ic = b ? `<svg viewBox="0 0 24 24"><path d="${b.path}"/></svg>`
+      : a.icon ? `<img class="wash" src="${html(a.icon)}" alt=""><img src="${html(a.icon)}" alt="">` : initial;
+    const bg = b ? b.color : a.icon ? '#1B2A3B' : html(a.color || '#24415E');
+    return `<div class="app" data-app="${html(a.id)}"><div class="ic${b ? ' brand' : ''}" style="background:${bg}">${ic}</div><span>${html(a.title)}</span></div>`;
   });
   tiles.push(`<div class="app" data-act="tv-settings"><div class="ic">${svg('gear')}</div><span>${html(tx.tvSettings)}</span></div>`);
   $('#shelf').innerHTML = tiles.join('');
   // An icon that doesn't load becomes the app's initial on its colour.
   Array.prototype.forEach.call($('#shelf').querySelectorAll('img'), (img) => {
     img.onerror = () => {
-      const box = img.parentNode, tile = box.parentNode;
+      const box = img.parentNode;
+      if (!box) return; // the other copy of the same icon failed first
+      const tile = box.parentNode;
       box.style.background = '#24415E';
       box.textContent = (tile.textContent || '?').trim().charAt(0).toUpperCase();
     };
@@ -671,8 +676,8 @@ function hint() {
 function activate(el) {
   if (!el) return;
   const id = el.getAttribute('data-app'), act = el.getAttribute('data-act'), n = +el.getAttribute('data-surah');
-  // In a TV's web browser the page can't open apps, and only the LG app opens the TV's settings: say where they are.
-  if ((id && !apps.opens) || (act === 'tv-settings' && !apps.webos)) { toast(t().appsHere); return; }
+  // In a TV's web browser the page can't open apps: say where they are.
+  if (id && !apps.opens) { toast(t().appsHere); return; }
   if (id) { stopQuran(); apps.launch(id); return; }
   // OK plays; OK on what is playing stops it.
   if (n) { const was = !!playing && playing.n === n; stopQuran(); if (!was) playQuran({ kind: 'surah', n, r: reciter }); return; }
@@ -682,7 +687,7 @@ function activate(el) {
   else if (act === 'help') openHelp();
   else if (act === 'iqama') openIqama(0);
   else if (act === 'calc') openCalc(0);
-  else if (act === 'tv-settings') apps.settings();
+  else if (act === 'tv-settings') apps.settings(() => toast(t().settingsRemote));
   else if (act === 'city') openPicker();
   else if (act === 'lang') { lang = rtl() ? 'en' : 'ar'; store.set('mp-tv-lang', lang); render(); }
   else if (act === 'sound') { sound = !sound; store.set('mp-tv-sound', sound ? '1' : '0'); unlockAudio(); renderPrefs(); }
