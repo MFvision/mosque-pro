@@ -66,6 +66,15 @@ jobs:
         run: python3 tools/store/collect.py --check
       - name: Ayah and Hadith of the day (shared/daily/daily.json and its fixture)
         run: python3 tools/build_daily.py --check
+      - name: Help Center answers (shared/help/help.json and its search fixture)
+        run: python3 tools/check_help.py
+      - name: Mosque Pro's own name, site and link address (no Near Mosque)
+        run: python3 tools/check_brand.py
+      - name: Privacy text names every service the apps use
+        run: python3 tools/check_privacy.py
+      - name: TV page's iqama, Jumu'ah and calculation settings
+        # The runner's Node 20 needs the flag to load website/*.js as modules (Node 22 does it on its own).
+        run: node --experimental-detect-module tools/check_tv.mjs
       - name: Design tokens (contrast, theme parity)
         run: python3 tools/check_tokens.py
       - name: Golden fixtures regenerate identically

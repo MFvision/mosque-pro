@@ -2,7 +2,7 @@
 import ClockKit
 import SwiftUI
 
-/// Settings → Apple Watch: how to put Near Mosque on a watch face, and the ready-made faces when the app has any
+/// Settings → Apple Watch: how to put Mosque Pro on a watch face, and the ready-made faces when the app has any
 /// (.watchface files exported from a real watch and added to App/Resources; none ship yet).
 struct WatchFacesView: View {
     @Environment(\.l10n) private var l10n

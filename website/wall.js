@@ -25,28 +25,30 @@ const STEPS = ['iphone/01-prayer', 'iphone/02-qibla', 'iphone/03-mosques-map', '
 // The middle column outside the phone runs on as if the reel went round: the last two screens above the first, the
 // first two below the last.
 const MID = [STEPS[3], STEPS[4], ...STEPS, STEPS[0], STEPS[1]];
-// The other columns never show one of the phone's screens. Each layout deals the same eighteen screens between its
+// The other columns never show one of the phone's screens. Each layout deals the same thirteen screens between its
 // columns, so no screen is on view twice at once, and each column repeats its own few as it runs (no more often than
 // it has room for). From the reading side; the number is the column's ring, counted out from the middle column.
 const W = (n) => `wall/${n}`, I = (n) => `iphone/${n}`, A = (n) => `android/${n}`;
+// Only screens without the other app's name (the Android welcome steps "promise", "extras", "more", "adhan" and
+// "done" say it, so they are left out).
 const DEAL = {
   narrow: [
-    [1, [I('06-widgets'), W('promise'), W('asr'), I('09-mosques-radar'), W('weather'), A('07-onboarding-look'), I('10-prayer-dark'), W('extras'), W('privacy')]],
-    [1, [I('08-audio'), W('where'), W('friday'), I('07-island'), W('adhan'), A('09-onboarding-day'), I('02-prayer-weather'), W('more'), W('done')]],
+    [1, [I('06-widgets'), W('asr'), I('09-mosques-radar'), W('weather'), A('07-onboarding-look'), I('10-prayer-dark'), W('privacy')]],
+    [1, [I('08-audio'), W('where'), W('friday'), I('07-island'), A('09-onboarding-day'), I('02-prayer-weather')]],
   ],
   mid: [
-    [2, [I('06-widgets'), W('promise'), I('10-prayer-dark'), W('asr'), W('privacy')]],
-    [1, [I('09-mosques-radar'), W('weather'), A('07-onboarding-look'), W('extras')]],
-    [1, [I('08-audio'), W('where'), A('09-onboarding-day'), W('done')]],
-    [2, [I('07-island'), W('adhan'), I('02-prayer-weather'), W('friday'), W('more')]],
+    [2, [I('06-widgets'), I('10-prayer-dark'), W('asr'), W('privacy')]],
+    [1, [I('09-mosques-radar'), W('weather'), A('07-onboarding-look')]],
+    [1, [I('08-audio'), W('where'), A('09-onboarding-day')]],
+    [2, [I('07-island'), I('02-prayer-weather'), W('friday')]],
   ],
   wide: [
-    [3, [I('07-island'), W('adhan'), W('more')]],
-    [2, [I('06-widgets'), W('asr'), W('privacy')]],
-    [1, [I('09-mosques-radar'), W('weather'), W('extras')]],
+    [3, [I('07-island'), W('privacy')]],
+    [2, [I('06-widgets'), W('asr')]],
+    [1, [I('09-mosques-radar'), W('weather')]],
     [1, [I('08-audio'), W('where'), A('09-onboarding-day')]],
-    [2, [I('02-prayer-weather'), W('friday'), W('done')]],
-    [3, [I('10-prayer-dark'), W('promise'), A('07-onboarding-look')]],
+    [2, [I('02-prayer-weather'), W('friday')]],
+    [3, [I('10-prayer-dark'), A('07-onboarding-look')]],
   ],
 };
 // How each ring moves: which way as the page scrolls (1 up, -1 down; the middle column goes up), how fast as a share

@@ -529,7 +529,7 @@ struct DirectionsMenu<MenuLabel: View>: View {
     }
 }
 
-/// The map full screen, as on nearmosque.net: a card per mosque along the bottom (nearest first). Swiping
+/// The map full screen, as on the Near Mosque website: a card per mosque along the bottom (nearest first). Swiping
 /// the cards flies the map to that mosque; tapping a pin brings its card. Each card has the name, address,
 /// distance, walking time and the next prayer, with Go, Call and Website; tapping it opens the full page.
 struct FullScreenMosqueMap: View {

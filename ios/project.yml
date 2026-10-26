@@ -44,6 +44,8 @@ targets:
         buildPhase: resources
       - path: ../shared/daily/daily.json
         buildPhase: resources
+      - path: ../shared/help/help.json
+        buildPhase: resources
       - path: ../shared/semantic/model.bin
         buildPhase: resources
     dependencies:
@@ -90,10 +92,10 @@ targets:
         # Required for the Mac App Store (same category as on iPhone: Lifestyle).
         LSApplicationCategoryType: public.app-category.lifestyle
         SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
-        # Widgets open the app with nearmosque://prayer, nearmosque://qibla or nearmosque://ask.
+        # Widgets open the app with mosquepro://prayer, mosquepro://qibla or mosquepro://ask.
         CFBundleURLTypes:
           - CFBundleURLName: $(APP_BUNDLE_ID)
-            CFBundleURLSchemes: [nearmosque]
+            CFBundleURLSchemes: [mosquepro]
         # Directions can open Google Maps or Waze when installed (canOpenURL needs the schemes listed).
         LSApplicationQueriesSchemes: [comgooglemaps, waze]
         CFBundleShortVersionString: $(MARKETING_VERSION)
@@ -111,7 +113,7 @@ targets:
         # after a tap on the Qibla widget (iOS shows the location indicator meanwhile).
         # fetch: a background refresh tops up the prayer reminders (ReminderRefresh); nothing is downloaded.
         UIBackgroundModes: [location, fetch, audio]
-        BGTaskSchedulerPermittedIdentifiers: [sa.zood.nearmosque.reminders]
+        BGTaskSchedulerPermittedIdentifiers: [sa.zood.mosquepro.reminders]
         NSLocationWhenInUseUsageDescription: Your location is used on this phone for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         NSLocationUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         UILaunchScreen:
@@ -181,6 +183,8 @@ targets:
         buildPhase: resources
       - path: ../shared/daily/daily.json
         buildPhase: resources
+      - path: ../shared/help/help.json
+        buildPhase: resources
       - path: ../shared/semantic/model.bin
         buildPhase: resources
     dependencies:
@@ -210,7 +214,7 @@ targets:
         SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
         CFBundleURLTypes:
           - CFBundleURLName: $(APP_BUNDLE_ID)
-            CFBundleURLSchemes: [nearmosque]
+            CFBundleURLSchemes: [mosquepro]
         LSApplicationQueriesSchemes: [comgooglemaps, waze]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
@@ -218,7 +222,7 @@ targets:
         CFBundleAllowMixedLocalizations: false
         ITSAppUsesNonExemptEncryption: false
         UIBackgroundModes: [fetch, audio]
-        BGTaskSchedulerPermittedIdentifiers: [sa.zood.nearmosque.reminders]
+        BGTaskSchedulerPermittedIdentifiers: [sa.zood.mosquepro.reminders]
         NSLocationWhenInUseUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         UIApplicationSceneManifest:
           UIApplicationSupportsMultipleScenes: false
@@ -236,7 +240,6 @@ targets:
       - path: Shared/StyleAccent.swift
       - path: App/Support/Daily.swift
       - path: App/Support/QuranPlayer.swift
-      - path: App/Support/Seasons.swift
       - path: App/Support/Localization.swift
       - path: App/Support/Format.swift
       - path: App/Support/Sky.swift
@@ -253,6 +256,8 @@ targets:
         buildPhase: resources
       # Ayah and Hadith of the day on the prayer screen.
       - path: ../shared/daily/daily.json
+        buildPhase: resources
+      - path: ../shared/help/help.json
         buildPhase: resources
       # The lock screen's film: the tawaf around the Kaaba.
       - path: ../website/assets/kaaba-tawaf.mp4
@@ -282,7 +287,7 @@ targets:
         SharedKeychainGroup: $(AppIdentifierPrefix)$(APP_BUNDLE_ID).shared
         CFBundleURLTypes:
           - CFBundleURLName: $(APP_BUNDLE_ID)
-            CFBundleURLSchemes: [nearmosque]
+            CFBundleURLSchemes: [mosquepro]
         CFBundleShortVersionString: $(MARKETING_VERSION)
         CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleLocalizations: [en, ar, ur, tr, id, fr, es, ru, bn, fa, fa-AF, zh-Hans, hi, pt, ha, sw, fil, vi, th, km, ug, ckb, bs, sr, mk, hu, nl, ka, si, te, kn, ml, mr, gu, pa, as]
@@ -400,7 +405,7 @@ targets:
         WKRunsIndependentlyOfCompanionApp: true
         CFBundleURLTypes:
           - CFBundleURLName: $(APP_BUNDLE_ID).watchkitapp
-            CFBundleURLSchemes: [nearmosque]
+            CFBundleURLSchemes: [mosquepro]
         NSLocationWhenInUseUsageDescription: Your location is used on this watch for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         NSHealthUpdateUsageDescription: If you turn it on, each prayer you mark is added to Apple Health as mindful minutes.
         NSHealthShareUsageDescription: Near Mosque does not read your health data; it only adds the mindful minutes of the prayers you mark.

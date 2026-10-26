@@ -3,9 +3,9 @@
  "promo": "Heures de prière, qibla et mosquée proche, avec un ciel en option qui suit la météo. Adhan, widgets et réponses de livres fiables, avec sources. Sans pub ni compte.",
  "promo_tv": "Les heures de prière du jour sur votre téléviseur, la qibla de votre ville et les mosquées proches. Une alerte plein écran à chaque prière. Sans pub ni compte.",
  "keywords": "adhan,azan,salat,priere,qibla,mosquee,islam,musulman,coran,hijri,dua,ramadan,mecque,tasbih,horaire",
- "whats_new": "Nouveau : Near Mosque sur Apple Watch, avec complications, boussole de la qibla et tasbih. Un seul style pour tout. Choisissez-le dans les Réglages : les boutons de l’app, chaque widget, l’écran verrouillé et la Dynamic Island le suivent. Nouveaux styles de widget : bleu canard et selon l’heure.",
+ "whats_new": "Nouveau : Mosque Pro sur Apple Watch, avec complications, boussole de la qibla et tasbih. Un seul style pour tout. Choisissez-le dans les Réglages : les boutons de l’app, chaque widget, l’écran verrouillé et la Dynamic Island le suivent. Nouveaux styles de widget : bleu canard et selon l’heure.",
  "whats_new_other": "Un seul style pour tout. Choisissez-le dans les Réglages : les boutons et les accents de l’app le suivent. Nouveaux styles : bleu canard et selon l’heure.",
- "intro": "Near Mosque affiche les heures de prière du jour pour votre ville, vous indique la qibla et trouve les mosquées autour de vous. Les heures et la qibla sont calculées sur votre appareil : elles fonctionnent sans internet.",
+ "intro": "Mosque Pro affiche les heures de prière du jour pour votre ville, vous indique la qibla et trouve les mosquées autour de vous. Les heures et la qibla sont calculées sur votre appareil : elles fonctionnent sans internet.",
  "h_prayer": "HEURES DE PRIÈRE",
  "prayer": [
   "La prochaine prière et le temps restant, sur un ciel qui suit l’heure de la journée",
@@ -57,11 +57,11 @@
  "also_mac": "iPhone, iPad, Apple TV et Apple Vision Pro.",
  "also_vision": "iPhone, iPad, Mac et Apple TV.",
  "h_privacy": "CONFIDENTIALITÉ",
- "privacy": "Sans compte, sans pub, sans pistage. L’app ne va en ligne que pour chercher des mosquées (avec une position arrondie), afficher la carte, télécharger ce que vous demandez, ouvrir les liens que vous choisissez et, si vous activez « Ciel selon la météo », obtenir la météo de votre ville.",
+ "privacy": "Sans compte, sans pub, sans pistage. L’app ne va en ligne que pour chercher des mosquées (avec une position arrondie), afficher la carte, télécharger ce que vous demandez, ouvrir les liens que vous choisissez et, si vous activez « Ciel selon la météo », obtenir la météo de votre ville. Le Coran est lu depuis mp3quran.net, QuranicAudio ou qurango.net, qui voient votre adresse internet. Avec « Réseau propre » activé, AdGuard voit les noms des sites que cet appareil consulte.",
  "languages": "36 langues.",
- "privacy_policy_text": "Near Mosque, c’est sans compte, sans pub, sans mesure d’audience et sans pistage. Les heures de prière et la qibla sont calculées sur votre appareil, et nous n’exploitons aucun serveur pour l’app : rien sur vous ne nous parvient. L’app ne va en ligne que pour chercher des mosquées, afficher les cartes, télécharger ce que vous choisissez et ouvrir les liens que vous sélectionnez. Sur iPhone, iPad, Mac et Apple Vision Pro, l’option « Ciel selon la météo » reste désactivée tant que vous ne l’activez pas ; elle envoie alors la position de votre ville, arrondie à environ 1 km, à MET Norway pour obtenir la météo. L’app Apple TV ne l’utilise pas. Politique de confidentialité complète : https://nearmosque.net/privacy.html",
+ "privacy_policy_text": "Mosque Pro, c’est sans compte, sans pub, sans mesure d’audience et sans pistage. Les heures de prière et la qibla sont calculées sur votre appareil, et nous n’exploitons aucun serveur pour l’app : rien sur vous ne nous parvient. L’app ne va en ligne que pour chercher des mosquées, afficher les cartes, télécharger ce que vous choisissez et ouvrir les liens que vous sélectionnez. Sur iPhone, iPad, Mac et Apple Vision Pro, l’option « Ciel selon la météo » reste désactivée tant que vous ne l’activez pas ; elle envoie alors la position de votre ville, arrondie à environ 1 km, à MET Norway pour obtenir la météo. L’app Apple TV ne l’utilise pas. Le Coran est lu depuis mp3quran.net, QuranicAudio ou qurango.net, qui voient votre adresse internet. Avec « Réseau propre » activé, AdGuard voit les noms des sites que cet appareil consulte. Politique de confidentialité complète : https://nearmosque.net/mosque-pro/privacy.html",
  "tv": {
-  "intro": "Near Mosque transforme votre téléviseur en tableau des prières pour la maison ou la salle de la mosquée : les heures du jour, la prochaine prière et le temps restant, lisibles de loin.",
+  "intro": "Mosque Pro transforme votre téléviseur en tableau des prières pour la maison ou la salle de la mosquée : les heures du jour, la prochaine prière et le temps restant, lisibles de loin.",
   "points": [
    "Une alerte plein écran à l’heure de chaque prière",
    "La direction de la qibla et la distance jusqu’à La Mecque pour votre ville",
@@ -69,7 +69,7 @@
    "Les heures du jour sur le Top Shelf, sans ouvrir l’app",
    "11 méthodes de calcul, Asr standard ou hanafite, date hégirienne et ajustement en minutes"
   ],
-  "privacy": "Sans compte, sans pub, sans pistage. L’app ne va en ligne que pour chercher des mosquées (avec une position arrondie), afficher la carte, télécharger ce que vous demandez et ouvrir les liens que vous choisissez.",
+  "privacy": "Sans compte, sans pub, sans pistage. L’app ne va en ligne que pour chercher des mosquées (avec une position arrondie), afficher la carte, télécharger ce que vous demandez et ouvrir les liens que vous choisissez. Le Coran est lu depuis mp3quran.net, QuranicAudio ou qurango.net, qui voient votre adresse internet.",
   "keywords": "adhan,azan,salat,priere,qibla,mosquee,islam,musulman,coran,hijri,dua,ramadan,mecque,tasbih,horaire"
  }
 }

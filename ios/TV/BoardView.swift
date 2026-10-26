@@ -7,6 +7,8 @@ struct TVSnapshot {
     let today: DaySchedule?
     let next: Upcoming?
     let current: PrayerEvent?
+    /// After an Adhan, the wait for its iqama (nil with the iqama off, or at any other time).
+    let toIqama: PrayerMoment?
     let sky: SkyPeriod
 
     @MainActor
@@ -15,6 +17,8 @@ struct TVSnapshot {
         let days = model.days(now: now)
         today = days.count == 3 ? days[1] : nil
         next = model.calculator.nextPrayer(days, now: now)
+        let moment = model.calculator.moment(days, now: now, iqama: model.settings.iqama)
+        toIqama = moment?.stage == .toIqama ? moment : nil
         if let t = today {
             current = PrayerEvent.allCases.last { (t[$0] ?? .distantFuture) <= now } ?? (days[0][.isha] != nil ? .isha : nil)
         } else {
@@ -98,7 +102,26 @@ struct BoardView: View {
 
             Spacer(minLength: 20)
 
-            if let next = snap.next {
+            if let wait = snap.toIqama, let iqama = wait.iqama {
+                // From the Adhan to the iqama: the prayer being called and the time left to stand for it.
+                VStack(alignment: .leading, spacing: 6) {
+                    Text(l10n.t("iqama_in"))
+                        .font(.system(size: 32, weight: .medium))
+                        .foregroundStyle(.white.opacity(0.8))
+                    HStack(alignment: .firstTextBaseline, spacing: 28) {
+                        Text(l10n.t(Format.prayerKey(wait.event)))
+                            .font(.system(size: 110, weight: .bold))
+                        Text(l10n.t("iqama_at", Format.time(iqama, zone: zone, locale: l10n.locale)))
+                            .font(.system(size: 54, weight: .medium).monospacedDigit())
+                            .foregroundStyle(Theme.gold)
+                    }
+                    Text(Format.countdown(wait.until.timeIntervalSince(snap.now), locale: l10n.locale))
+                        .font(.system(size: 150, weight: .thin, design: .rounded).monospacedDigit())
+                        .contentTransition(.numericText(countsDown: true))
+                }
+                .accessibilityElement(children: .combine)
+                .accessibilityLabel(l10n.t("iqama_left", Format.remainingLong(wait.until.timeIntervalSince(snap.now), locale: l10n.locale)))
+            } else if let next = snap.next {
                 VStack(alignment: .leading, spacing: 6) {
                     Text(l10n.t(Seasons.nextLabelKey(next.event, at: next.at, now: snap.now, zone: zone,
                                                      adjustment: model.settings.prayer.hijriAdjustmentDays) ?? "next_prayer"))
@@ -136,6 +159,7 @@ struct BoardView: View {
                 HStack(spacing: 22) {
                     ForEach(PrayerEvent.allCases, id: \.self) { e in
                         PrayerTile(event: e, time: today[e].map { Format.time($0, zone: zone, locale: l10n.locale) } ?? "–",
+                                   iqama: iqamaLine(e, today: today, zone: zone),
                                    isCurrent: e == snap.current && snap.today?[e] != nil, isNext: e == snap.next?.event && snap.next?.isTomorrow == false)
                     }
                 }
@@ -151,6 +175,13 @@ struct BoardView: View {
 }
 
 extension BoardView {
+    /// "Iqama 12:20" for a prayer's tile, with the iqama on.
+    func iqamaLine(_ e: PrayerEvent, today: DaySchedule, zone: TimeZone) -> String? {
+        let q = model.settings.iqama
+        guard q.enabled, e.isPrayer, q.wait(e) > 0, let adhan = today[e] else { return nil }
+        return model.l10n.t("iqama_at", Format.time(q.iqama(e, adhan: adhan), zone: zone, locale: model.l10n.locale))
+    }
+
     /// Under the countdown: what is playing, the iftar or the end of suhoor in Ramadan (when the countdown isn't
     /// already counting to it), and Al-Kahf from Thursday's Maghrib to Friday's.
     @ViewBuilder func chips(_ snap: TVSnapshot, zone: TimeZone) -> some View {
@@ -159,8 +190,9 @@ extension BoardView {
         let fast = Seasons.fast(snap.now, days: model.days(now: snap.now), zone: zone, adjustment: adj)
         let kahf = Seasons.isKahfTime(snap.now, today: snap.today, zone: zone) && player.playing?.surah != 18
         let fastChip: (key: String, at: Date)? = fast.flatMap { f -> (key: String, at: Date)? in
-            if snap.now < f.iftar { return snap.next?.event == .maghrib ? nil : ("ramadan_iftar", f.iftar) }
-            return snap.next?.event == .fajr ? nil : ("ramadan_suhoor_until", f.suhoorEnds)
+            if let iftar = f.iftar, snap.now < iftar { return snap.next?.event == .maghrib ? nil : ("ramadan_iftar", iftar) }
+            guard let suhoor = f.suhoorEnds else { return nil }
+            return snap.next?.event == .fajr ? nil : ("ramadan_suhoor_until", suhoor)
         }
         if player.playing != nil || fastChip != nil || kahf {
             HStack(spacing: 20) {
@@ -198,6 +230,8 @@ struct PrayerTile: View {
     @Environment(TVModel.self) private var model
     let event: PrayerEvent
     let time: String
+    /// "Iqama 12:20", under the Adhan's time (nil for Sunrise, or with the iqama off).
+    var iqama: String?
     let isCurrent: Bool
     let isNext: Bool
 
@@ -215,6 +249,13 @@ struct PrayerTile: View {
                 .font(.system(size: 40, weight: .medium).monospacedDigit())
                 .lineLimit(1)
                 .minimumScaleFactor(0.6)
+            if let iqama {
+                Text(iqama)
+                    .font(.system(size: 24).monospacedDigit())
+                    .foregroundStyle(.white.opacity(0.75))
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
+            }
         }
         .opacity(event.isPrayer ? 1 : 0.8)
         .padding(.vertical, 26)

@@ -40,8 +40,9 @@ export function sun(jd) {
 const julian = (y, m, d) => { if (m <= 2) { y -= 1; m += 12; } const A = Math.floor(y / 100); return Math.floor(365.25 * (y + 4716)) + Math.floor(30.6001 * (m + 1)) + d + 2 - A + Math.floor(A / 4) - 1524.5; };
 
 const hijriMonth = (y, m, d) => { try { return +new Intl.DateTimeFormat('en-u-ca-islamic-umalqura', { month: 'numeric', timeZone: 'UTC' }).format(new Date(Date.UTC(y, m - 1, d, 12))); } catch { return 0; } };
-// One day's times for a place, as hours from 0:00 UTC of that (local) date.
-export function dayTimes(y, m, d, lat, lon, method) {
+// One day's times for a place, as hours from 0:00 UTC of that (local) date. shadow is 1 for the standard Asr, 2 for
+// the Hanafi one (a shadow twice its object plus its noon shadow).
+export function dayTimes(y, m, d, lat, lon, method, shadow = 1) {
   const jd = julian(y, m, d), [fajrA, ishaA] = METHODS[method], la = lat * D;
   const noon = (h) => 12 - lon / 15 - sun(jd + h / 24).eqt;
   const atAlt = (alt, h, side) => {
@@ -49,7 +50,7 @@ export function dayTimes(y, m, d, lat, lon, method) {
     const c = (Math.sin(alt * D) - Math.sin(s.decl) * Math.sin(la)) / (Math.cos(s.decl) * Math.cos(la));
     return noon(h) + side * Math.acos(Math.max(-2, Math.min(2, c))) / D / 15;
   };
-  const asrAlt = (h) => { const s = sun(jd + h / 24); return Math.atan(1 / (1 + Math.tan(Math.abs(la - s.decl)))) / D; };
+  const asrAlt = (h) => { const s = sun(jd + h / 24); return Math.atan(1 / (shadow + Math.tan(Math.abs(la - s.decl)))) / D; };
   const refine = (f, h) => f(f(h));
   const t = {
     dhuhr: refine((h) => noon(h), 12 - lon / 15),
@@ -84,16 +85,19 @@ export async function resolveCity(places, zonesUrl, saved) {
   return { en: 'Makkah', ar: 'مكة المكرمة', lat: MAKKAH[0], lon: MAKKAH[1], tz: 'Asia/Riyadh' };
 }
 
-// Today's six times, tomorrow's Fajr and yesterday's Isha as real moments, in the city's own calendar.
-export function schedule(city) {
-  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: city.tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(new Date()).map((p) => [p.type, p.value]));
+// Today's six times, tomorrow's Fajr and yesterday's Isha as real moments, in the city's own calendar. opts (the TV's
+// settings): method (a METHODS key; otherwise the city's), asr ('hanafi' or the standard), offsets (minutes per time).
+export function schedule(city, opts = {}, now = new Date()) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', { timeZone: city.tz, year: 'numeric', month: 'numeric', day: 'numeric' }).formatToParts(now).map((p) => [p.type, p.value]));
   const y = +parts.year, m = +parts.month, d = +parts.day;
-  const at = (dd, hours) => new Date(Date.UTC(y, m - 1, dd) + hours * 3600e3);
-  const method = methodFor(city.tz);
-  const on = (dd) => { const x = new Date(Date.UTC(y, m - 1, dd)); return dayTimes(x.getUTCFullYear(), x.getUTCMonth() + 1, x.getUTCDate(), city.lat, city.lon, method); };
+  const offsets = opts.offsets || {};
+  const at = (dd, hours, k) => new Date(Date.UTC(y, m - 1, dd) + hours * 3600e3 + (offsets[k] || 0) * 60e3);
+  const method = METHODS[opts.method] ? opts.method : methodFor(city.tz);
+  const shadow = opts.asr === 'hanafi' ? 2 : 1;
+  const on = (dd) => { const x = new Date(Date.UTC(y, m - 1, dd)); return dayTimes(x.getUTCFullYear(), x.getUTCMonth() + 1, x.getUTCDate(), city.lat, city.lon, method, shadow); };
   const today = on(d), tomorrow = on(d + 1), yesterday = on(d - 1);
   const keys = ['fajr', 'sunrise', 'dhuhr', 'asr', 'maghrib', 'isha'];
-  return { method, today: keys.map((k) => [k, at(d, today[k])]), tomorrowFajr: at(d + 1, tomorrow.fajr), yesterdayIsha: at(d - 1, yesterday.isha) };
+  return { method, today: keys.map((k) => [k, at(d, today[k], k)]), tomorrowFajr: at(d + 1, tomorrow.fajr, 'fajr'), yesterdayIsha: at(d - 1, yesterday.isha, 'isha') };
 }
 
 // The next of the five prayers after now (tomorrow's Fajr after Isha).
