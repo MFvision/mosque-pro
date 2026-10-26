@@ -413,12 +413,10 @@ final class AppModel {
         }
     }
 
-    /// An Adhan (or the Fajr alarm) just turned on: alarms are asked for where the device has them, so it rings even
-    /// on silent. The system asks only once; without them it stays a notification.
+    /// The Adhan as an alarm (or the Fajr alarm) just turned on: alarms are asked for where the device has them, so it
+    /// rings even on silent. The system asks only once; without them it stays a notification.
     private func askForAlarms(_ a: AlertSettings, after old: AlertSettings) async {
-        let turnedOn = PrayerEvent.prayers.contains { a.adhanPlays($0) && !old.adhanPlays($0) }
-            || (old.fajrAlarmMinutesBefore == nil && a.fajrAlarmMinutesBefore != nil)
-        guard turnedOn, PrayerAlarms.permission == .notDetermined else { return }
+        guard Self.wantsAlarms(a), !Self.wantsAlarms(old), PrayerAlarms.permission == .notDetermined else { return }
         await PrayerAlarms.requestAuthorization()
     }
 
@@ -430,10 +428,11 @@ final class AppModel {
             || a.friday || a.ramadan || a.kahf || a.salawat || a.quran || a.bedtimeMinutes != nil || a.fajrAlarmMinutesBefore != nil
     }
 
-    /// An Adhan or the Fajr alarm is on: they ring as alarms where the device has them.
-    var wantsAlarms: Bool {
-        let a = settings.alerts
-        return PrayerEvent.prayers.contains { a.adhanPlays($0) } || a.fajrAlarmMinutesBefore != nil
+    /// An Adhan set to ring as an alarm, or the Fajr alarm, is on: they ring as alarms where the device has them.
+    var wantsAlarms: Bool { Self.wantsAlarms(settings.alerts) }
+
+    static func wantsAlarms(_ a: AlertSettings) -> Bool {
+        (a.adhanAlarm && PrayerEvent.prayers.contains { a.adhanPlays($0) }) || a.fajrAlarmMinutesBefore != nil
     }
 
     /// Notifications and alarms allowed, as the last rebuild found them: a change since then rebuilds the reminders.
@@ -604,6 +603,13 @@ final class AppModel {
 
     private func performReschedule() async {
         ReminderRefresh.submit()
+        // Time to finish if the app leaves the screen meanwhile (iOS suspends it soon after otherwise).
+        var background = UIBackgroundTaskIdentifier.invalid
+        background = UIApplication.shared.beginBackgroundTask(withName: "reminders") {
+            UIApplication.shared.endBackgroundTask(background)
+            background = .invalid
+        }
+        defer { if background != .invalid { UIApplication.shared.endBackgroundTask(background) } }
         // Read first: a change while the rebuild runs is caught at the next look.
         let access = await readAlertAccess()
         let lang = l10n.language

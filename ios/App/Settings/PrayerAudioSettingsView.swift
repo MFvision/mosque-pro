@@ -79,9 +79,12 @@ struct PrayerAudioSettingsView: View {
                     PreviewButton(name: "adhan_\(a.adhanSource.rawValue)_short", label: l10n.t("adhan_short"))
                 }
             }
+            // Where the device has alarms (iPhone and iPad, iOS 26): the Adhan as an alarm instead of a notification.
+            if PrayerAlarms.permission != .unavailable {
+                Toggle(l10n.t("adhan_alarm_toggle"), isOn: bind(\.adhanAlarm))
+            }
         } header: { Text(l10n.t("adhan_section")) } footer: {
-            // With alarms allowed (iPhone and iPad, iOS 26) the Adhan is an alarm, not a 30-second notification sound.
-            Text(l10n.t(PrayerAlarms.permission == .authorized ? "adhan_alarm_note" : "adhan_note"))
+            Text(l10n.t(a.adhanAlarm && PrayerAlarms.permission == .authorized ? "adhan_alarm_note" : "adhan_note"))
         }
     }
 
