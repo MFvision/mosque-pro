@@ -35,7 +35,7 @@ struct OpenPrayerTimesIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        PendingRoute.open(URL(string: "nearmosque://prayer")!)
+        PendingRoute.open(URL(string: "mosquepro://prayer")!)
         return .result()
     }
 }
@@ -52,7 +52,7 @@ struct AskIslamIntent: AppIntent {
 
     @MainActor
     func perform() async throws -> some IntentResult {
-        var c = URLComponents(string: "nearmosque://ask")!
+        var c = URLComponents(string: "mosquepro://ask")!
         c.queryItems = [URLQueryItem(name: "q", value: question)]
         PendingRoute.open(c.url!)
         return .result()
@@ -99,12 +99,12 @@ struct NearestMosqueDirectionsIntent: AppIntent {
     @MainActor
     func perform() async throws -> some IntentResult & ProvidesDialog & OpensIntent {
         guard let s = SharedStore.read() else {
-            return .result(opensIntent: OpenURLIntent(URL(string: "nearmosque://mosques")!), dialog: IntentDialog(stringLiteral: SharedState.fallbackNoCity))
+            return .result(opensIntent: OpenURLIntent(URL(string: "mosquepro://mosques")!), dialog: IntentDialog(stringLiteral: SharedState.fallbackNoCity))
         }
         if let found = await NearbyMosques.lookup(lang: s.language, unnamed: s.t("mosque_unnamed"), online: s.onlineSearch ?? true) {
             guard let m = found.first else {
                 let text = s.t("siri_nearest_none")
-                return .result(opensIntent: OpenURLIntent(URL(string: "nearmosque://mosques")!), dialog: IntentDialog(stringLiteral: text))
+                return .result(opensIntent: OpenURLIntent(URL(string: "mosquepro://mosques")!), dialog: IntentDialog(stringLiteral: text))
             }
             var c = URLComponents(string: "https://maps.apple.com/")!
             c.queryItems = [URLQueryItem(name: "daddr", value: "\(m.location.latitude),\(m.location.longitude)"),
@@ -113,7 +113,7 @@ struct NearestMosqueDirectionsIntent: AppIntent {
             return .result(opensIntent: OpenURLIntent(c.url!), dialog: IntentDialog(stringLiteral: text))
         }
         // No fresh fix: open the app on the nearest mosque it knows.
-        var c = URLComponents(string: "nearmosque://mosque")!
+        var c = URLComponents(string: "mosquepro://mosque")!
         c.queryItems = s.mosques?.first.map { [URLQueryItem(name: "id", value: $0.id)] }
         return .result(opensIntent: OpenURLIntent(c.url!), dialog: IntentDialog(stringLiteral: s.t("siri_nearest_open_app")))
     }

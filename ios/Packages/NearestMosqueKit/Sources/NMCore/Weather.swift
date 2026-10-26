@@ -106,7 +106,7 @@ public enum Weather {
     public static let cacheFileName = "weather-cache.json"
     public static let lineKey = "weather_line"
     public static let a11yKey = "weather_a11y"
-    static let publisherSite = "https://nearmosque.net/"
+    static let publisherSite = "https://nearmosque.net/mosque-pro/"
     static let publisherEmail = "app@vision.bz"
 
     private static let posix = Locale(identifier: "en_US_POSIX")
@@ -137,7 +137,7 @@ public enum Weather {
 
     /// platform: iOS, iPadOS, macOS, visionOS, Android, Windows or Linux. The publisher's contact, never the user's.
     public static func userAgent(platform: String, version: String) -> String {
-        "NearMosque/\(version) (\(platform); +\(publisherSite); \(publisherEmail))"
+        "MosquePro/\(version) (\(platform); +\(publisherSite); \(publisherEmail))"
     }
 
     /// Headers for the GET: User-Agent always; If-Modified-Since only for the same city. No Accept-Encoding

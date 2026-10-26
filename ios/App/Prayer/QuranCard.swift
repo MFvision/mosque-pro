@@ -147,8 +147,8 @@ struct SeasonCard: View {
                     if let fast {
                         Text(l10n.t("ramadan_day", fast.day)).font(.subheadline.weight(.semibold))
                         HStack(spacing: 10) {
-                            time(l10n.t("ramadan_iftar"), fast.iftar, zone, icon: "sunset")
-                            time(l10n.t("ramadan_suhoor_until"), fast.suhoorEnds, zone, icon: "sun.horizon")
+                            if let iftar = fast.iftar { time(l10n.t("ramadan_iftar"), iftar, zone, icon: "sunset") }
+                            if let suhoor = fast.suhoorEnds { time(l10n.t("ramadan_suhoor_until"), suhoor, zone, icon: "sun.horizon") }
                         }
                     }
                     if let next = snap.next, next.event == .dhuhr, friday, next.at > snap.now, next.at.timeIntervalSince(snap.now) < 3 * 3600 {

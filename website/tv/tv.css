@@ -183,6 +183,8 @@ p, h2 { margin: 0; }
 .picker-list li small { font-size: 2.1vh; color: var(--soft); }
 .picker-list li.group { height: 6vh; font-size: 2.2vh; color: var(--gold); padding-top: 1.5vh; }
 .picker-list li.on { background: rgba(217, 178, 106, 0.20); border-color: var(--gold); }
+.picker-list li.qa { height: auto; min-height: 9vh; flex-direction: column; align-items: flex-start; justify-content: center; gap: 0.8vh; padding: 1.6vh 2vw; }
+.picker-list li.qa small { font-size: 2.3vh; line-height: 1.45; }
 .picker-keys { text-align: center; font-size: 2.2vh; color: var(--soft); }
 
 /* Adhan */

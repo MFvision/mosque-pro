@@ -327,18 +327,18 @@ final class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
             switch action {
             case .prayed: Reminders.markPrayed(event: event, date: date, delivered: delivered)
             case .snooze: await Reminders.snooze(content)
-            case .qibla: PendingRoute.open(URL(string: "nearmosque://qibla")!)
-            case .mosques: PendingRoute.open(URL(string: "nearmosque://mosques")!)
+            case .qibla: PendingRoute.open(URL(string: "mosquepro://qibla")!)
+            case .mosques: PendingRoute.open(URL(string: "mosquepro://mosques")!)
             case .silence:
                 // Too late for this prayer's silence: only the prayer screen, as a tap on the notification opens
                 // (without carrying the Adhan on).
-                if !SilenceShortcutRunner.runFromNotification(event: event, date: date) { PendingRoute.open(URL(string: "nearmosque://prayer")!) }
+                if !SilenceShortcutRunner.runFromNotification(event: event, date: date) { PendingRoute.open(URL(string: "mosquepro://prayer")!) }
             case nil:
                 // Opening an Adhan notification carries the Adhan on in the app, from where it would be now.
                 if let file = content.userInfo["adhan"] as? String {
                     AdhanPlayer.shared.play(file, title: Self.adhanTitle(content.userInfo["source"] as? String), adhan: true, offset: Date().timeIntervalSince(delivered))
                 }
-                PendingRoute.open(URL(string: "nearmosque://prayer")!)
+                PendingRoute.open(URL(string: "mosquepro://prayer")!)
             }
             // The Lock Screen countdown moves on too (a button may have woken the app only for this).
             await LiveCountdown.refresh(AppModel.shared)
@@ -614,10 +614,10 @@ struct PrayerAlarmOpenIntent: LiveActivityIntent {
         if #available(iOS 26.0, *), let id = UUID(uuidString: alarmID) { try? AlarmManager.shared.stop(id: id) }
         if silence {
             // Too late for this prayer's silence: the prayer screen, as for the notification button.
-            if !SilenceShortcutRunner.runFromNotification(event: event, date: date) { PendingRoute.open(URL(string: "nearmosque://prayer")!) }
+            if !SilenceShortcutRunner.runFromNotification(event: event, date: date) { PendingRoute.open(URL(string: "mosquepro://prayer")!) }
         } else {
             AdhanPlayer.shared.play(file, title: NotificationHandler.adhanTitle(source), adhan: true, offset: Date().timeIntervalSince(at))
-            PendingRoute.open(URL(string: "nearmosque://prayer")!)
+            PendingRoute.open(URL(string: "mosquepro://prayer")!)
         }
         await LiveCountdown.refresh(AppModel.shared)
         return .result()
@@ -628,7 +628,7 @@ struct PrayerAlarmOpenIntent: LiveActivityIntent {
 /// A background refresh about twice a day (when iOS allows) rebuilds the reminders, so they keep going when
 /// the app has not been opened for days, and moves the Lock Screen countdown on. Nothing is downloaded.
 enum ReminderRefresh {
-    static let id = "sa.zood.nearmosque.reminders"
+    static let id = "sa.zood.mosquepro.reminders"
 
     static func register() {
         BGTaskScheduler.shared.register(forTaskWithIdentifier: id, using: nil) { task in

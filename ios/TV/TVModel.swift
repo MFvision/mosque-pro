@@ -30,6 +30,8 @@ struct TVSettings: Codable, Equatable {
     var onlineSearch = true
     /// After five minutes on the board without a press, the Kaaba fills the screen with the time.
     var lockScreen = true
+    /// The wait from each Adhan to its iqama, as at the mosque (the same rules as the iPhone app's).
+    var iqama = IqamaSettings()
 
     init() {}
 
@@ -42,6 +44,7 @@ struct TVSettings: Codable, Equatable {
         prayerAlert = try c.decodeIfPresent(Bool.self, forKey: .prayerAlert) ?? true
         onlineSearch = try c.decodeIfPresent(Bool.self, forKey: .onlineSearch) ?? true
         lockScreen = try c.decodeIfPresent(Bool.self, forKey: .lockScreen) ?? true
+        iqama = (try? c.decodeIfPresent(IqamaSettings.self, forKey: .iqama)) ?? IqamaSettings()
     }
 }
 

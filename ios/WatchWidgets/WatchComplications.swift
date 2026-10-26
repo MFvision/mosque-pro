@@ -93,10 +93,10 @@ struct NoCityView: View {
     @Environment(\.widgetFamily) private var family
     var body: some View {
         switch family {
-        case .accessoryInline: Label("Near Mosque", systemImage: "building.columns")
+        case .accessoryInline: Label("Mosque Pro", systemImage: "building.columns")
         case .accessoryRectangular:
             VStack(alignment: .leading) {
-                Label("Near Mosque", systemImage: "building.columns").font(.headline)
+                Label("Mosque Pro", systemImage: "building.columns").font(.headline)
                 Text(LocalizedStringResource("widget_choose_city")).font(.caption).foregroundStyle(.secondary)
             }
             .frame(maxWidth: .infinity, alignment: .leading)

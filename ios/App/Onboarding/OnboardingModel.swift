@@ -15,7 +15,7 @@ final class OnboardingModel {
     private(set) var leaving = false
     /// Steps answered or passed (their chips show).
     private(set) var answered: Set<OnboardingStep> = []
-    /// The Adhan step was shown, with its quiet switch (so "Also in Near Mosque" leaves quiet out).
+    /// The Adhan step was shown, with its quiet switch (so "Also in Mosque Pro" leaves quiet out).
     private(set) var adhanVisited = false
     /// The city and method chips (a place was set before the flow, or on its place step).
     private(set) var placeShown = false

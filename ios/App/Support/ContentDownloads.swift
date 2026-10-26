@@ -54,7 +54,7 @@ final class ContentDownloads {
 
     private nonisolated static func get(_ url: URL) async throws -> Data {
         var request = URLRequest(url: url, timeoutInterval: 60)
-        request.setValue("NearMosque", forHTTPHeaderField: "User-Agent")
+        request.setValue("MosquePro", forHTTPHeaderField: "User-Agent")
         let (data, response) = try await URLSession.shared.data(for: request)
         guard (response as? HTTPURLResponse)?.statusCode == 200 else { throw URLError(.badServerResponse) }
         return data
