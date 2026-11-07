@@ -109,10 +109,13 @@ targets:
         NSSupportsLiveActivities: true
         # The Qibla compass in the Dynamic Island updates about once a second for two minutes.
         NSSupportsLiveActivitiesFrequentUpdates: true
-        # Experimental Qibla compass in the Dynamic Island: the compass is read in the background for two minutes
-        # after a tap on the Qibla widget (iOS shows the location indicator meanwhile).
+        # No background location (App Review 2.5.4, as in Near Mosque): the Dynamic Island Qibla compass updates
+        # only while the app is in use. Location is used when in use only.
         # fetch: a background refresh tops up the prayer reminders (ReminderRefresh); nothing is downloaded.
-        UIBackgroundModes: [location, fetch, audio]
+        # audio: the Quran player (whole surahs and Quran radio, with lock-screen controls) keeps playing when the
+        # phone is locked. Near Mosque was rejected for audio without such a player; keep a screen recording of
+        # the Quran playing on the lock screen ready for App Review.
+        UIBackgroundModes: [fetch, audio]
         BGTaskSchedulerPermittedIdentifiers: [sa.zood.mosquepro.reminders]
         NSLocationWhenInUseUsageDescription: Your location is used on this phone for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
         NSLocationUsageDescription: Your location is used on this device for prayer times, the Qibla and nearby mosques. Mosque search sends only an approximate location.
