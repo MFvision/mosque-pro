@@ -27,6 +27,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+        with:
+          persist-credentials: false
       - name: Gather the site, the TV page and what they load
         run: python3 tools/site_bundle.py _site
       - uses: actions/configure-pages@983d7736d9b0ae728b81ab479565c72886d7745b # v5
