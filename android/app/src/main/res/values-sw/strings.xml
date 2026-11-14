@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Bofya eneo-kazi huku umeshikilia Control, chagua Hariri Wijeti, kisha utafute Mosque Pro.</string>
     <string name="onb2_widgets_style">Kwa mtindo wako: %1$s</string>
     <string name="onb2_your_day">Siku yako</string>
+    <string name="onb3_ask">Ipi inakufaa zaidi?</string>
+    <string name="onb3_ask_sub">Usifikirie sana. Chagua haraka.</string>
+    <string name="onb3_learning">Tunakufahamu</string>
     <string name="onb_ask_body">Majibu yananukuu Qur\'ani pamoja na namba ya aya, ili uweze kukagua chanzo kila wakati.</string>
     <string name="onb_ask_title">Uliza lolote kuhusu Uislamu</string>
     <string name="onb_back">Rudi</string>

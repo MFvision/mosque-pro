@@ -133500,6 +133500,669 @@
         }
       }
     },
+    "onb3_ask": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Which one feels like you?"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "أيّهما يناسبك؟"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آپ کو کون سا پسند ہے؟"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Hangisi sana daha uygun?"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mana yang paling cocok untukmu?"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Lequel vous ressemble ?"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "¿Cuál va más contigo?"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Что вам ближе?"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "আপনার কোনটা পছন্দ?"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کدام را بیشتر می‌پسندید؟"
+          }
+        },
+        "fa-AF": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کدام را بیشتر می‌پسندید؟"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "你更喜欢哪一个？"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "आपको कौन-सा पसंद है?"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Qual combina mais com você?"
+          }
+        },
+        "ha": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Wanne ya fi dacewa da kai?"
+          }
+        },
+        "sw": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ipi inakufaa zaidi?"
+          }
+        },
+        "fil": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Alin ang mas bagay sa iyo?"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Bạn thích cái nào hơn?"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "คุณชอบแบบไหนมากกว่า?"
+          }
+        },
+        "km": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "តើអ្នកចូលចិត្តមួយណា?"
+          }
+        },
+        "ug": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "قايسىسى سىزگە ياقىدۇ؟"
+          }
+        },
+        "ckb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "کامیانت پێ باشترە؟"
+          }
+        },
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Šta vam više odgovara?"
+          }
+        },
+        "sr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Шта вам више одговара?"
+          }
+        },
+        "mk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Кое повеќе ви одговара?"
+          }
+        },
+        "hu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Melyik illik jobban hozzád?"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Welke past bij jou?"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "რომელი მოგწონთ?"
+          }
+        },
+        "si": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ඔබට වඩා ගැළපෙන්නේ කුමක්ද?"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మీకు ఏది నచ్చింది?"
+          }
+        },
+        "kn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ನಿಮಗೆ ಯಾವುದು ಇಷ್ಟ?"
+          }
+        },
+        "ml": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "നിങ്ങൾക്ക് ഏതാണ് ഇഷ്ടം?"
+          }
+        },
+        "mr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "तुम्हाला कोणते आवडते?"
+          }
+        },
+        "gu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "તમને કયું ગમે છે?"
+          }
+        },
+        "pa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ਤੁਹਾਨੂੰ ਕਿਹੜਾ ਪਸੰਦ ਹੈ?"
+          }
+        },
+        "as": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "আপোনাৰ কোনটো ভাল লাগে?"
+          }
+        }
+      }
+    },
+    "onb3_ask_sub": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Don’t overthink it. Pick fast."
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "لا تفكّر كثيرًا، اختر بسرعة."
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زیادہ مت سوچیں، جلدی چنیں۔"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Fazla düşünme, hızlıca seç."
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Jangan terlalu dipikirkan. Pilih cepat."
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne réfléchissez pas trop. Choisissez vite."
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "No lo pienses mucho. Elige rápido."
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не раздумывайте, выбирайте быстро."
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "বেশি ভাববেন না, দ্রুত বেছে নিন।"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زیاد فکر نکنید، سریع انتخاب کنید."
+          }
+        },
+        "fa-AF": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زیاد فکر نکنید، زود انتخاب کنید."
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "别想太多，快速选择。"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ज़्यादा मत सोचिए, जल्दी चुनिए।"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Não pense muito. Escolha rápido."
+          }
+        },
+        "ha": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kada ka yi tunani da yawa. Zaɓi da sauri."
+          }
+        },
+        "sw": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Usifikirie sana. Chagua haraka."
+          }
+        },
+        "fil": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Huwag masyadong pag-isipan. Pumili agad."
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đừng nghĩ nhiều, chọn nhanh thôi."
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ไม่ต้องคิดมาก เลือกเร็ว ๆ"
+          }
+        },
+        "km": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "កុំគិតច្រើនពេក ជ្រើសរើសឱ្យលឿន។"
+          }
+        },
+        "ug": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "كۆپ ئويلىماڭ، تېز تاللاڭ."
+          }
+        },
+        "ckb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "زۆر بیر مەکەرەوە، خێرا هەڵبژێرە."
+          }
+        },
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne razmišljajte previše. Izaberite brzo."
+          }
+        },
+        "sr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не размишљајте превише. Изаберите брзо."
+          }
+        },
+        "mk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Не размислувајте премногу. Изберете брзо."
+          }
+        },
+        "hu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ne gondold túl, válassz gyorsan."
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Denk er niet te lang over na. Kies snel."
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ბევრს ნუ იფიქრებთ, სწრაფად აირჩიეთ."
+          }
+        },
+        "si": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "වැඩිපුර හිතන්න එපා. ඉක්මනින් තෝරන්න."
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ఎక్కువ ఆలోచించకండి, త్వరగా ఎంచుకోండి."
+          }
+        },
+        "kn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ಹೆಚ್ಚು ಯೋಚಿಸಬೇಡಿ, ಬೇಗ ಆರಿಸಿ."
+          }
+        },
+        "ml": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "അധികം ആലോചിക്കേണ്ട, വേഗം തിരഞ്ഞെടുക്കൂ."
+          }
+        },
+        "mr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "जास्त विचार करू नका, पटकन निवडा."
+          }
+        },
+        "gu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "વધુ વિચારશો નહીં, ઝડપથી પસંદ કરો."
+          }
+        },
+        "pa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ਜ਼ਿਆਦਾ ਨਾ ਸੋਚੋ, ਜਲਦੀ ਚੁਣੋ।"
+          }
+        },
+        "as": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "বেছি নাভাবিব, সোনকালে বাছক।"
+          }
+        }
+      }
+    },
+    "onb3_learning": {
+      "extractionState": "manual",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Getting to know you"
+          }
+        },
+        "ar": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "نتعرّف عليك"
+          }
+        },
+        "ur": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "آپ کو جان رہے ہیں"
+          }
+        },
+        "tr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Seni tanıyoruz"
+          }
+        },
+        "id": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Mengenal dirimu"
+          }
+        },
+        "fr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Nous apprenons à vous connaître"
+          }
+        },
+        "es": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conociéndote"
+          }
+        },
+        "ru": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Узнаём вас"
+          }
+        },
+        "bn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "আপনাকে জানছি"
+          }
+        },
+        "fa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال شناختن شما"
+          }
+        },
+        "fa-AF": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "در حال شناختن شما"
+          }
+        },
+        "zh-Hans": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "正在了解你"
+          }
+        },
+        "hi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "आपको जान रहे हैं"
+          }
+        },
+        "pt": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Conhecendo você"
+          }
+        },
+        "ha": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Muna sanin ka"
+          }
+        },
+        "sw": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Tunakufahamu"
+          }
+        },
+        "fil": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Kinikilala ka namin"
+          }
+        },
+        "vi": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Đang tìm hiểu bạn"
+          }
+        },
+        "th": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "กำลังทำความรู้จักคุณ"
+          }
+        },
+        "km": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "កំពុងស្គាល់អ្នក"
+          }
+        },
+        "ug": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "سىزنى تونۇۋاتىمىز"
+          }
+        },
+        "ckb": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "خەریکی ناسینتین"
+          }
+        },
+        "bs": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Upoznajemo vas"
+          }
+        },
+        "sr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Упознајемо вас"
+          }
+        },
+        "mk": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Ве запознаваме"
+          }
+        },
+        "hu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Megismerünk"
+          }
+        },
+        "nl": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "We leren je kennen"
+          }
+        },
+        "ka": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "გეცნობით"
+          }
+        },
+        "si": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ඔබව හඳුනා ගනිමින්"
+          }
+        },
+        "te": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "మిమ్మల్ని తెలుసుకుంటున్నాం"
+          }
+        },
+        "kn": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ನಿಮ್ಮನ್ನು ತಿಳಿದುಕೊಳ್ಳುತ್ತಿದ್ದೇವೆ"
+          }
+        },
+        "ml": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "നിങ്ങളെ അറിയുന്നു"
+          }
+        },
+        "mr": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "तुमची ओळख करून घेत आहोत"
+          }
+        },
+        "gu": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "તમને ઓળખી રહ્યા છીએ"
+          }
+        },
+        "pa": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "ਤੁਹਾਨੂੰ ਜਾਣ ਰਹੇ ਹਾਂ"
+          }
+        },
+        "as": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "আপোনাক চিনি পাইছোঁ"
+          }
+        }
+      }
+    },
     "onb_ask_body": {
       "extractionState": "manual",
       "localizations": {

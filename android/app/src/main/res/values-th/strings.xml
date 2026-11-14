@@ -605,6 +605,9 @@
     <string name="onb2_widgets_howto_mac">กด Control ค้างแล้วคลิกเดสก์ท็อป เลือกแก้ไขวิดเจ็ต แล้วค้นหา Mosque Pro</string>
     <string name="onb2_widgets_style">ในสไตล์ของคุณ: %1$s</string>
     <string name="onb2_your_day">วันของคุณ</string>
+    <string name="onb3_ask">คุณชอบแบบไหนมากกว่า?</string>
+    <string name="onb3_ask_sub">ไม่ต้องคิดมาก เลือกเร็ว ๆ</string>
+    <string name="onb3_learning">กำลังทำความรู้จักคุณ</string>
     <string name="onb_ask_body">คำตอบยกข้อความจากอัลกุรอานพร้อมเลขอายะฮ์ คุณจึงตรวจสอบแหล่งที่มาได้เสมอ</string>
     <string name="onb_ask_title">ถามอะไรก็ได้เกี่ยวกับอิสลาม</string>
     <string name="onb_back">ย้อนกลับ</string>

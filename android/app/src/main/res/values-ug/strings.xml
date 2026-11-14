@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Control نى بېسىپ تۇرۇپ ئۈستەليۈزىنى چېكىڭ، Edit Widgets نى تاللاڭ، ئاندىن «Mosque Pro» نى تېپىڭ.</string>
     <string name="onb2_widgets_style">ئۇسلۇبىڭىزدا: %1$s</string>
     <string name="onb2_your_day">كۈنىڭىز</string>
+    <string name="onb3_ask">قايسىسى سىزگە ياقىدۇ؟</string>
+    <string name="onb3_ask_sub">كۆپ ئويلىماڭ، تېز تاللاڭ.</string>
+    <string name="onb3_learning">سىزنى تونۇۋاتىمىز</string>
     <string name="onb_ask_body">جاۋابلار قۇرئاندىن ئايەت نومۇرى بىلەن نەقىل كەلتۈرىدۇ، شۇڭا مەنبەنى ھەمىشە تەكشۈرەلەيسىز.</string>
     <string name="onb_ask_title">ئىسلام توغرىسىدا خالىغان سوئالنى سوراڭ</string>
     <string name="onb_back">قايتىش</string>

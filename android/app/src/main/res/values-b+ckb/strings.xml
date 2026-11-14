@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">بە گرتنی Control کلیک لەسەر ڕووی کار بکە، Edit Widgets هەڵبژێرە، پاشان «Mosque Pro» بدۆزەرەوە.</string>
     <string name="onb2_widgets_style">بە شێوازی تۆ: %1$s</string>
     <string name="onb2_your_day">ڕۆژەکەت</string>
+    <string name="onb3_ask">کامیانت پێ باشترە؟</string>
+    <string name="onb3_ask_sub">زۆر بیر مەکەرەوە، خێرا هەڵبژێرە.</string>
+    <string name="onb3_learning">خەریکی ناسینتین</string>
     <string name="onb_ask_body">وەڵامەکان لە قورئانەوە وەردەگیرێن لەگەڵ ئاماژە بە ئایەتەکە، بۆ ئەوەی هەمیشە بتوانیت سەرچاوەکە بپشکنیت.</string>
     <string name="onb_ask_title">هەر پرسیارێکت دەربارەی ئیسلام هەیە بیکە</string>
     <string name="onb_back">گەڕانەوە</string>

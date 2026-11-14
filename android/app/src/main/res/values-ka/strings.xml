@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Control-ით დააწკაპუნეთ სამუშაო მაგიდაზე, აირჩიეთ „ვიჯეტების რედაქტირება“ და იპოვეთ Mosque Pro.</string>
     <string name="onb2_widgets_style">თქვენს სტილში: %1$s</string>
     <string name="onb2_your_day">თქვენი დღე</string>
+    <string name="onb3_ask">რომელი მოგწონთ?</string>
+    <string name="onb3_ask_sub">ბევრს ნუ იფიქრებთ, სწრაფად აირჩიეთ.</string>
+    <string name="onb3_learning">გეცნობით</string>
     <string name="onb_ask_body">პასუხები ყურანს ციტირებს აიათის მითითებით, ასე რომ წყაროს ყოველთვის შეამოწმებთ.</string>
     <string name="onb_ask_title">იკითხეთ ნებისმიერი რამ ისლამის შესახებ</string>
     <string name="onb_back">უკან</string>

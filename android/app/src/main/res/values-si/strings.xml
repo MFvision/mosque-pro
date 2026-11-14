@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Control ඔබාගෙන ඩෙස්ක්ටොපය ක්ලික් කර, Edit Widgets තෝරා, Mosque Pro සොයන්න.</string>
     <string name="onb2_widgets_style">ඔබේ විලාසයෙන්: %1$s</string>
     <string name="onb2_your_day">ඔබේ දිනය</string>
+    <string name="onb3_ask">ඔබට වඩා ගැළපෙන්නේ කුමක්ද?</string>
+    <string name="onb3_ask_sub">වැඩිපුර හිතන්න එපා. ඉක්මනින් තෝරන්න.</string>
+    <string name="onb3_learning">ඔබව හඳුනා ගනිමින්</string>
     <string name="onb_ask_body">පිළිතුරු ආයත් යොමුව සමඟ කුර්ආනය උපුටා දක්වයි, එබැවින් ඔබට සැමවිටම මූලාශ්‍රය පරීක්ෂා කළ හැක.</string>
     <string name="onb_ask_title">ඉස්ලාම් ගැන ඕනෑම දෙයක් අහන්න</string>
     <string name="onb_back">ආපසු</string>

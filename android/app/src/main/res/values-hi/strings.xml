@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Control दबाकर डेस्कटॉप पर क्लिक करें, विजेट संपादित करें चुनें, फिर Mosque Pro ढूँढें।</string>
     <string name="onb2_widgets_style">आपके स्टाइल में: %1$s</string>
     <string name="onb2_your_day">आपका दिन</string>
+    <string name="onb3_ask">आपको कौन-सा पसंद है?</string>
+    <string name="onb3_ask_sub">ज़्यादा मत सोचिए, जल्दी चुनिए।</string>
+    <string name="onb3_learning">आपको जान रहे हैं</string>
     <string name="onb_ask_body">जवाबों में क़ुरआन का उद्धरण आयत के हवाले के साथ होता है, ताकि आप हमेशा स्रोत जाँच सकें।</string>
     <string name="onb_ask_title">इस्लाम के बारे में कुछ भी पूछें</string>
     <string name="onb_back">पीछे</string>

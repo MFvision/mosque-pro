@@ -607,6 +607,9 @@
     <string name="onb2_widgets_howto_mac">Кликните на радну површину држећи тастер Control, изаберите Измени виџете и пронађите Mosque Pro.</string>
     <string name="onb2_widgets_style">У вашем стилу: %1$s</string>
     <string name="onb2_your_day">Ваш дан</string>
+    <string name="onb3_ask">Шта вам више одговара?</string>
+    <string name="onb3_ask_sub">Не размишљајте превише. Изаберите брзо.</string>
+    <string name="onb3_learning">Упознајемо вас</string>
     <string name="onb_ask_body">Одговори цитирају Кур\'ан са ознаком ајета, па увек можете проверити извор.</string>
     <string name="onb_ask_title">Питајте било шта о исламу</string>
     <string name="onb_back">Назад</string>
