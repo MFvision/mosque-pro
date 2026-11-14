@@ -197,20 +197,23 @@ jobs:
             sleep 9
             xcrun simctl io "$UDID" screenshot "shots/$name.png"
           }
-          # The welcome flow (First Light), one still frame per step: before a place, then with Cape Town.
-          shot 01-onboarding-promise -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep promise -languageOverride en
+          # The welcome flow ("one or two"), one still frame per page: before a place, then with Cape Town.
+          shot 01-onboarding-welcome -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep welcome -languageOverride en
           shot 02-onboarding-where -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep where -languageOverride en
           shot 03-onboarding-asr -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep asr -languageOverride en
-          shot 04-onboarding-adhan -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep adhan -languageOverride en
-          shot 04b-onboarding-friday -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep friday -languageOverride en
-          shot 04c-onboarding-weather -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep weather -demoOnboardingWeather rain -languageOverride en
-          shot 04d-onboarding-look -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep look -languageOverride en
-          shot 04e-onboarding-day -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep day -languageOverride en
-          shot 04f-onboarding-extras -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep extras -demoOnboardingWatch installed -languageOverride en
-          shot 04g-onboarding-more -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep more -languageOverride en
-          shot 04h-onboarding-privacy -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep privacy -languageOverride en
-          shot 04i-onboarding-day-ar -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep day -languageOverride ar
-          shot 04j-onboarding-extras-ar -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep extras -demoOnboardingWatch installed -languageOverride ar
+          shot 04-onboarding-voice -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep voice -languageOverride en
+          shot 04b-onboarding-alarm -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep alarm -languageOverride en
+          shot 04c-onboarding-appearance -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep appearance -languageOverride en
+          shot 04d-onboarding-style -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep style -languageOverride en
+          shot 04e-onboarding-friday -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep friday -languageOverride en
+          shot 04f-onboarding-clean -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep clean -languageOverride en
+          shot 04g-onboarding-notify -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep notify -languageOverride en
+          shot 04h-onboarding-done -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep done -languageOverride en
+          shot 04i-onboarding-welcome-ar -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep welcome -languageOverride ar
+          shot 04j-onboarding-asr-ar -demoCity "Riyadh" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep asr -languageOverride ar
+          shot 04k-onboarding-voice-ar -demoCity "Riyadh" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep voice -languageOverride ar
+          shot 04l-onboarding-style-ar -demoCity "Riyadh" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep style -languageOverride ar
+          shot 04m-onboarding-done-ar -demoCity "Riyadh" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep done -languageOverride ar
           shot 05-prayer-en -demoCity "Cape Town" -demoTab prayer -languageOverride en
           shot 06-prayer-ar -demoCity "Cape Town" -demoTab prayer -languageOverride ar
           shot 06b-qibla-compass -demoCity "Cape Town" -demoTab prayer -demoCompass YES -languageOverride en
@@ -314,7 +317,7 @@ jobs:
             ipad 06-mosques-landscape -demoCity "Cape Town" -demoTab mosques -demoMosqueMode 1 -demoLandscape YES -languageOverride en
             ipad 07-ask-answer -demoCity "Cape Town" -demoTab ask -demoAsk YES -languageOverride en
             ipad 08-ask-landscape -demoCity "Cape Town" -demoTab ask -demoAsk YES -demoLandscape YES -languageOverride en
-            ipad 09-onboarding -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep day -demoLandscape YES -languageOverride en
+            ipad 09-onboarding -demoCity "Cape Town" -demoOnboarding YES -demoOnboardingStill YES -demoOnboardingStep style -demoLandscape YES -languageOverride en
             ipad 10-widgets-today -demoCity "Cape Town" -demoWidgets YES -demoWidgetKind today -demoWidgetLook cream -languageOverride en
             ipad 10b-widgets-ring -demoCity "Cape Town" -demoWidgets YES -demoWidgetKind ring -demoWidgetLook night -languageOverride en
             ipad 10c-mosques-compass -demoCity "Cape Town" -demoTab mosques -demoMosqueMode 0 -languageOverride ar

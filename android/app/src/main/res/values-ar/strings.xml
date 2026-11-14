@@ -610,6 +610,9 @@
     <string name="onb2_widgets_howto_mac">انقر على سطح المكتب مع الضغط على Control، واختر «تعديل الأدوات»، ثم ابحث عن «مسجد وأكثر».</string>
     <string name="onb2_widgets_style">بنمطك: %1$s</string>
     <string name="onb2_your_day">يومك</string>
+    <string name="onb3_ask">أيّهما يناسبك؟</string>
+    <string name="onb3_ask_sub">لا تفكّر كثيرًا، اختر بسرعة.</string>
+    <string name="onb3_learning">نتعرّف عليك</string>
     <string name="onb_ask_body">تقتبس الإجابات من القرآن مع رقم الآية، لتتحقق من المصدر دائمًا.</string>
     <string name="onb_ask_title">اسأل أي شيء عن الإسلام</string>
     <string name="onb_back">رجوع</string>

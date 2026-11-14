@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Control টিপি ডেস্কটপত ক্লিক কৰক, Edit Widgets বাছক, তাৰ পিছত Mosque Pro বিচাৰক।</string>
     <string name="onb2_widgets_style">আপোনাৰ শৈলীত: %1$s</string>
     <string name="onb2_your_day">আপোনাৰ দিন</string>
+    <string name="onb3_ask">আপোনাৰ কোনটো ভাল লাগে?</string>
+    <string name="onb3_ask_sub">বেছি নাভাবিব, সোনকালে বাছক।</string>
+    <string name="onb3_learning">আপোনাক চিনি পাইছোঁ</string>
     <string name="onb_ask_body">উত্তৰত আয়াতৰ উল্লেখসহ কোৰআনৰ উদ্ধৃতি থাকে, যাতে আপুনি সদায় উৎস পৰীক্ষা কৰিব পাৰে।</string>
     <string name="onb_ask_title">ইছলামৰ বিষয়ে যিকোনো প্ৰশ্ন সোধক</string>
     <string name="onb_back">উভতি যাওক</string>

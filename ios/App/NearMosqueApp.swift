@@ -206,7 +206,7 @@ struct RootView: View {
         }
         .fullScreenCover(isPresented: Binding(get: { model.ready && !model.settings.onboarded },
                                               set: { if !$0 { model.settings.onboarded = true } })) {
-            OnboardingView()
+            PairOnboardingView()
                 .environment(\.locale, l10n.locale)
                 .environment(\.layoutDirection, l10n.layoutDirection)
         }

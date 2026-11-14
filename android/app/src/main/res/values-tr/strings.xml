@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Masaüstüne Control tuşuyla tıklayın, Widget’ları Düzenle’yi seçin ve Mosque Pro’u bulun.</string>
     <string name="onb2_widgets_style">Sizin stilinizde: %1$s</string>
     <string name="onb2_your_day">Gününüz</string>
+    <string name="onb3_ask">Hangisi sana daha uygun?</string>
+    <string name="onb3_ask_sub">Fazla düşünme, hızlıca seç.</string>
+    <string name="onb3_learning">Seni tanıyoruz</string>
     <string name="onb_ask_body">Cevaplar Kur’an’dan ayet numarasıyla alıntı yapar; kaynağı her zaman kontrol edebilirsiniz.</string>
     <string name="onb_ask_title">İslam hakkında her şeyi sorun</string>
     <string name="onb_back">Geri</string>

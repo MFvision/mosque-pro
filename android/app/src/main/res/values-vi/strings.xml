@@ -605,6 +605,9 @@
     <string name="onb2_widgets_howto_mac">Giữ Control và bấm vào màn hình nền, chọn Sửa tiện ích, rồi tìm Mosque Pro.</string>
     <string name="onb2_widgets_style">Theo kiểu của bạn: %1$s</string>
     <string name="onb2_your_day">Ngày của bạn</string>
+    <string name="onb3_ask">Bạn thích cái nào hơn?</string>
+    <string name="onb3_ask_sub">Đừng nghĩ nhiều, chọn nhanh thôi.</string>
+    <string name="onb3_learning">Đang tìm hiểu bạn</string>
     <string name="onb_ask_body">Câu trả lời trích dẫn Qur’an kèm số câu kinh, để bạn luôn có thể kiểm tra nguồn.</string>
     <string name="onb_ask_title">Hỏi bất cứ điều gì về Islam</string>
     <string name="onb_back">Quay lại</string>

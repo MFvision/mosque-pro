@@ -605,6 +605,9 @@
     <string name="onb2_widgets_howto_mac">按住 Control 键点按桌面，选择“编辑小组件”，然后找到 Mosque Pro。</string>
     <string name="onb2_widgets_style">你的样式：%1$s</string>
     <string name="onb2_your_day">你的一天</string>
+    <string name="onb3_ask">你更喜欢哪一个？</string>
+    <string name="onb3_ask_sub">别想太多，快速选择。</string>
+    <string name="onb3_learning">正在了解你</string>
     <string name="onb_ask_body">回答会引用古兰经并注明经文出处，你随时可以核对来源。</string>
     <string name="onb_ask_title">关于伊斯兰的任何问题都可以问</string>
     <string name="onb_back">返回</string>

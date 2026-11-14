@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">Kattintson a Control billentyűt lenyomva az íróasztalra, válassza a Widgetek szerkesztése lehetőséget, és keresse meg a Mosque Pro-ot.</string>
     <string name="onb2_widgets_style">Az Ön stílusában: %1$s</string>
     <string name="onb2_your_day">Az Ön napja</string>
+    <string name="onb3_ask">Melyik illik jobban hozzád?</string>
+    <string name="onb3_ask_sub">Ne gondold túl, válassz gyorsan.</string>
+    <string name="onb3_learning">Megismerünk</string>
     <string name="onb_ask_body">A válaszok a Koránból idéznek, versszámmal, így a forrást mindig ellenőrizheted.</string>
     <string name="onb_ask_title">Kérdezz bármit az iszlámról</string>
     <string name="onb_back">Vissza</string>

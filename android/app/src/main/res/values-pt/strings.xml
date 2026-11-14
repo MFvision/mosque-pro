@@ -607,6 +607,9 @@
     <string name="onb2_widgets_howto_mac">Clique na mesa com a tecla Control pressionada, escolha Editar Widgets e procure Mosque Pro.</string>
     <string name="onb2_widgets_style">No seu estilo: %1$s</string>
     <string name="onb2_your_day">Seu dia</string>
+    <string name="onb3_ask">Qual combina mais com você?</string>
+    <string name="onb3_ask_sub">Não pense muito. Escolha rápido.</string>
+    <string name="onb3_learning">Conhecendo você</string>
     <string name="onb_ask_body">As respostas citam o Alcorão com a referência do versículo, para você sempre poder conferir a fonte.</string>
     <string name="onb_ask_title">Pergunte qualquer coisa sobre o Islã</string>
     <string name="onb_back">Voltar</string>

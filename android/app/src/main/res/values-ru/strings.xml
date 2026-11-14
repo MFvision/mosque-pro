@@ -608,6 +608,9 @@
     <string name="onb2_widgets_howto_mac">Нажмите на рабочий стол, удерживая Control, выберите «Изменить виджеты» и найдите Mosque Pro.</string>
     <string name="onb2_widgets_style">В вашем стиле: %1$s</string>
     <string name="onb2_your_day">Ваш день</string>
+    <string name="onb3_ask">Что вам ближе?</string>
+    <string name="onb3_ask_sub">Не раздумывайте, выбирайте быстро.</string>
+    <string name="onb3_learning">Узнаём вас</string>
     <string name="onb_ask_body">Ответы цитируют Коран со ссылкой на аят, поэтому источник всегда можно проверить.</string>
     <string name="onb_ask_title">Спросите что угодно об исламе</string>
     <string name="onb_back">Назад</string>

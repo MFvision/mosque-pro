@@ -606,6 +606,9 @@
     <string name="onb2_widgets_howto_mac">با نگه‌داشتن کلید Control روی میز کار کلیک کنید، «ویرایش ابزارک‌ها» را انتخاب کنید و «Mosque Pro» را پیدا کنید.</string>
     <string name="onb2_widgets_style">به سبک شما: %1$s</string>
     <string name="onb2_your_day">روز شما</string>
+    <string name="onb3_ask">کدام را بیشتر می‌پسندید؟</string>
+    <string name="onb3_ask_sub">زیاد فکر نکنید، سریع انتخاب کنید.</string>
+    <string name="onb3_learning">در حال شناختن شما</string>
     <string name="onb_ask_body">پاسخ‌ها از قرآن با ذکر نشانی آیه نقل می‌شوند تا همیشه بتوانید منبع را بررسی کنید.</string>
     <string name="onb_ask_title">هر سؤالی درباره اسلام دارید بپرسید</string>
     <string name="onb_back">قبلی</string>
