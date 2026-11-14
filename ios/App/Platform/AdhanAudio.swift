@@ -59,19 +59,22 @@ final class AdhanPlayer: NSObject, AVAudioPlayerDelegate {
     @ObservationIgnored private var player: AVAudioPlayer?
 
     /// Plays `name` (.m4a if there is one, else .caf) from `offset` seconds; nothing if `offset` is past the end.
-    func play(_ name: String, title: String? = nil, adhan: Bool = false, offset: TimeInterval = 0) {
+    /// False when nothing plays (file missing, past the end, or iOS refused the audio, as during a phone call).
+    @discardableResult
+    func play(_ name: String, title: String? = nil, adhan: Bool = false, offset: TimeInterval = 0) -> Bool {
         stop()
         guard let url = AudioCatalog.url(name, "m4a") ?? AudioCatalog.url(name, "caf"),
-              let p = try? AVAudioPlayer(contentsOf: url), offset < p.duration - 1 else { return }
+              let p = try? AVAudioPlayer(contentsOf: url), offset < p.duration - 1 else { return false }
         try? AVAudioSession.sharedInstance().setCategory(.playback, mode: .default, options: [.duckOthers])
         try? AVAudioSession.sharedInstance().setActive(true)
         p.delegate = self
         p.currentTime = max(0, offset)
-        guard p.play() else { return }
+        guard p.play() else { return false }
         player = p
         playing = name
         self.title = title
         isAdhan = adhan
+        return true
     }
 
     func toggle(_ name: String) {

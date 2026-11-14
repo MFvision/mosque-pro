@@ -297,8 +297,9 @@ final class NotificationHandler: NSObject, UNUserNotificationCenterDelegate {
                 // An alarm's silent notification: the alarm is ringing.
                 completionHandler([.banner, .list])
             } else if let file = info["adhan"] as? String {
-                AdhanPlayer.shared.play(file, title: Self.adhanTitle(info["source"] as? String), adhan: true)
-                completionHandler([.banner, .list])
+                // The notification's own sound only when the app could not play the Adhan, so it is never silent.
+                let playing = AdhanPlayer.shared.play(file, title: Self.adhanTitle(info["source"] as? String), adhan: true)
+                completionHandler(playing ? [.banner, .list] : [.banner, .list, .sound])
             } else {
                 completionHandler([.banner, .list, .sound])
             }
