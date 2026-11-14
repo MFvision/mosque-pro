@@ -974,9 +974,8 @@ extension SharedState {
                                      questions: ["What is Islam?", "How do I pray?", "What are the five pillars?"])
 }
 
-/// A tap on the Qibla dial opens the app's live Qibla compass (the widget's link, mosquepro://qibla). It used to start a
-/// compass in the Dynamic Island, read in the background; without background location (App Review 2.5.4) a compass
-/// started from a widget never gets a heading, so the island stayed on "Move your phone" for two minutes.
+/// On iPhone and iPad, a tap on the Qibla dial starts the live compass in the Dynamic Island (experimental);
+/// elsewhere (the Mac) the content is shown as is and a tap opens the app.
 enum QiblaIslandSupport {
     static var available: Bool {
         #if canImport(ActivityKit) && !targetEnvironment(macCatalyst) && !os(visionOS)
@@ -991,6 +990,10 @@ struct QiblaIslandButton<Content: View>: View {
     @ViewBuilder var content: Content
 
     var body: some View {
+        #if canImport(ActivityKit) && !targetEnvironment(macCatalyst) && !os(visionOS)
+        Button(intent: StartQiblaIslandIntent()) { content }.buttonStyle(.plain)
+        #else
         content
+        #endif
     }
 }
